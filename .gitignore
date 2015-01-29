@@ -53,6 +53,10 @@ docs/_build/
 # PyBuilder
 target/
 
+# WSGI Static except Keep Me
+wsgi/static/*
+!wsgi/static/keep.me
+
 # IntelliJ IDEA Project File
 .idea
 

@@ -1,10 +1,10 @@
 from setuptools import setup
 
 setup(
-    name='YourAppName',
+    name='Apollo',
     version='1.0',
-    description='OpenShift App',
-    author='Your Name',
-    author_email='example@example.com',
-    url='http://www.python.org/sigs/distutils-sig/',
+    description='Prototype inventory management application running on OpenShift PAAS.',
+    author='Alexander Wong',
+    author_email='admin@alexander-wong.com',
+    url='http://www.alexander-wong.com',
 )

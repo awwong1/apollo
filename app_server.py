@@ -1,6 +1,6 @@
 import os
-import mysite.settings
-import mysite.wsgi
+import apollo.settings
+import apollo.wsgi
 import tornado.web
 import tornado.websocket
 import tornado.wsgi
@@ -14,11 +14,11 @@ class Application(tornado.web.Application):
 
     def __init__(self):
         settings = dict()
-        settings["debug"] = True if mysite.settings.DEBUG else False
+        settings["debug"] = True if apollo.settings.DEBUG else False
 
-        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mysite.settings")
-        wsgi_app = tornado.wsgi.WSGIContainer(mysite.wsgi.application)
-        static_path = mysite.settings.STATIC_ROOT
+        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "apollo.settings")
+        wsgi_app = tornado.wsgi.WSGIContainer(apollo.wsgi.application)
+        static_path = apollo.settings.STATIC_ROOT
 
         handlers = [
             (r"/ws", WebSocketHandler),
