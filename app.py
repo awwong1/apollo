@@ -6,7 +6,7 @@ import tornado.httpserver
 import tornado.ioloop
 import tornado.options
 
-import app_server as app
+import server_app as app
 
 
 # Return the libs path (this path is appended to module search path/sys.path).

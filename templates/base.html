@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en" ng-app="apollo">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name=viewport content="width=device-width, initial-scale=1">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>Apollo</title>
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.2/darkly/bootstrap.min.css">
+  <link rel="stylesheet" href="{% static 'css/apollo.css' %}">
+</head>
+<body>
+{% if user.authenticated %}
+  <p>Todo</p>
+{% else %}
+  <base-content></base-content>
+{% endif %}
+{% block content %}{% endblock %}
+<footer class="footer">
+  <div class="container-fluid">
+    <p class="text-muted">&#169; Alexander Wong, 2014-2015.</p>
+  </div>
+</footer>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular.min.js"></script>
+<script src="{% static 'js/app.js' %}"></script>
+{% if user.authenticated %}{% else %}<script src="{% static 'js/base_content.js' %}"></script>{% endif %}
+</body>
+</html>

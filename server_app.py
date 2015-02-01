@@ -22,6 +22,7 @@ class Application(tornado.web.Application):
 
         handlers = [
             (r"/ws", WebSocketHandler),
+            (r"/(favicon\.ico)", tornado.web.StaticFileHandler, {'path': static_path}),
             (r"/static/(.*)", tornado.web.StaticFileHandler, {'path': static_path}),
             (r".*", tornado.web.FallbackHandler, dict(fallback=wsgi_app)),
         ]
