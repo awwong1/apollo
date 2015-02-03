@@ -55,6 +55,7 @@ INSTALLED_APPS = (
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+    'bootstrap3',
     'djangular',
     'rest_framework',
 )

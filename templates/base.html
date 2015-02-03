@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 {% load staticfiles %}
-<html lang="en" ng-app="apollo">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -11,12 +11,55 @@
   <link rel="stylesheet" href="{% static 'css/apollo.css' %}">
 </head>
 <body>
-{% if user.authenticated %}
-  <p>Todo</p>
-{% else %}
-  <base-content></base-content>
-{% endif %}
-{% block content %}{% endblock %}
+<nav class="navbar navbar-default navbar-static-top">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+              aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/">Apollo</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      {% if user.is_authenticated %}
+      <ul class="nav navbar-nav navbar-right">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+            Account <span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li><a href="{% url 'account_email' %}">Manage Email</a></li>
+            <li><a href="{% url 'account_password_change' %}">Change Password</a></li>
+            <li class="divider"></li>
+            <li><a href="{% url 'account_logout' %}">Sign Out</a></li>
+          </ul>
+        </li>
+      </ul>
+      {% else %}
+      <ul class="nav navbar-nav">
+        <li><a href="{% url 'base_idea' %}">Billing Beyond the Rig</a></li>
+        <li><a href="{% url 'base_prototype' %}">Prototype Details</a></li>
+        <li><a href="{% url 'base_contact' %}">Contact</a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="{% url 'account_login' %}">Sign In</a></li>
+        <li><a href="{% url 'account_signup' %}">Sign Up</a></li>
+      </ul>
+      {% endif %}
+    </div>
+  </div>
+</nav>
+<div class="container-fluid">
+  {% block content %}
+  <div ng-app="apollo">
+    <application></application>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular.min.js"></script>
+    <script src="{% static 'js/app.js' %}"></script>
+  </div>
+  {% endblock %}
+</div>
 <footer class="footer">
   <div class="container-fluid">
     <p class="text-muted">&#169; Alexander Wong, 2014-2015.</p>
@@ -24,8 +67,5 @@
 </footer>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
-<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular.min.js"></script>
-<script src="{% static 'js/app.js' %}"></script>
-{% if user.authenticated %}{% else %}<script src="{% static 'js/base_content.js' %}"></script>{% endif %}
 </body>
 </html>

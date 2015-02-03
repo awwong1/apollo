@@ -1,11 +1,14 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
-from apollo.views import index, ws_demo
+from apollo.views import base, base_idea, base_prototype, base_contact, ws_demo
 
 admin.autodiscover()
 urlpatterns = patterns(
     '',
-    url(r'^$', index, name='index'),
+    url(r'^$', base, name='base'),
+    url(r'^idea/$', base_idea, name='base_idea'),
+    url(r'^prototype/$', base_prototype, name='base_prototype'),
+    url(r'^contact/$', base_contact, name='base_contact'),
     url(r'^accounts/', include('allauth.urls')),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^admin/', include(admin.site.urls)),
