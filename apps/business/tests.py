@@ -68,3 +68,24 @@ class BusinessTestCase(TestCase):
         BusinessMembership.objects.create(user=user2, business=business, business_administrator=True)
         membership.business_administrator = False
         membership.save()
+
+    def test_readonly_after_add(self):
+        user = User.objects.create_user('testUser', 'test@example.com', 'password')
+        business = Business.objects.create(
+            name="X",
+            description="Testing business known as X.",
+            address_1="345 Test Drive",
+            address_2="789 Boulevard Test",
+            postal_code="T3S7E4",
+        )
+        membership = BusinessMembership(user=user, business=business, business_administrator=True)
+        self.assertEqual(None, membership.pk)
+        membership.save()
+        self.assertNotEqual(None, membership.pk)
+        user2 = User.objects.create_user('testUser2', 'test2@example.com', 'password')
+        membership.user = user2  # This instance of business membership is invalid
+        self.assertEqual(membership.user, user2)
+        membership.save()  # This instance of business membership is valid again
+        self.assertEqual(membership.user, user)
+        membership = BusinessMembership.objects.all()[0]
+        self.assertEqual(membership.user, user)

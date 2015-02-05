@@ -46,10 +46,10 @@ class BusinessMembership(models.Model):
     Mapping between users and businesses.
     """
     user = models.ForeignKey(
-        User, editable=False, help_text="Which user is part of this membership?",
+        User, help_text="Which user is part of this membership? Cannot be edited once membership is created."
     )
     business = models.ForeignKey(
-        Business, editable=False, help_text="Which business is part of this membership?"
+        Business, help_text="Which business is part of this membership? Cannot be edited once membership is created."
     )
     business_administrator = models.BooleanField(
         default=False, help_text="Is this user an administrator of this business?"
@@ -57,7 +57,6 @@ class BusinessMembership(models.Model):
 
     class Meta:
         unique_together = ("user", "business")
-        index_together = ("user", "business")
         default_permissions = ('change', 'delete')
 
     def delete(self, *args, **kwargs):
@@ -66,7 +65,7 @@ class BusinessMembership(models.Model):
             business_admins = self.business.businessmembership_set.all().filter(business_administrator=True)
             if len(business_admins) == 1:
                 raise LastAdministratorException('Cannot delete the last administrator in a business')
-        super(BusinessMembership, self).delete(*args, **kwargs)
+        return super(BusinessMembership, self).delete(*args, **kwargs)
 
     def save(self, *args, **kwargs):
         # Do not allow modification of membership such that there are no administrators
@@ -74,7 +73,13 @@ class BusinessMembership(models.Model):
         if len(business_admins) == 1:
             if business_admins[0].pk == self.pk and self.business_administrator is False:
                 raise LastAdministratorException('Cannot remove administrator status from last business administrator')
-        super(BusinessMembership, self).save(*args, **kwargs)
+        # Do not allow modification of user and business after creation, revert fields back to original state
+        if self.pk is not None:
+            existing = BusinessMembership.objects.get(pk=self.pk)
+            self.user = existing.user
+            self.business = existing.business
+            kwargs['update_fields'] = ['business_administrator']
+        return super(BusinessMembership, self).save(*args, **kwargs)
 
     def __str__(self):
         return "{business}{admin}: {uname}".format(uname=self.user.username, business=self.business.name,
