@@ -51,11 +51,14 @@ INSTALLED_APPS = (
     "django.contrib.sites",
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # Internally Installed Applications
+    'apps.business',
     # Externally Installed Applications
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'bootstrap3',
+    'cities_light',
     'djangular',
     'rest_framework',
 )
@@ -161,3 +164,11 @@ TEMPLATE_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
     os.path.join(BASE_DIR, 'templates'),
 )
+
+# Django REST Framework Settings
+REST_FRAMEWORK = {
+    'PAGINATE_BY': 10,
+}
+
+# Django Cities Light Settings
+TRANSLATION_LANGUAGES = ['en']

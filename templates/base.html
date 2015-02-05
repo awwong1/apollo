@@ -30,8 +30,8 @@
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
             Account <span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
-            <li><a href="{% url 'account_email' %}">Manage Email</a></li>
-            <li><a href="{% url 'account_password_change' %}">Change Password</a></li>
+            <li><a href="{% url 'account_email' %}">Manage E-mail</a></li>
+            <li><a href="{% url 'account_change_password' %}">Change Password</a></li>
             <li class="divider"></li>
             <li><a href="{% url 'account_logout' %}">Sign Out</a></li>
           </ul>
@@ -67,5 +67,6 @@
 </footer>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+{% block extra_body %}{% endblock %}
 </body>
 </html>
