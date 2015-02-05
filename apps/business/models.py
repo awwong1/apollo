@@ -60,19 +60,29 @@ class BusinessMembership(models.Model):
         index_together = ("user", "business")
         default_permissions = ('change', 'delete')
 
-    def delete(self, using=None):
+    def delete(self, *args, **kwargs):
         # Do not allow deletion if the current membership is the business last administrator.
         if self.business_administrator:
             business_admins = self.business.businessmembership_set.all().filter(business_administrator=True)
             if len(business_admins) == 1:
                 raise LastAdministratorException('Cannot delete the last administrator in a business')
-        super(BusinessMembership, self).delete(using=using)
+        super(BusinessMembership, self).delete(*args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        # Do not allow modification of membership such that there are no administrators
+        business_admins = self.business.businessmembership_set.all().filter(business_administrator=True)
+        if len(business_admins) == 1:
+            if business_admins[0].pk == self.pk and self.business_administrator is False:
+                raise LastAdministratorException('Cannot remove administrator status from last business administrator')
+        super(BusinessMembership, self).save(*args, **kwargs)
 
     def __str__(self):
-        return "%s: %s" % self.user.username, self.business.name
+        return "{business}{admin}: {uname}".format(uname=self.user.username, business=self.business.name,
+                                                   admin=' (admin)' if self.business_administrator else ' ')
 
     def __unicode__(self):
-        return u"%s: %s" % self.user.username, self.business.name
+        return u"{business}{admin}: {uname}".format(uname=self.user.username, business=self.business.name,
+                                                    admin=u' (admin)' if self.business_administrator else u' ')
 
 
 class LastAdministratorException(Exception):
