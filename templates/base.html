@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 {% load staticfiles %}
+{% load bootstrap3 %}
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -52,6 +53,7 @@
   </div>
 </nav>
 <div class="container-fluid">
+  {% bootstrap_messages %}
   {% block content %}
   <div ng-app="apollo">
     <application></application>
