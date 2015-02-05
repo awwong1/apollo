@@ -27,6 +27,8 @@ class BusinessTestCase(TestCase):
         self.assertTrue(user.has_perm('business.change_businessmembership', membership))
         self.assertTrue(user.has_perm('business.delete_businessmembership', membership))
 
+        user2 = User.objects.create_user('testUser2', 'test2@example.com', 'password')
+        BusinessMembership.objects.create(user=user2, business=business, business_administrator=True)
         membership.business_administrator = False
         membership.save()
 
@@ -50,3 +52,19 @@ class BusinessTestCase(TestCase):
         BusinessMembership.objects.create(user=user2, business=business, business_administrator=True)
         membership.delete()
 
+    def test_modify_last_business_admin(self):
+        user = User.objects.create_user('testUser', 'test@example.com', 'password')
+        business = Business.objects.create(
+            name="X",
+            description="Testing business known as X.",
+            address_1="345 Test Drive",
+            address_2="789 Boulevard Test",
+            postal_code="T3S7E4",
+        )
+        membership = BusinessMembership.objects.create(user=user, business=business, business_administrator=True)
+        membership.business_administrator = False
+        self.assertRaises(LastAdministratorException, membership.save)
+        user2 = User.objects.create_user('testUser2', 'test2@example.com', 'password')
+        BusinessMembership.objects.create(user=user2, business=business, business_administrator=True)
+        membership.business_administrator = False
+        membership.save()
