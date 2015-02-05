@@ -169,6 +169,10 @@ TEMPLATE_DIRS = (
 
 # Email & Django All Auth Email Permissions
 # https://docs.djangoproject.com/en/1.7/topics/email/
+ACCOUNT_EMAIL_REQUIRED = True
+ADMINS = (
+    ('Alexander Wong', 'admin@alexander-wong.com'),
+)
 if ON_PAAS:
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
     EMAIL_HOST = os.environ['OPENSHIFT_EMAIL_HOST']
@@ -184,6 +188,8 @@ if ON_PAAS:
 else:
     EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
     ACCOUNT_EMAIL_VERIFICATION = "none"
+
+LOGIN_REDIRECT_URL = '/'
 
 # Django REST Framework Settings
 REST_FRAMEWORK = {
