@@ -13,7 +13,6 @@ class Business(models.Model):
     name = models.CharField(
         max_length=60, unique=True, help_text="What is the name of this business?"
     )
-
     description = models.TextField(
         blank=True, help_text="What is the description for this business?"
     )
