@@ -31,7 +31,7 @@ if ON_PAAS and DEBUG:
 TEMPLATE_DEBUG = True
 
 if ON_PAAS:
-    ALLOWED_HOSTS = [os.environ['OPENSHIFT_APP_DNS'], socket.gethostname()]
+    ALLOWED_HOSTS = [os.environ['OPENSHIFT_APP_DNS'], socket.gethostname(), 'apollo.alexander-wong.com', ]
 else:
     ALLOWED_HOSTS = []
 
