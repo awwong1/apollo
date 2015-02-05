@@ -41,6 +41,7 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     # `allauth` specific authentication methods, such as login by e-mail
     "allauth.account.auth_backends.AuthenticationBackend",
+    'guardian.backends.ObjectPermissionBackend',
 )
 
 INSTALLED_APPS = (
@@ -60,6 +61,7 @@ INSTALLED_APPS = (
     'bootstrap3',
     'cities_light',
     'djangular',
+    'guardian',
     'rest_framework',
 )
 
@@ -165,6 +167,24 @@ TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, 'templates'),
 )
 
+# Email & Django All Auth Email Permissions
+# https://docs.djangoproject.com/en/1.7/topics/email/
+if ON_PAAS:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = os.environ['OPENSHIFT_EMAIL_HOST']
+    EMAIL_PORT = os.environ['OPENSHIFT_EMAIL_PORT']
+    EMAIL_HOST_USER = os.environ['OPENSHIFT_EMAIL_HOST_USER']
+    EMAIL_HOST_PASSWORD = os.environ['OPENSHIFT_EMAIL_HOST_PASSWORD']
+    EMAIL_SUBJECT_PREFIX = '[Apollo] '
+    DEFAULT_FROM_EMAIL = os.environ['OPENSHIFT_DEFAULT_FROM_EMAIL']
+    EMAIL_USE_TLS = True
+    ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
+    ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+    ACCOUNT_EMAIL_SUBJECT_PREFIX = EMAIL_SUBJECT_PREFIX
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
+    ACCOUNT_EMAIL_VERIFICATION = "none"
+
 # Django REST Framework Settings
 REST_FRAMEWORK = {
     'PAGINATE_BY': 10,
@@ -172,3 +192,7 @@ REST_FRAMEWORK = {
 
 # Django Cities Light Settings
 TRANSLATION_LANGUAGES = ['en']
+
+# Django Guardian Settings
+ANONYMOUS_USER_ID = -1
+GUARDIAN_RAISE_403 = True
