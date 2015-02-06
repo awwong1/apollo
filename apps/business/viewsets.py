@@ -7,7 +7,10 @@ class BusinessViewSet(viewsets.ModelViewSet):
     """
     ViewSet for Businesses. To define city choices, supply a city parameter (city name, partial) to the url.
 
-    Examples: "/api/business/?city=calgary", "/api/business/?city=den"
+    Examples:
+
+    - <a href="/api/business/?city=calgary">/api/business/?city=calgary</a>, city options named *calgary*
+    - <a href="/api/business/?city=den">/api/business/?city=den</a>, city options named *den*
     """
     serializer_class = BusinessSerializer
 
@@ -25,7 +28,9 @@ class BusinessViewSet(viewsets.ModelViewSet):
 
 class BusinessMembershipViewSet(viewsets.ModelViewSet):
     """
-    ViewSet for Businesses Memberships.
+    ViewSet for Businesses Memberships. When creating business memberships, supply user, business, and business
+    administrator fields. When editing, only business administrator field is toggleable. No business may not remove
+    their last administrator.
     """
 
     def get_queryset(self):

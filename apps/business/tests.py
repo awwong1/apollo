@@ -1,6 +1,8 @@
 from apps.business.models import Business, BusinessMembership, LastAdministratorException
 from django.contrib.auth.models import User
 from django.test import TestCase
+from rest_framework.reverse import reverse
+from rest_framework.test import APITestCase
 
 
 class BusinessTestCase(TestCase):
@@ -69,7 +71,7 @@ class BusinessTestCase(TestCase):
         membership.business_administrator = False
         membership.save()
 
-    def test_readonly_after_add(self):
+    def test_readonly_fields_after_add(self):
         user = User.objects.create_user('testUser', 'test@example.com', 'password')
         business = Business.objects.create(
             name="X",
@@ -83,9 +85,27 @@ class BusinessTestCase(TestCase):
         membership.save()
         self.assertNotEqual(None, membership.pk)
         user2 = User.objects.create_user('testUser2', 'test2@example.com', 'password')
-        membership.user = user2  # This instance of business membership is invalid
+        membership.user = user2  # This instance of business membership has invalid user
         self.assertEqual(membership.user, user2)
-        membership.save()  # This instance of business membership is valid again
+        membership.save()  # This instance of business membership has valid user again
         self.assertEqual(membership.user, user)
         membership = BusinessMembership.objects.all()[0]
         self.assertEqual(membership.user, user)
+        business2 = Business.objects.create(
+            name="Y",
+            description="Testing business known as Y.",
+            address_1="PLM Test Drive",
+            address_2="OKN Boulevard Test",
+            postal_code="T3S7E4",
+        )
+        membership.business = business2
+        membership.save()
+        self.assertEqual(membership.business, business)
+
+
+class BusinessAPITestCase(APITestCase):
+    def test_business_add(self):
+        # todo
+        url = '/api/business/'
+        data = {}
+        self.assertTrue(True)
