@@ -1,4 +1,5 @@
 from apps.business.models import Business, BusinessMembership
+from apps.business.permissions import BusinessPermissions
 from apps.business.serializers import BusinessMembershipSerializer, BusinessSerializer, EditBusinessMembershipSerializer
 from rest_framework import viewsets
 
@@ -13,6 +14,7 @@ class BusinessViewSet(viewsets.ModelViewSet):
     - <a href="/api/business/?city=den">/api/business/?city=den</a>, city options named *den*
     """
     serializer_class = BusinessSerializer
+    permission_classes = [BusinessPermissions]
 
     def get_serializer(self, *args, **kwargs):
         serializer_class = self.get_serializer_class()

@@ -20,7 +20,7 @@ class BusinessSerializer(HyperlinkedModelSerializer):
     # Set for API Query performance, limit the cities in the queryset options
     city = relations.HyperlinkedRelatedField(
         view_name="cities-light-api-city-detail", queryset=City.objects.all(),
-        help_text="Which city does this business belong in?"
+        help_text="Which city does this business belong in?", required=False, allow_null=True,
     )
 
     class Meta:
@@ -28,7 +28,12 @@ class BusinessSerializer(HyperlinkedModelSerializer):
         read_only_fields = ('id',)
 
     def __init__(self, *args, **kwargs):
-        q_city = kwargs['context']['request'].GET.get('city', None)
+        q_city = None
+        context = kwargs.get('context', None)
+        if context:
+            request = context.get('request', None)
+            if request:
+                q_city = request.GET.get('city', None)
         super(BusinessSerializer, self).__init__(*args, **kwargs)
         if q_city:
             self.fields['city'].queryset = City.objects.filter(search_names__icontains=q_city)

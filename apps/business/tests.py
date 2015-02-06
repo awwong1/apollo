@@ -1,6 +1,7 @@
 from apps.business.models import Business, BusinessMembership, LastAdministratorException
 from django.contrib.auth.models import User
 from django.test import TestCase
+from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
@@ -104,8 +105,77 @@ class BusinessTestCase(TestCase):
 
 
 class BusinessAPITestCase(APITestCase):
-    def test_business_add(self):
-        # todo
-        url = '/api/business/'
-        data = {}
-        self.assertTrue(True)
+    def setUp(self):
+        User.objects.create_user('test', 'test@example.com', 'password')
+
+    def test_business_post(self):
+        url = reverse('business-list')
+        data = {
+            "city": None,
+            "name": u"Business API Test",
+            "description": u"This is a test business for API adding.",
+            "address_1": u"Test Drive 123 Way",
+            "address_2": u"Mark Boulevard 345",
+            "postal_code": u"Z0Z0Z0"
+        }
+
+        # Must be logged in to create businesses
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        self.client.login(username='test', password='password')
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data['city'], data['city'])
+        self.assertEqual(response.data['name'], data['name'])
+        self.assertEqual(response.data['description'], data['description'])
+        self.assertEqual(response.data['address_1'], data['address_1'])
+        self.assertEqual(response.data['address_2'], data['address_2'])
+        self.assertEqual(response.data['postal_code'], data['postal_code'])
+        self.assertIsNotNone(response.data['url'])
+
+    def test_business_put(self):
+        data = {
+            "city": None,
+            "name": u"Business API Test",
+            "description": u"This is a test business for API adding.",
+            "address_1": u"Test Drive 123 Way",
+            "address_2": u"Mark Boulevard 345",
+            "postal_code": u"Z0Z0Z0"
+        }
+        business = Business.objects.create(
+            city=data['city'],
+            name=data['name'],
+            description=data['description'],
+            address_1=data['address_1'],
+            address_2=data['address_2'],
+            postal_code=data['postal_code']
+        )
+        url = reverse('business-detail', kwargs={'pk': business.pk})
+
+        user = User.objects.get(username='test')
+
+        # Not authenticated, throw 403 forbidden
+        response = self.client.put(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        # Not a member of the business, throw 403 forbidden
+        self.client.login(username='test', password='password')
+        response = self.client.put(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        # Membership is not administrator, throw 403 forbidden
+        business_membership = BusinessMembership.objects.create(
+            user=user,
+            business=business
+        )
+        response = self.client.put(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        # Membership is an administrator for business, allow put
+        business_membership.business_administrator = True
+        business_membership.save()
+        data['name'] = "Modified Business Name"
+        response = self.client.put(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['name'], data['name'])
