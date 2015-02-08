@@ -109,6 +109,9 @@ class BusinessAPITestCase(APITestCase):
         User.objects.create_user('test', 'test@example.com', 'password')
 
     def test_business_post(self):
+        """
+        Test for business object creation with our API
+        """
         url = reverse('business-list')
         data = {
             "city": None,
@@ -135,6 +138,9 @@ class BusinessAPITestCase(APITestCase):
         self.assertIsNotNone(response.data['url'])
 
     def test_business_put(self):
+        """
+        Test to ensure full object updates function properly
+        """
         data = {
             "city": None,
             "name": u"Business API Test",
@@ -179,3 +185,97 @@ class BusinessAPITestCase(APITestCase):
         response = self.client.put(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['name'], data['name'])
+
+    def test_business_patch(self):
+        """
+        Test to ensure partial updates function properly
+        """
+        data = {
+            "city": None,
+            "name": u"Business API Test",
+            "description": u"This is a test business for API adding.",
+            "address_1": u"Test Drive 123 Way",
+            "address_2": u"Mark Boulevard 345",
+            "postal_code": u"Z0Z0Z0"
+        }
+        business = Business.objects.create(
+            city=data['city'],
+            name=data['name'],
+            description=data['description'],
+            address_1=data['address_1'],
+            address_2=data['address_2'],
+            postal_code=data['postal_code']
+        )
+        url = reverse('business-detail', kwargs={'pk': business.pk})
+
+        user = User.objects.get(username='test')
+
+        # Not authenticated, throw 403 forbidden
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        # Not a member of the business, throw 403 forbidden
+        self.client.login(username='test', password='password')
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        # Membership is not administrator, throw 403 forbidden
+        business_membership = BusinessMembership.objects.create(
+            user=user,
+            business=business
+        )
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        # Membership is an administrator for business, allow put
+        business_membership.business_administrator = True
+        business_membership.save()
+        patch_data = {"name": "Modified Business Name"}
+        response = self.client.patch(url, patch_data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['name'], patch_data['name'])
+
+    def test_business_delete(self):
+        """
+        Test to ensure businesses may not be deleted with our API
+        """
+        data = {
+            "city": None,
+            "name": u"Business API Test",
+            "description": u"This is a test business for API adding.",
+            "address_1": u"Test Drive 123 Way",
+            "address_2": u"Mark Boulevard 345",
+            "postal_code": u"Z0Z0Z0"
+        }
+        business = Business.objects.create(
+            city=data['city'],
+            name=data['name'],
+            description=data['description'],
+            address_1=data['address_1'],
+            address_2=data['address_2'],
+            postal_code=data['postal_code']
+        )
+        url = reverse('business-detail', kwargs={'pk': business.pk})
+        user = User.objects.get(username='test')
+
+        # Not logged in, forbidden
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        # Not a member of the business, throw 403 forbidden
+        self.client.login(username='test', password='password')
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        # Membership is not administrator, throw 403 forbidden
+        business_membership = BusinessMembership.objects.create(
+            user=user,
+            business=business
+        )
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        # Membership is an administrator for business, delete is forbidden
+        business_membership.business_administrator = True
+        business_membership.save()
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

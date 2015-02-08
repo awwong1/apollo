@@ -1,10 +1,11 @@
 from apps.business.models import Business, BusinessMembership
 from apps.business.permissions import BusinessPermissions
 from apps.business.serializers import BusinessMembershipSerializer, BusinessSerializer, EditBusinessMembershipSerializer
-from rest_framework import viewsets
+from rest_framework import viewsets, mixins
 
 
-class BusinessViewSet(viewsets.ModelViewSet):
+class BusinessViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
+                      mixins.ListModelMixin, viewsets.GenericViewSet):
     """
     ViewSet for Businesses. To define city choices, supply a city parameter (city name, partial) to the url.
 
