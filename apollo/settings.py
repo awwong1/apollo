@@ -54,6 +54,9 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     # Internally Installed Applications
     'apps.business',
+    'apps.equipment',
+    'apps.price_list',
+    'apps.terms_of_service',
     # Externally Installed Applications
     'allauth',
     'allauth.account',
