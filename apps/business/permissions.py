@@ -1,7 +1,7 @@
 from rest_framework import permissions
 
 
-class BusinessPermissions(permissions.BasePermission):
+class BusinessPermission(permissions.BasePermission):
     """
     Custom permission to only allow:
 
@@ -35,4 +35,30 @@ class BusinessPermissions(permissions.BasePermission):
             elif request.method in ('PUT', 'PATCH'):
                 # Handled by Object Permissions
                 return True
+        return False
+
+
+class BusinessMembershipPermission(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        """
+        Permissions for business membership instances
+        """
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        elif request.user.is_authenticated():
+            if request.method == 'POST':
+                return request.user.has_perm('business.add_businessmembership', obj.business)
+            elif request.method in ('PUT', 'PATCH'):
+                return request.user.has_perm('business.change_businessmembership', obj)
+        return False
+
+    def has_permission(self, request, view):
+        """
+        Permissions for all business memberships
+        """
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        elif request.user.is_authenticated():
+            # Handled by Object Permissions
+            return True
         return False

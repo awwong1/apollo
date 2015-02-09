@@ -85,7 +85,7 @@ class AbstractPriceListItem(models.Model):
     """
     price_list = models.ForeignKey(
         'PriceList', related_name='%(class)s_set',
-        help_text="Which price list does this price list item apply to?"
+        help_text="Which price list does this price list item belong in?"
     )
     item_uuid = models.CharField(
         max_length=36, default=uuid4,

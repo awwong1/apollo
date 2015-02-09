@@ -1,5 +1,5 @@
 from apps.business.models import Business, BusinessMembership
-from apps.business.permissions import BusinessPermissions
+from apps.business.permissions import BusinessPermission, BusinessMembershipPermission
 from apps.business.serializers import BusinessMembershipSerializer, BusinessSerializer, EditBusinessMembershipSerializer
 from rest_framework import viewsets, mixins
 
@@ -15,7 +15,7 @@ class BusinessViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins
     - <a href="/api/business/?city=den">/api/business/?city=den</a>, city options named *den*
     """
     serializer_class = BusinessSerializer
-    permission_classes = [BusinessPermissions]
+    permission_classes = [BusinessPermission]
 
     def get_serializer(self, *args, **kwargs):
         serializer_class = self.get_serializer_class()
@@ -35,6 +35,8 @@ class BusinessMembershipViewSet(viewsets.ModelViewSet):
     administrator fields. When editing, only business administrator field is toggleable. No business may not remove
     their last administrator.
     """
+    serializer_class = BusinessMembershipSerializer
+    permission_classes = [BusinessMembershipPermission]
 
     def get_queryset(self):
         queryset = BusinessMembership.objects.all()
