@@ -1,6 +1,5 @@
 from apps.business.models import Business, BusinessMembership, LastAdministratorException
 from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.reverse import reverse
@@ -51,10 +50,22 @@ class BusinessTestCase(TestCase):
             postal_code="T3S7E4",
         )
         membership = BusinessMembership.objects.create(user=user, business=business, business_administrator=True)
-        self.assertRaises(LastAdministratorException, membership.delete)
+        membership.delete()
+        self.assertIsNone(membership.pk)
+        self.assertIsNone(business.pk)
+        business = Business.objects.create(
+            name="X",
+            description="Testing business known as X.",
+            address_1="345 Test Drive",
+            address_2="789 Boulevard Test",
+            postal_code="T3S7E4",
+        )
         user2 = User.objects.create_user('testUser2', 'test2@example.com', 'password')
+        membership = BusinessMembership.objects.create(user=user, business=business, business_administrator=True)
         BusinessMembership.objects.create(user=user2, business=business, business_administrator=True)
         membership.delete()
+        self.assertIsNone(membership.pk)
+        self.assertIsNotNone(business.pk)
 
     def test_modify_last_business_admin(self):
         user = User.objects.create_user('testUser', 'test@example.com', 'password')
@@ -137,6 +148,10 @@ class BusinessAPITestCase(APITestCase):
         self.assertEqual(response.data['address_2'], data['address_2'])
         self.assertEqual(response.data['postal_code'], data['postal_code'])
         self.assertIsNotNone(response.data['url'])
+        # Auto created business membership
+        business_membership = BusinessMembership.objects.all()[0]
+        business = Business.objects.all()[0]
+        self.assertEqual(business_membership.business.pk, business.pk)
 
     def test_business_put(self):
         """

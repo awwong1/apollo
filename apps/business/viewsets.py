@@ -1,7 +1,8 @@
+import re
 from apps.business.models import Business, BusinessMembership
 from apps.business.permissions import BusinessPermission, BusinessMembershipPermission
 from apps.business.serializers import BusinessMembershipSerializer, BusinessSerializer, EditBusinessMembershipSerializer
-from rest_framework import viewsets, mixins
+from rest_framework import viewsets, mixins, status
 
 
 class BusinessViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
@@ -27,6 +28,20 @@ class BusinessViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins
         if self.request.GET.get('q', None):
             return queryset.filter(name__icontains=self.request.GET['q'])
         return queryset
+
+    def create(self, request, *args, **kwargs):
+        """
+        Using the rest framework, if a user creates a valid business, auto create the business membership.
+        """
+        create_ret_val = super(BusinessViewSet, self).create(request, *args, **kwargs)
+        if create_ret_val.status_code == status.HTTP_201_CREATED:
+            key = int(re.search("([\d]*)/$", create_ret_val.data['url']).group(1))
+            BusinessMembership.objects.create(
+                business=Business.objects.get(pk=key),
+                user=request.user,
+                business_administrator=True
+            )
+        return create_ret_val
 
 
 class BusinessMembershipViewSet(viewsets.ModelViewSet):
