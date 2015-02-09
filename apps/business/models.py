@@ -1,7 +1,7 @@
 from cities_light.models import City
 from django.contrib.auth.models import User, Permission
 from django.db import models
-from django.db.models.signals import post_save, pre_delete
+from django.db.models.signals import post_save
 from django.dispatch import receiver
 from guardian.shortcuts import assign_perm, remove_perm
 
@@ -67,7 +67,7 @@ class BusinessMembership(models.Model):
                 raise LastAdministratorException('Cannot delete the last administrator in a business')
         return super(BusinessMembership, self).delete(*args, **kwargs)
 
-    def save(self, *args, **kwargs):
+    def clean(self):
         # Do not allow modification of membership such that there are no administrators
         business_admins = self.business.businessmembership_set.all().filter(business_administrator=True)
         if len(business_admins) == 1:
@@ -78,8 +78,6 @@ class BusinessMembership(models.Model):
             existing = BusinessMembership.objects.get(pk=self.pk)
             self.user = existing.user
             self.business = existing.business
-            kwargs['update_fields'] = ['business_administrator']
-        return super(BusinessMembership, self).save(*args, **kwargs)
 
     def __str__(self):
         return "{business}{admin}: {uname}".format(uname=self.user.username, business=self.business.name,

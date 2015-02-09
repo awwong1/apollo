@@ -1,5 +1,5 @@
 from apollo.choices import PRICE_LIST_RELEASE
-from apps.price_list.models import PriceList, ActivityPriceListItem, TimePriceListItem, UnitPriceListItem, Bundle
+from apps.price_list.models import PriceList, ActivityPriceListItem, TimePriceListItem, UnitPriceListItem, PriceListBundle
 from apps.terms_of_service.models import TermsOfService
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
@@ -55,7 +55,7 @@ class PriceListTestCase(TestCase):
             terms_of_service=TermsOfService.objects.get(pk=1),
             price_per_unit=10.0,
         )
-        bundle = Bundle.objects.create(
+        bundle = PriceListBundle.objects.create(
             price_list=price_list,
             percent_discount=50
         )
@@ -65,7 +65,7 @@ class PriceListTestCase(TestCase):
         self.assertEqual(price_list.activitypricelistitem_set.all()[0], activity_item)
         self.assertEqual(price_list.timepricelistitem_set.all()[0], time_item)
         self.assertEqual(price_list.unitpricelistitem_set.all()[0], unit_item)
-        self.assertEqual(price_list.bundle_set.all()[0], bundle)
+        self.assertEqual(price_list.pricelistbundle_set.all()[0], bundle)
 
         price_list.status = PRICE_LIST_RELEASE
         price_list.save()
@@ -85,12 +85,12 @@ class PriceListTestCase(TestCase):
                          "20000000-0000-0000-0000-000000000000")
         self.assertNotEqual(price_list, next_price_list)
 
-        self.assertNotEqual(next_price_list.bundle_set.all()[0], bundle)
-        self.assertEqual(next_price_list.bundle_set.all()[0].activity_bundle_items.all()[0].item_uuid,
+        self.assertNotEqual(next_price_list.pricelistbundle_set.all()[0], bundle)
+        self.assertEqual(next_price_list.pricelistbundle_set.all()[0].activity_bundle_items.all()[0].item_uuid,
                          "00000000-0000-0000-0000-000000000000")
-        self.assertEqual(next_price_list.bundle_set.all()[0].time_bundle_items.all()[0].item_uuid,
+        self.assertEqual(next_price_list.pricelistbundle_set.all()[0].time_bundle_items.all()[0].item_uuid,
                          "10000000-0000-0000-0000-000000000000")
-        self.assertEqual(next_price_list.bundle_set.all()[0].unit_bundle_items.all()[0].item_uuid,
+        self.assertEqual(next_price_list.pricelistbundle_set.all()[0].unit_bundle_items.all()[0].item_uuid,
                          "20000000-0000-0000-0000-000000000000")
 
     def test_bundle_cost_calculation(self):
@@ -124,7 +124,7 @@ class PriceListTestCase(TestCase):
             terms_of_service=TermsOfService.objects.get(pk=1),
             price_per_unit=10.0,
         )
-        bundle = Bundle(
+        bundle = PriceListBundle(
             price_list=price_list,
             percent_discount=-1
         )

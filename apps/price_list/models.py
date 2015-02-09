@@ -68,7 +68,7 @@ class PriceList(models.Model):
             next_unit_item.price_list = next_price_list
             next_unit_item.pk = None
             next_unit_item.save()
-        for bundle in self.bundle_set.all():
+        for bundle in self.pricelistbundle_set.all():
             bundle.create_bundle_for_price_list(next_price_list)
         return next_price_list
 
@@ -173,7 +173,7 @@ class UnitPriceListItem(AbstractPriceListItem):
     )
 
 
-class Bundle(models.Model):
+class PriceListBundle(models.Model):
     """
     Model for bundles within a price list. Will contain a set of price list items with an applied discount for all
     abstract items.

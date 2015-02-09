@@ -1,5 +1,6 @@
 from apps.business.models import Business, BusinessMembership, LastAdministratorException
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.reverse import reverse
@@ -66,7 +67,7 @@ class BusinessTestCase(TestCase):
         )
         membership = BusinessMembership.objects.create(user=user, business=business, business_administrator=True)
         membership.business_administrator = False
-        self.assertRaises(LastAdministratorException, membership.save)
+        self.assertRaises(LastAdministratorException, membership.clean)
         user2 = User.objects.create_user('testUser2', 'test2@example.com', 'password')
         BusinessMembership.objects.create(user=user2, business=business, business_administrator=True)
         membership.business_administrator = False
@@ -88,7 +89,7 @@ class BusinessTestCase(TestCase):
         user2 = User.objects.create_user('testUser2', 'test2@example.com', 'password')
         membership.user = user2  # This instance of business membership has invalid user
         self.assertEqual(membership.user, user2)
-        membership.save()  # This instance of business membership has valid user again
+        membership.clean()  # This instance of business has valid membership user again
         self.assertEqual(membership.user, user)
         membership = BusinessMembership.objects.all()[0]
         self.assertEqual(membership.user, user)
@@ -100,7 +101,7 @@ class BusinessTestCase(TestCase):
             postal_code="T3S7E4",
         )
         membership.business = business2
-        membership.save()
+        membership.clean()
         self.assertEqual(membership.business, business)
 
 
