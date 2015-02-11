@@ -41,7 +41,6 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     # `allauth` specific authentication methods, such as login by e-mail
     "allauth.account.auth_backends.AuthenticationBackend",
-    'guardian.backends.ObjectPermissionBackend',
 )
 
 INSTALLED_APPS = (
@@ -56,6 +55,7 @@ INSTALLED_APPS = (
     'apps.business',
     'apps.equipment',
     'apps.price_list',
+    'apps.station',
     'apps.terms_of_service',
     # Externally Installed Applications
     'allauth',
@@ -199,7 +199,7 @@ REST_FRAMEWORK = {
     'PAGINATE_BY_PARAM': 'page_size',
     'MAX_PAGINATE_BY': 100,
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.AllowAny',
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ),
     'DEFAULT_FILTER_BACKENDS': (
         'rest_framework.filters.DjangoFilterBackend',

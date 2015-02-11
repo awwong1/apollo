@@ -2,8 +2,6 @@ from uuid import uuid4
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 
 
 class Station(models.Model):
@@ -69,8 +67,3 @@ class StationBusiness(models.Model):
     def __unicode__(self):
         return u"{business}{admin}: {uname}".format(uname=self.station.name, business=self.business.name,
                                                     admin=u' (Admin)' if self.station_administrator else u' ')
-
-
-@receiver(post_save, Station)
-def station_post_save_callback(sender, instance, created, *args, **kwargs):
-    pass

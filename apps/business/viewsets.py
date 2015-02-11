@@ -11,8 +11,9 @@ class BusinessViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins
 
     Examples:
 
-    - <a href="/api/business/?city=calgary">/api/business/?city=calgary</a>, city options named *calgary*
-    - <a href="/api/business/?city=den">/api/business/?city=den</a>, city options named *den*
+    - <a href="/api/business/business/?city=calgary">/api/business/business/?city=calgary</a>,
+        cities with *calgary* in the name
+    - <a href="/api/business/business/?city=den">/api/business/business/?city=den</a>, cities with *den* in the name
     """
     queryset = Business.objects.all()
     serializer_class = BusinessSerializer
@@ -27,20 +28,6 @@ class BusinessViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins
         if self.request.GET.get('q', None):
             return queryset.filter(name__icontains=self.request.GET['q'])
         return queryset
-
-    def create(self, request, *args, **kwargs):
-        """
-        Using the rest framework, if a user creates a valid business, auto create the business membership.
-        """
-        create_ret_val = super(BusinessViewSet, self).create(request, *args, **kwargs)
-        if create_ret_val.status_code == status.HTTP_201_CREATED:
-            key = re.search("([\d]*)/$", create_ret_val.data['url']).group(1)
-            BusinessMembership.objects.create(
-                business=Business.objects.get(pk=key),
-                user=request.user,
-                business_administrator=True
-            )
-        return create_ret_val
 
 
 class BusinessMembershipViewSet(viewsets.ModelViewSet):

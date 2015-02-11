@@ -39,7 +39,6 @@ class TimePriceListItemViewSet(viewsets.ModelViewSet):
     name.
     """
     serializer_class = TimePriceListItemSerializer
-    permission_classes = [IsAdminOrReadOnly]
 
     def get_queryset(self):
         queryset = TimePriceListItem.objects.all()
@@ -54,7 +53,6 @@ class UnitPriceListItemViewSet(viewsets.ModelViewSet):
     name.
     """
     serializer_class = UnitPriceListItemSerializer
-    permission_classes = [IsAdminOrReadOnly]
 
     def get_queryset(self):
         queryset = UnitPriceListItem.objects.all()
@@ -69,7 +67,6 @@ class PriceListBundleViewSet(viewsets.ModelViewSet):
     list primary key (id).
     """
     serializer_class = PriceListBundleSerializer
-    permission_classes = [IsAdminOrReadOnly]
 
     def get_queryset(self):
         queryset = PriceListBundle.objects.all()
