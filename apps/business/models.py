@@ -53,7 +53,6 @@ class BusinessMembership(models.Model):
 
     class Meta:
         unique_together = ("user", "business")
-        index_together = ("user", "business")
 
     def clean(self):
         # Do not allow modification of membership such that there are no administrators
