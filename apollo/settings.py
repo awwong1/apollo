@@ -53,7 +53,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     # Internally Installed Applications
     'apps.business',
-    'apps.equipment',
+    'apps.assets',
     'apps.price_list',
     'apps.station',
     'apps.terms_of_service',

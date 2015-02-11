@@ -1,4 +1,4 @@
-from apps.equipment.models import Equipment, Service
+from apps.assets.models import Equipment, Service
 from django.contrib import admin
 
 admin.site.register(Equipment)

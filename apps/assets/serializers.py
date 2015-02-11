@@ -1,4 +1,4 @@
-from apps.equipment.models import Equipment, Service
+from apps.assets.models import Equipment, Service
 from rest_framework import relations
 from rest_framework.serializers import HyperlinkedModelSerializer
 

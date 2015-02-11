@@ -33,7 +33,6 @@ class Migration(migrations.Migration):
             name='BusinessMembership',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('business_administrator', models.BooleanField(default=False, help_text=b'Is this user an administrator of this business?')),
                 ('business', models.ForeignKey(help_text=b'Which business is part of this membership? Cannot be edited once membership is created.', to='business.Business')),
                 ('user', models.ForeignKey(help_text=b'Which user is part of this membership? Cannot be edited once membership is created.', to=settings.AUTH_USER_MODEL)),
             ],

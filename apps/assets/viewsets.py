@@ -1,5 +1,5 @@
-from apps.equipment.models import Equipment, Service
-from apps.equipment.serializers import EquipmentSerializer, ServiceSerializer
+from apps.assets.models import Equipment, Service
+from apps.assets.serializers import EquipmentSerializer, ServiceSerializer
 from rest_framework import viewsets
 
 

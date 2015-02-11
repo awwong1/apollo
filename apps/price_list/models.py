@@ -102,11 +102,11 @@ class AbstractPriceListItem(models.Model):
         help_text="What is the description of this price list item?", blank=True
     )
     equipment = models.ManyToManyField(
-        'equipment.Equipment', null=True, blank=True,
+        'assets.Equipment', null=True, blank=True,
         help_text="Which pieces of equipment does this price list item associate with? (May be empty)"
     )
     services = models.ManyToManyField(
-        'equipment.Service', null=True, blank=True,
+        'assets.Service', null=True, blank=True,
         help_text="Which services does this price list item associate with? (May be empty)"
     )
     terms_of_service = models.ForeignKey(

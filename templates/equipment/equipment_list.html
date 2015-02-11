@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <ol class="breadcrumb">
+    <li><a href="/">Home</a></li>
+    <li class="active">Equipment</li>
+  </ol>
+  <h1>Equipment</h1>
+  <div class="panel panel-default">
+    <div class="panel-body">{% include 'snippet/staff_disclaimer.html' %}
+      <a class="btn btn-primary" href="{% url 'equipment_create' %}">Create Equipment</a>
+    </div>
+  </div>
+  <ul>
+    {% for eq in equipment %}
+      <li><a href="{% url 'equipment_detail' pk=eq.pk %}">{{ eq }}</a></li>
+    {% empty %}
+      <li>No equipment has been created yet.</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

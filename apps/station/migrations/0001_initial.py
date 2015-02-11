@@ -29,7 +29,6 @@ class Migration(migrations.Migration):
             name='StationBusiness',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('station_administrator', models.BooleanField(default=False, help_text=b'Is this station an administrator of this business?')),
                 ('business', models.ForeignKey(help_text=b'Which business comprises this station to business membership?', to='business.Business')),
                 ('station', models.ForeignKey(help_text=b'Which station comprises this station to business membership?', to='station.Station')),
             ],

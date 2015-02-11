@@ -14,6 +14,7 @@ urlpatterns = patterns(
     # Internal application urls
     url(r'^pricelist/', include('apps.price_list.urls'), name='pricelist'),
     url(r'^termsofservice/', include('apps.terms_of_service.urls'), name='termsofservice'),
+    url(r'^assets/', include('apps.assets.urls'), name='assets'),
     # Included with external packages
     url(r'^accounts/', include('allauth.urls')),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),

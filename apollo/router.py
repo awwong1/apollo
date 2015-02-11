@@ -1,6 +1,6 @@
 from apollo.viewsets import UserViewSet
 from apps.business.viewsets import BusinessViewSet, BusinessMembershipViewSet
-from apps.equipment.viewsets import EquipmentViewSet, ServiceViewSet
+from apps.assets.viewsets import EquipmentViewSet, ServiceViewSet
 from apps.price_list.viewsets import PriceListViewSet, ActivityPriceListItemViewSet, TimePriceListItemViewSet, \
     UnitPriceListItemViewSet, PriceListBundleViewSet
 from apps.station.viewsets import StationViewSet, StationBusinessViewSet

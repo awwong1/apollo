@@ -9,11 +9,21 @@ import uuid
 class Migration(migrations.Migration):
 
     dependencies = [
+        ('assets', '0001_initial'),
         ('terms_of_service', '0001_initial'),
-        ('equipment', '0001_initial'),
     ]
 
     operations = [
+        migrations.CreateModel(
+            name='ActivityBundleItem',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+            ],
+            options={
+                'abstract': False,
+            },
+            bases=(models.Model,),
+        ),
         migrations.CreateModel(
             name='ActivityPriceListItem',
             fields=[
@@ -23,7 +33,7 @@ class Migration(migrations.Migration):
                 ('description', models.TextField(help_text=b'What is the description of this price list item?', blank=True)),
                 ('price_per_unit', models.DecimalField(help_text=b'How much does this price list item cost per unit measurement?', max_digits=7, decimal_places=2)),
                 ('unit_measurement', models.CharField(default=b'Unit', help_text=b"What is the unit measurement for this activity? (Example: 'hour' or 'kb')", max_length=15)),
-                ('equipment', models.ManyToManyField(help_text=b'Which pieces of equipment does this price list item associate with? (May be empty)', to='equipment.Equipment', null=True, blank=True)),
+                ('equipment', models.ManyToManyField(help_text=b'Which pieces of equipment does this price list item associate with? (May be empty)', to='assets.Equipment', null=True, blank=True)),
             ],
             options={
                 'abstract': False,
@@ -48,11 +58,23 @@ class Migration(migrations.Migration):
             name='PriceListBundle',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(default=b'Bundle', help_text=b'What is the name of this bundle?', max_length=100)),
+                ('description', models.TextField(default=b'', help_text=b'What is the description of this bundle?', blank=True)),
                 ('percent_discount', models.PositiveSmallIntegerField(help_text=b'What percent discount should be applied for this bundle? (Value between 0 and 100 percent)', validators=[django.core.validators.MinValueValidator(0), django.core.validators.MaxValueValidator(100)])),
-                ('activity_bundle_items', models.ManyToManyField(help_text=b'Which activity items are included in this bundle?', to='price_list.ActivityPriceListItem')),
                 ('price_list', models.ForeignKey(help_text=b'Which price list does this bundle belong to?', to='price_list.PriceList')),
             ],
             options={
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='TimeBundleItem',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('bundle', models.ForeignKey(help_text=b'Which bundle does this bundle price list item belong to?', to='price_list.PriceListBundle')),
+            ],
+            options={
+                'abstract': False,
             },
             bases=(models.Model,),
         ),
@@ -65,10 +87,21 @@ class Migration(migrations.Migration):
                 ('description', models.TextField(help_text=b'What is the description of this price list item?', blank=True)),
                 ('price_per_time', models.DecimalField(help_text=b'How much does this price list item cost per unit of time?', max_digits=7, decimal_places=2)),
                 ('unit_time', models.PositiveIntegerField(help_text=b'What is the unit of time measurement?', choices=[(60, b'Hour'), (1440, b'Day')])),
-                ('equipment', models.ManyToManyField(help_text=b'Which pieces of equipment does this price list item associate with? (May be empty)', to='equipment.Equipment', null=True, blank=True)),
+                ('equipment', models.ManyToManyField(help_text=b'Which pieces of equipment does this price list item associate with? (May be empty)', to='assets.Equipment', null=True, blank=True)),
                 ('price_list', models.ForeignKey(related_name='timepricelistitem_set', to='price_list.PriceList', help_text=b'Which price list does this price list item belong in?')),
-                ('services', models.ManyToManyField(help_text=b'Which services does this price list item associate with? (May be empty)', to='equipment.Service', null=True, blank=True)),
+                ('services', models.ManyToManyField(help_text=b'Which services does this price list item associate with? (May be empty)', to='assets.Service', null=True, blank=True)),
                 ('terms_of_service', models.ForeignKey(help_text=b'Which terms of service must a user agree to before using purchasing this price list item?', to='terms_of_service.TermsOfService')),
+            ],
+            options={
+                'abstract': False,
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='UnitBundleItem',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('bundle', models.ForeignKey(help_text=b'Which bundle does this bundle price list item belong to?', to='price_list.PriceListBundle')),
             ],
             options={
                 'abstract': False,
@@ -83,9 +116,9 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(help_text=b'What is the name of this price list item?', max_length=60)),
                 ('description', models.TextField(help_text=b'What is the description of this price list item?', blank=True)),
                 ('price_per_unit', models.DecimalField(help_text=b'How much does this price list item cost?', max_digits=7, decimal_places=2)),
-                ('equipment', models.ManyToManyField(help_text=b'Which pieces of equipment does this price list item associate with? (May be empty)', to='equipment.Equipment', null=True, blank=True)),
+                ('equipment', models.ManyToManyField(help_text=b'Which pieces of equipment does this price list item associate with? (May be empty)', to='assets.Equipment', null=True, blank=True)),
                 ('price_list', models.ForeignKey(related_name='unitpricelistitem_set', to='price_list.PriceList', help_text=b'Which price list does this price list item belong in?')),
-                ('services', models.ManyToManyField(help_text=b'Which services does this price list item associate with? (May be empty)', to='equipment.Service', null=True, blank=True)),
+                ('services', models.ManyToManyField(help_text=b'Which services does this price list item associate with? (May be empty)', to='assets.Service', null=True, blank=True)),
                 ('terms_of_service', models.ForeignKey(help_text=b'Which terms of service must a user agree to before using purchasing this price list item?', to='terms_of_service.TermsOfService')),
             ],
             options={
@@ -101,6 +134,12 @@ class Migration(migrations.Migration):
             name='unitpricelistitem',
             index_together=set([('price_list', 'item_uuid')]),
         ),
+        migrations.AddField(
+            model_name='unitbundleitem',
+            name='unit_price_list_item',
+            field=models.ForeignKey(help_text=b'Which unit price list item does this bundle item represent?', to='price_list.UnitPriceListItem'),
+            preserve_default=True,
+        ),
         migrations.AlterUniqueTogether(
             name='timepricelistitem',
             unique_together=set([('price_list', 'item_uuid')]),
@@ -110,15 +149,9 @@ class Migration(migrations.Migration):
             index_together=set([('price_list', 'item_uuid')]),
         ),
         migrations.AddField(
-            model_name='pricelistbundle',
-            name='time_bundle_items',
-            field=models.ManyToManyField(help_text=b'Which time items are included in this bundle?', to='price_list.TimePriceListItem'),
-            preserve_default=True,
-        ),
-        migrations.AddField(
-            model_name='pricelistbundle',
-            name='unit_bundle_items',
-            field=models.ManyToManyField(help_text=b'Which unit items are included in this bundle?', to='price_list.UnitPriceListItem'),
+            model_name='timebundleitem',
+            name='time_price_list_item',
+            field=models.ForeignKey(help_text=b'Which time price list item does this bundle item represent?', to='price_list.TimePriceListItem'),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -130,7 +163,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='activitypricelistitem',
             name='services',
-            field=models.ManyToManyField(help_text=b'Which services does this price list item associate with? (May be empty)', to='equipment.Service', null=True, blank=True),
+            field=models.ManyToManyField(help_text=b'Which services does this price list item associate with? (May be empty)', to='assets.Service', null=True, blank=True),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -146,5 +179,17 @@ class Migration(migrations.Migration):
         migrations.AlterIndexTogether(
             name='activitypricelistitem',
             index_together=set([('price_list', 'item_uuid')]),
+        ),
+        migrations.AddField(
+            model_name='activitybundleitem',
+            name='activity_price_list_item',
+            field=models.ForeignKey(help_text=b'Which activity price list item does this bundle item represent?', to='price_list.ActivityPriceListItem'),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='activitybundleitem',
+            name='bundle',
+            field=models.ForeignKey(help_text=b'Which bundle does this bundle price list item belong to?', to='price_list.PriceListBundle'),
+            preserve_default=True,
         ),
     ]
