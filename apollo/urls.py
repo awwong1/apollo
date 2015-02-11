@@ -13,6 +13,7 @@ urlpatterns = patterns(
     url(r'^api/', include(router.urls), name='api'),
     # Internal application urls
     url(r'^pricelist/', include('apps.price_list.urls'), name='pricelist'),
+    url(r'^termsofservice/', include('apps.terms_of_service.urls'), name='termsofservice'),
     # Included with external packages
     url(r'^accounts/', include('allauth.urls')),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <ol class="breadcrumb">
+    <li><a href="/">Home</a></li>
+    <li class="active">Terms of Services</li>
+  </ol>
+  <h1>Terms of Services</h1>
+  <div class="panel panel-default">
+    <div class="panel-body">{% include 'snippet/staff_disclaimer.html' %}
+      <a class="btn btn-primary" href="{% url 'termsofservice_create' %}">Create Terms of Service</a>
+    </div>
+  </div>
+  <ul>
+    {% for tos in termsofservices %}
+      <li><a href="{% url 'termsofservice_detail' pk=tos.pk %}">{{ tos }}</a></li>
+    {% empty %}
+      <li>No terms of service has been created yet.</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

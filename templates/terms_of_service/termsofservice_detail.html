@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+  <ol class="breadcrumb">
+    <li><a href="/">Home</a></li>
+    <li><a href="{% url 'termsofservice_list' %}">Terms of Services</a></li>
+    <li class="active">{{ termsofservice }}</li>
+  </ol>
+  <h1>{{ termsofservice.title }}</h1>
+  <div class="panel panel-default">
+    <div class="panel-body">{% include 'snippet/staff_disclaimer.html' %}
+      <a class="btn btn-primary" href="{% url 'termsofservice_update' pk=termsofservice.pk %}">Update Terms of
+        Service</a>
+      <a class="btn btn-warning" href="{% url 'termsofservice_delete' pk=termsofservice.pk %}">Delete Terms of
+        Service</a>
+    </div>
+  </div>
+  <h2>Content
+    <small>Last Modified: {{ termsofservice.last_modified|date:"D, d F Y \a\t H:i T" }}</small>
+  </h2>
+  <div class="well">{{ termsofservice.content|linebreaks }}</div>
+{% endblock %}

@@ -1,11 +1,19 @@
 {% extends "base.html" %}
 
 {% block content %}
-<ol class="breadcrumb">
-  <li><a href="/">Home</a></li>
-  <li><a href="{% url 'pricelist_list' %}">Price Lists</a></li>
-  <li class="active">{{ pricelist }}</li>
-</ol>
-<h1>{{ pricelist.name }}</h1>
-{{ pricelist }}
+  <ol class="breadcrumb">
+    <li><a href="/">Home</a></li>
+    <li><a href="{% url 'pricelist_list' %}">Price Lists</a></li>
+    <li class="active">{{ pricelist }}</li>
+  </ol>
+  <h1>{{ pricelist.name }}</h1>
+  <div class="panel panel-default">
+    <div class="panel-body">{% include 'snippet/staff_disclaimer.html' %}
+      {% if can_create %}
+        <a class="btn btn-primary" href="{% url 'activity_pli_create' pl_id=pricelist.id %}">Create Activity Price List
+          Item</a>
+      {% endif %}
+    </div>
+  </div>
+  {{ pricelist }}
 {% endblock %}

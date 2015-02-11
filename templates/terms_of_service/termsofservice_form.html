@@ -4,17 +4,17 @@
 {% block content %}
 <ol class="breadcrumb">
   <li><a href="/">Home</a></li>
-  <li><a href="{% url 'pricelist_list' %}">Price Lists</a></li>
-  <li class="active">{{ action }} Price List</li>
+  <li><a href="{% url 'termsofservice_list' %}">Terms of Services</a></li>
+  <li class="active">{{ action }} Terms of Service</li>
 </ol>
-<h1>{% if pricelist %}{{ pricelist.name }}{% else %}Create New Price List{% endif %}</h1>
+<h1>{% if termsofservice %}{{ termsofservice.title }}{% else %}Create New Terms of Service{% endif %}</h1>
 <form method="POST">
   {% csrf_token %}
   {% if form %}
     {% bootstrap_form form %}
     <input class="btn btn-primary" type="submit" value="Submit"/>
   {% else %}
-    <p>Are you sure you want to delete {{ pricelist }}?</p>
+    <p>Are you sure you want to delete {{ termsofservice }}?</p>
     <input class="btn btn-danger" type="submit" value="Delete"/>
   {% endif %}
 </form>
