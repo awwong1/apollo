@@ -1,22 +1,23 @@
+from apollo.viewmixins import LoginRequiredMixin
 from apps.terms_of_service.models import TermsOfService
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
 
-class TermsOfServiceViewList(ListView):
+class TermsOfServiceViewList(LoginRequiredMixin, ListView):
     context_object_name = "termsofservices"
     model = TermsOfService
     template_name = "terms_of_service/termsofservice_list.html"
 
 
-class TermsOfServiceViewDetail(DetailView):
+class TermsOfServiceViewDetail(LoginRequiredMixin, DetailView):
     context_object_name = 'termsofservice'
     model = TermsOfService
     template_name = "terms_of_service/termsofservice_detail.html"
 
 
-class TermsOfServiceViewCreate(SuccessMessageMixin, CreateView):
+class TermsOfServiceViewCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     context_object_name = 'termsofservice'
     model = TermsOfService
     success_message = "%(title)s was created successfully!"
@@ -31,7 +32,7 @@ class TermsOfServiceViewCreate(SuccessMessageMixin, CreateView):
         return context
 
 
-class TermsOfServiceViewUpdate(SuccessMessageMixin, UpdateView):
+class TermsOfServiceViewUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     context_object_name = 'termsofservice'
     model = TermsOfService
     success_message = "%(title)s was updated successfully!"
@@ -46,7 +47,7 @@ class TermsOfServiceViewUpdate(SuccessMessageMixin, UpdateView):
         return context
 
 
-class TermsOfServiceViewDelete(DeleteView):
+class TermsOfServiceViewDelete(LoginRequiredMixin, DeleteView):
     context_object_name = 'termsofservice'
     model = TermsOfService
     success_url = reverse_lazy('termsofservice_list')

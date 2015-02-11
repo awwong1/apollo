@@ -1,4 +1,5 @@
 from apollo.choices import PRICE_LIST_PRE_RELEASE
+from apollo.viewmixins import LoginRequiredMixin
 from apps.price_list.forms import ActivityPriceListItemForm, PriceListForm
 from apps.price_list.models import PriceList, ActivityPriceListItem
 from django.contrib.messages.views import SuccessMessageMixin
@@ -7,7 +8,7 @@ from django.shortcuts import get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
 
-class PriceListViewList(ListView):
+class PriceListViewList(LoginRequiredMixin, ListView):
     context_object_name = "pricelists"
     model = PriceList
     template_name = "price_list/pricelist_list.html"
@@ -18,7 +19,7 @@ class PriceListViewList(ListView):
         return context
 
 
-class PriceListViewDetail(DetailView):
+class PriceListViewDetail(LoginRequiredMixin, DetailView):
     context_object_name = 'pricelist'
     model = PriceList
     template_name = "price_list/pricelist_detail.html"
@@ -31,7 +32,7 @@ class PriceListViewDetail(DetailView):
         return context
 
 
-class PriceListViewCreate(SuccessMessageMixin, CreateView):
+class PriceListViewCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     context_object_name = 'pricelist'
     model = PriceList
     slug_field = 'id'
@@ -49,7 +50,7 @@ class PriceListViewCreate(SuccessMessageMixin, CreateView):
         return context
 
 
-class PriceListViewUpdate(SuccessMessageMixin, UpdateView):
+class PriceListViewUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     context_object_name = 'pricelist'
     model = PriceList
     slug_field = 'id'
@@ -66,7 +67,7 @@ class PriceListViewUpdate(SuccessMessageMixin, UpdateView):
         return context
 
 
-class PriceListViewDelete(DeleteView):
+class PriceListViewDelete(LoginRequiredMixin, DeleteView):
     context_object_name = 'pricelist'
     model = PriceList
     slug_field = 'id'
@@ -80,7 +81,7 @@ class PriceListViewDelete(DeleteView):
         return context
 
 
-class ActivityPriceListItemViewCreate(SuccessMessageMixin, CreateView):
+class ActivityPriceListItemViewCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     context_object_name = 'activityitem'
     model = ActivityPriceListItem
     template_name = "price_list/activity_pricelistitem_form.html"
