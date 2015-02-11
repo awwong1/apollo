@@ -1,4 +1,3 @@
-from apollo.permissions import IsAdminOrReadOnly
 from apps.price_list.models import PriceList, ActivityPriceListItem, TimePriceListItem, UnitPriceListItem, \
     PriceListBundle
 from apps.price_list.serializers import PriceListSerializer, ActivityPriceListItemSerializer, \
@@ -12,7 +11,6 @@ class PriceListViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixin
     ViewSet for Price Lists. To search, supply a 'q' get parameter to the url to filter on price list name.
     """
     serializer_class = PriceListSerializer
-    permission_classes = [IsAdminOrReadOnly]
 
     def get_queryset(self):
         queryset = PriceList.objects.all()
@@ -27,7 +25,6 @@ class ActivityPriceListItemViewSet(viewsets.ModelViewSet):
     name.
     """
     serializer_class = ActivityPriceListItemSerializer
-    permission_classes = [IsAdminOrReadOnly]
 
     def get_queryset(self):
         queryset = ActivityPriceListItem.objects.all()

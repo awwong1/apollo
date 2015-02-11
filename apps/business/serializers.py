@@ -1,6 +1,3 @@
-"""
-Rest framework classes for Business application
-"""
 from apps.business.models import Business, BusinessMembership
 from cities_light.models import City
 from django.contrib.auth.models import User
@@ -52,17 +49,3 @@ class BusinessMembershipSerializer(HyperlinkedModelSerializer):
     class Meta:
         model = BusinessMembership
         read_only_fields = ('id', )
-
-
-class EditBusinessMembershipSerializer(HyperlinkedModelSerializer):
-    """
-    HyperlinkedModelSerializer for a Business Relationship (Modification).
-    Can only toggle business administrator status.
-    """
-    url = relations.HyperlinkedIdentityField(view_name="business-membership-detail")
-    business = relations.HyperlinkedRelatedField(view_name="business-detail", read_only=True)
-    user = relations.HyperlinkedRelatedField(view_name="user-detail", read_only=True)
-
-    class Meta:
-        model = BusinessMembership
-        read_only_fields = ('id', 'user', 'business')

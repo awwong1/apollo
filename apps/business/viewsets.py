@@ -1,7 +1,6 @@
 import re
 from apps.business.models import Business, BusinessMembership
-from apps.business.permissions import BusinessPermission, BusinessMembershipPermission
-from apps.business.serializers import BusinessMembershipSerializer, BusinessSerializer, EditBusinessMembershipSerializer
+from apps.business.serializers import BusinessMembershipSerializer, BusinessSerializer
 from rest_framework import viewsets, mixins, status
 
 
@@ -15,8 +14,8 @@ class BusinessViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins
     - <a href="/api/business/?city=calgary">/api/business/?city=calgary</a>, city options named *calgary*
     - <a href="/api/business/?city=den">/api/business/?city=den</a>, city options named *den*
     """
+    queryset = Business.objects.all()
     serializer_class = BusinessSerializer
-    permission_classes = [BusinessPermission]
 
     def get_serializer(self, *args, **kwargs):
         serializer_class = self.get_serializer_class()
@@ -24,7 +23,7 @@ class BusinessViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins
         return serializer_class(*args, context=context, **kwargs)
 
     def get_queryset(self):
-        queryset = Business.objects.all()
+        queryset = self.queryset
         if self.request.GET.get('q', None):
             return queryset.filter(name__icontains=self.request.GET['q'])
         return queryset
@@ -50,43 +49,11 @@ class BusinessMembershipViewSet(viewsets.ModelViewSet):
     administrator fields. When editing, only business administrator field is toggleable. No business may not remove
     their last administrator.
     """
+    queryset = BusinessMembership.objects.all()
     serializer_class = BusinessMembershipSerializer
-    permission_classes = [BusinessMembershipPermission]
 
     def get_queryset(self):
-        queryset = BusinessMembership.objects.all()
+        queryset = self.queryset
         if self.request.GET.get('q', None):
             return queryset.filter(business__name__icontains=self.request.GET['q'])
         return queryset
-
-    def get_serializer_class(self):
-        if self.request.method not in ('PUT', 'PATCH'):
-            return BusinessMembershipSerializer
-        return EditBusinessMembershipSerializer
-
-    def create(self, request, *args, **kwargs):
-        try:
-            bus_id_mobj = re.search("([\d]*)/$", request.data["business"])
-            if bus_id_mobj is not None:
-                bus_id = bus_id_mobj.group(1)
-                self.check_object_permissions(request, Business.objects.get(pk=bus_id))
-        finally:
-            return super(BusinessMembershipViewSet, self).create(request, *args, **kwargs)
-
-    def update(self, request, *args, **kwargs):
-        try:
-            bus_id_mobj = re.search("([\d]*)/$", request.data["business"])
-            if bus_id_mobj is not None:
-                bus_id = bus_id_mobj.group(1)
-                self.check_object_permissions(request, Business.objects.get(pk=bus_id))
-        finally:
-            return super(BusinessMembershipViewSet, self).update(request, *args, **kwargs)
-
-    def destroy(self, request, *args, **kwargs):
-        try:
-            bus_id_mobj = re.search("([\d]*)/$", request.data["business"])
-            if bus_id_mobj is not None:
-                bus_id = bus_id_mobj.group(1)
-                self.check_object_permissions(request, Business.objects.get(pk=bus_id))
-        finally:
-            return super(BusinessMembershipViewSet, self).destroy(request, *args, **kwargs)

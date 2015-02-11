@@ -64,7 +64,6 @@ INSTALLED_APPS = (
     'bootstrap3',
     'cities_light',
     'djangular',
-    'guardian',
     'rest_framework',
 )
 
@@ -200,7 +199,7 @@ REST_FRAMEWORK = {
     'PAGINATE_BY_PARAM': 'page_size',
     'MAX_PAGINATE_BY': 100,
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+        'rest_framework.permissions.AllowAny',
     ),
     'DEFAULT_FILTER_BACKENDS': (
         'rest_framework.filters.DjangoFilterBackend',

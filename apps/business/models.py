@@ -1,9 +1,7 @@
 from cities_light.models import City
 from django.contrib.auth.models import User, Permission
+from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-from guardian.shortcuts import assign_perm, remove_perm
 
 
 class Business(models.Model):
@@ -31,10 +29,6 @@ class Business(models.Model):
 
     class Meta:
         verbose_name_plural = "businesses"
-        permissions = (("add_businessmembership", "Can add a business membership for this business"),
-                       ("change_businessmembership", "Can add a business membership for this business"),
-                       ("delete_businessmembership", "Can add a business membership for this business"),)
-        default_permissions = ('add', 'change')
 
     def __str__(self):
         return "%s" % self.name
@@ -59,22 +53,14 @@ class BusinessMembership(models.Model):
 
     class Meta:
         unique_together = ("user", "business")
-        default_permissions = ()
-
-    def delete(self, *args, **kwargs):
-        # If the current membership is the business last administrator, delete the business.
-        if self.business_administrator:
-            business_admins = self.business.businessmembership_set.all().filter(business_administrator=True)
-            if len(business_admins) == 1 and business_admins[0].pk == self.pk:
-                self.business.delete()
-        return super(BusinessMembership, self).delete(*args, **kwargs)
+        index_together = ("user", "business")
 
     def clean(self):
         # Do not allow modification of membership such that there are no administrators
         business_admins = self.business.businessmembership_set.all().filter(business_administrator=True)
         if len(business_admins) == 1:
             if business_admins[0].pk == self.pk and self.business_administrator is False:
-                raise LastAdministratorException('Cannot remove administrator status from last business administrator')
+                raise ValidationError('Cannot remove administrator status from last business administrator')
         # Do not allow modification of user and business after creation, revert fields back to original state
         if self.pk is not None:
             existing = BusinessMembership.objects.get(pk=self.pk)
@@ -83,36 +69,8 @@ class BusinessMembership(models.Model):
 
     def __str__(self):
         return "{business}{admin}: {uname}".format(uname=self.user.username, business=self.business.name,
-                                                   admin=' (Admin)' if self.business_administrator else ' ')
+                                                   admin=' (Admin)' if self.business_administrator else '')
 
     def __unicode__(self):
         return u"{business}{admin}: {uname}".format(uname=self.user.username, business=self.business.name,
-                                                    admin=u' (Admin)' if self.business_administrator else u' ')
-
-
-class LastAdministratorException(Exception):
-    # Exception for deleting the last administrator in a business
-    pass
-
-
-@receiver(post_save, sender=BusinessMembership)
-def business_membership_post_save_callback(sender, instance, **kwargs):
-    # Administrators can change this business and add/change business memberships for this business, non-admins cannot
-    if instance.business_administrator:
-        assign_perm('business.change_business', instance.user, instance.business)
-        assign_perm('business.add_businessmembership', instance.user, instance.business)
-        assign_perm('business.change_businessmembership', instance.user, instance.business)
-        assign_perm('business.delete_businessmembership', instance.user, instance.business)
-    else:
-        remove_perm('business.change_business', instance.user, instance.business)
-        remove_perm('business.add_businessmembership', instance.user, instance.business)
-        remove_perm('business.change_businessmembership', instance.user, instance.business)
-        remove_perm('business.delete_businessmembership', instance.user, instance.business)
-
-
-@receiver(post_save, sender=User)
-def user_post_save_callback_business(sender, instance, created, **kwargs):
-    # All users can add businesses. On user creation, explicitly define permission to add a business.
-    if created:
-        add_business = Permission.objects.get(codename='add_business')
-        instance.user_permissions.add(add_business)
+                                                    admin=u' (Admin)' if self.business_administrator else u'')

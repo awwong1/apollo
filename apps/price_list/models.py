@@ -26,7 +26,6 @@ class PriceList(models.Model):
     class Meta:
         verbose_name = "Price List"
         verbose_name_plural = "Price Lists"
-        default_permissions = ('add', 'change', 'delete')
 
     def clean(self):
         if self.pk is not None:

@@ -1,5 +1,5 @@
 from uuid import uuid4
-from apps.business.models import LastAdministratorException
+from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models.signals import post_save
@@ -23,10 +23,6 @@ class Station(models.Model):
         help_text="What is the universally unique identifier for this station?",
         validators=[RegexValidator(regex="^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")]
     )
-
-    class Meta:
-        permissions = (("add_stationbusiness", "Can add a station business for this station"),)
-        default_permissions = ('add', 'change', 'delete')
 
     def __str__(self):
         return self.name
@@ -53,14 +49,13 @@ class StationBusiness(models.Model):
     class Meta:
         unique_together = ('station', 'business')
         index_together = ('station', 'business')
-        default_permissions = ('change', 'delete')
 
     def clean(self):
         # Do not allow modification of membership such that there are no administrators
         station_admins = self.business.stationbusiness_set.all().filter(station_administrator=True)
         if len(station_admins) == 1:
             if station_admins[0].pk == self.pk and self.station_administrator is False:
-                raise LastAdministratorException('Cannot remove administrator status from last station administrator')
+                raise ValidationError('Cannot remove administrator status from last station administrator')
         # Do not allow modification of user and business after creation, revert fields back to original state
         if self.pk is not None:
             existing = StationBusiness.objects.get(pk=self.pk)
