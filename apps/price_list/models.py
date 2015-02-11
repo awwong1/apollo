@@ -32,6 +32,9 @@ class PriceList(models.Model):
             price_list_existing = PriceList.objects.get(pk=self.pk)
             if price_list_existing.status != PRICE_LIST_PRE_RELEASE:
                 raise ValidationError("Price lists cannot be edited once released.")
+        pre_released = PriceList.objects.filter(status=PRICE_LIST_PRE_RELEASE)
+        if len(pre_released) > 0 and pre_released[0].pk != self.pk:
+            raise ValidationError("Only one price list may be in the pre-release state at a time!")
 
     def create_next_price_list(self, name=None, description=None):
         """
@@ -180,14 +183,11 @@ class PriceListBundle(models.Model):
     price_list = models.ForeignKey(
         'PriceList', help_text="Which price list does this bundle belong to?"
     )
-    activity_bundle_items = models.ManyToManyField(
-        ActivityPriceListItem, help_text="Which activity items are included in this bundle?"
+    name = models.CharField(
+        max_length=100, help_text="What is the name of this bundle?", default="Bundle"
     )
-    time_bundle_items = models.ManyToManyField(
-        TimePriceListItem, help_text="Which time items are included in this bundle?"
-    )
-    unit_bundle_items = models.ManyToManyField(
-        UnitPriceListItem, help_text="Which unit items are included in this bundle?"
+    description = models.TextField(
+        help_text="What is the description of this bundle?", default="", blank=True
     )
     percent_discount = models.PositiveSmallIntegerField(
         help_text="What percent discount should be applied for this bundle? (Value between 0 and 100 percent)",
@@ -202,13 +202,13 @@ class PriceListBundle(models.Model):
         next_bundle.pk = None
         next_bundle.price_list = price_list
         next_bundle.save()
-        for activity_item in self.activity_bundle_items.all():
+        for activity_item in self.activitybundleitem_set.all():
             next_act_item = ActivityPriceListItem.objects.get(item_uuid=activity_item.item_uuid, price_list=price_list)
             next_bundle.activity_bundle_items.add(next_act_item)
-        for time_item in self.time_bundle_items.all():
+        for time_item in self.timebundleitem_set.all():
             next_time_item = TimePriceListItem.objects.get(item_uuid=time_item.item_uuid, price_list=price_list)
             next_bundle.time_bundle_items.add(next_time_item)
-        for unit_item in self.unit_bundle_items.all():
+        for unit_item in self.unitbundleitem_set.all():
             next_unit_item = UnitPriceListItem.objects.get(item_uuid=unit_item.item_uuid, price_list=price_list)
             next_bundle.unit_bundle_items.add(next_unit_item)
         next_bundle.save()
@@ -217,23 +217,23 @@ class PriceListBundle(models.Model):
     def get_bundle_items_cost(self, item_classes=[ActivityPriceListItem, TimePriceListItem, UnitPriceListItem]):
         """
         Returns a dictionary of the bundle items and their new cost after the bundle percent discount is applied
-        :return: Dictionary[Activity/Time/Unit Price List Item] = (Cost Tuple)/Cost Value
+        :return: Dictionary[PriceListItem] = (Cost Tuple)/Cost Value
         """
         multiplier = Decimal((100.0 - self.percent_discount) / 100.0)
         data_dict = dict()
         for class_type in item_classes:
             if class_type == ActivityPriceListItem:
-                for activity_item in self.activity_bundle_items.all():
+                for activity_item in self.activitybundleitem_set.all():
                     data_dict[activity_item] = (
                         activity_item.price_per_unit * multiplier, activity_item.unit_measurement
                     )
             elif class_type == TimePriceListItem:
-                for time_item in self.time_bundle_items.all():
+                for time_item in self.timebundleitem_set.all():
                     data_dict[time_item] = (
                         time_item.price_per_time * multiplier, time_item.unit_time
                     )
             elif class_type == UnitPriceListItem:
-                for unit_item in self.unit_bundle_items.all():
+                for unit_item in self.unitbundleitem_set.all():
                     data_dict[unit_item] = unit_item.price_per_unit * multiplier
         return data_dict
 
@@ -250,3 +250,82 @@ class PriceListBundle(models.Model):
 
     def __unicode__(self):
         return u"%(price_list)s Bundle: %(bundle_pk)s" % {'price_list': self.price_list.name, 'bundle_pk': self.pk}
+
+
+class AbstractBundleItem(models.Model):
+    """
+    Model for the base abstract bundle item.
+    """
+    bundle = models.ForeignKey(
+        PriceListBundle, help_text="Which bundle does this bundle price list item belong to?"
+    )
+
+    class Meta:
+        abstract = True
+
+    def clean(self):
+        if self.bundle.price_list.status != PRICE_LIST_PRE_RELEASE:
+            raise ValidationError('Cannot create a bundle item for a released price list!')
+
+
+class ActivityBundleItem(AbstractBundleItem):
+    """
+    Model for the activity bundle item
+    """
+    activity_price_list_item = models.ForeignKey(
+        ActivityPriceListItem, help_text="Which activity price list item does this bundle item represent?"
+    )
+
+    def clean_fields(self, exclude=None):
+        if self.activity_price_list_item.price_list != self.bundle.price_list:
+            raise ValidationError(
+                {"activity_price_list_item": "Bundle Item must be within the same price list as the bundle!"}
+            )
+
+    def __str__(self):
+        return "{bundle}, {item}".format(bundle=self.bundle, item=self.activity_price_list_item)
+
+    def __unicode__(self):
+        return u"{bundle}, {item}".format(bundle=self.bundle, item=self.activity_price_list_item)
+
+
+class TimeBundleItem(AbstractBundleItem):
+    """
+    Model for the time bundle item
+    """
+    time_price_list_item = models.ForeignKey(
+        TimePriceListItem, help_text="Which time price list item does this bundle item represent?"
+    )
+
+    def clean_fields(self, exclude=None):
+        if self.time_price_list_item.price_list != self.bundle.price_list:
+            raise ValidationError(
+                {"time_price_list_item": "Bundle Item must be within the same price list as the bundle!"}
+            )
+
+    def __str__(self):
+        return "{bundle}, {item}".format(bundle=self.bundle, item=self.time_price_list_item)
+
+    def __unicode__(self):
+        return u"{bundle}, {item}".format(bundle=self.bundle, item=self.time_price_list_item)
+
+
+class UnitBundleItem(AbstractBundleItem):
+    """
+    Model for the unit bundle item
+    """
+    unit_price_list_item = models.ForeignKey(
+        UnitPriceListItem, help_text="Which unit price list item does this bundle item represent?"
+    )
+
+    def clean_fields(self, exclude=None):
+        if self.unit_price_list_item.price_list != self.bundle.price_list:
+            raise ValidationError(
+                {"unit_price_list_item": "Bundle Item must be within the same price list as the bundle!"}
+            )
+
+    def __str__(self):
+        return "{bundle}, {item}".format(bundle=self.bundle, item=self.unit_price_list_item)
+
+    def __unicode__(self):
+        return u"{bundle}, {item}".format(bundle=self.bundle, item=self.unit_price_list_item)

@@ -47,9 +47,6 @@ class BusinessMembership(models.Model):
     business = models.ForeignKey(
         Business, help_text="Which business is part of this membership? Cannot be edited once membership is created."
     )
-    business_administrator = models.BooleanField(
-        default=False, help_text="Is this user an administrator of this business?"
-    )
 
     class Meta:
         unique_together = ("user", "business")

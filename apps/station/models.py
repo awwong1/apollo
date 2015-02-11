@@ -40,9 +40,6 @@ class StationBusiness(models.Model):
     station = models.ForeignKey(
         'Station', help_text="Which station comprises this station to business membership?"
     )
-    station_administrator = models.BooleanField(
-        default=False, help_text="Is this station an administrator of this business?"
-    )
 
     class Meta:
         unique_together = ('station', 'business')

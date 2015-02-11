@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+
+{% block content %}
+<h1>Pricelist Create</h1>
+<form action="{% url 'pricelist_create' %}" method="POST">
+  {% csrf_token %}
+  {% bootstrap_form form %}
+  <input class="btn btn-primary" type="submit" value="Submit"/>
+</form>
+{% endblock %}

@@ -11,6 +11,8 @@ urlpatterns = patterns(
     url(r'^prototype/$', base_prototype, name='base_prototype'),
     url(r'^contact/$', base_contact, name='base_contact'),
     url(r'^api/', include(router.urls), name='api'),
+    # Internal application urls
+    url(r'^pricelist/', include('apps.price_list.urls'), name='pricelist'),
     # Included with external packages
     url(r'^accounts/', include('allauth.urls')),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),

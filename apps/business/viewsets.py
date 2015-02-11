@@ -1,7 +1,6 @@
-import re
 from apps.business.models import Business, BusinessMembership
 from apps.business.serializers import BusinessMembershipSerializer, BusinessSerializer
-from rest_framework import viewsets, mixins, status
+from rest_framework import viewsets, mixins
 
 
 class BusinessViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin,

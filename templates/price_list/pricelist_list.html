@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Price Lists</h1>
+<ul>
+  {% for pricelist in pricelists %}
+  <li><a href="{% url 'pricelist_detail' pl_id=pricelist.id %}">{{ pricelist }}</a></li>
+  {% empty %}
+  <li>No price lists created yet!</li>
+  {% endfor %}
+</ul>
+{% endblock %}

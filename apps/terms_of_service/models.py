@@ -2,7 +2,7 @@ from django.db import models
 
 
 class TermsOfService(models.Model):
-    date_created = models.DateTimeField(
+    last_modified = models.DateTimeField(
         auto_now=True, help_text="When was this terms of service created?"
     )
     title = models.CharField(
