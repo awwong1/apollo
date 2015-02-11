@@ -31,8 +31,10 @@ class Business(models.Model):
 
     class Meta:
         verbose_name_plural = "businesses"
-        permissions = (("add_businessmembership", "Can add a business membership for this business"),)
-        default_permissions = ('add', 'change', 'delete')
+        permissions = (("add_businessmembership", "Can add a business membership for this business"),
+                       ("change_businessmembership", "Can add a business membership for this business"),
+                       ("delete_businessmembership", "Can add a business membership for this business"),)
+        default_permissions = ('add', 'change')
 
     def __str__(self):
         return "%s" % self.name
@@ -57,7 +59,7 @@ class BusinessMembership(models.Model):
 
     class Meta:
         unique_together = ("user", "business")
-        default_permissions = ('change', 'delete')
+        default_permissions = ()
 
     def delete(self, *args, **kwargs):
         # If the current membership is the business last administrator, delete the business.
@@ -99,15 +101,13 @@ def business_membership_post_save_callback(sender, instance, **kwargs):
     if instance.business_administrator:
         assign_perm('business.change_business', instance.user, instance.business)
         assign_perm('business.add_businessmembership', instance.user, instance.business)
-        for business_membership in instance.business.businessmembership_set.all():
-            assign_perm('business.change_businessmembership', instance.user, business_membership)
-            assign_perm('business.delete_businessmembership', instance.user, business_membership)
+        assign_perm('business.change_businessmembership', instance.user, instance.business)
+        assign_perm('business.delete_businessmembership', instance.user, instance.business)
     else:
         remove_perm('business.change_business', instance.user, instance.business)
         remove_perm('business.add_businessmembership', instance.user, instance.business)
-        for business_membership in instance.business.businessmembership_set.all():
-            remove_perm('business.change_businessmembership', instance.user, business_membership)
-            remove_perm('business.delete_businessmembership', instance.user, business_membership)
+        remove_perm('business.change_businessmembership', instance.user, instance.business)
+        remove_perm('business.delete_businessmembership', instance.user, instance.business)
 
 
 @receiver(post_save, sender=User)

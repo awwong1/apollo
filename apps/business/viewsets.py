@@ -35,7 +35,7 @@ class BusinessViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins
         """
         create_ret_val = super(BusinessViewSet, self).create(request, *args, **kwargs)
         if create_ret_val.status_code == status.HTTP_201_CREATED:
-            key = int(re.search("([\d]*)/$", create_ret_val.data['url']).group(1))
+            key = re.search("([\d]*)/$", create_ret_val.data['url']).group(1)
             BusinessMembership.objects.create(
                 business=Business.objects.get(pk=key),
                 user=request.user,
@@ -63,3 +63,30 @@ class BusinessMembershipViewSet(viewsets.ModelViewSet):
         if self.request.method not in ('PUT', 'PATCH'):
             return BusinessMembershipSerializer
         return EditBusinessMembershipSerializer
+
+    def create(self, request, *args, **kwargs):
+        try:
+            bus_id_mobj = re.search("([\d]*)/$", request.data["business"])
+            if bus_id_mobj is not None:
+                bus_id = bus_id_mobj.group(1)
+                self.check_object_permissions(request, Business.objects.get(pk=bus_id))
+        finally:
+            return super(BusinessMembershipViewSet, self).create(request, *args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        try:
+            bus_id_mobj = re.search("([\d]*)/$", request.data["business"])
+            if bus_id_mobj is not None:
+                bus_id = bus_id_mobj.group(1)
+                self.check_object_permissions(request, Business.objects.get(pk=bus_id))
+        finally:
+            return super(BusinessMembershipViewSet, self).update(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            bus_id_mobj = re.search("([\d]*)/$", request.data["business"])
+            if bus_id_mobj is not None:
+                bus_id = bus_id_mobj.group(1)
+                self.check_object_permissions(request, Business.objects.get(pk=bus_id))
+        finally:
+            return super(BusinessMembershipViewSet, self).destroy(request, *args, **kwargs)

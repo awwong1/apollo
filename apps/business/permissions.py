@@ -30,16 +30,14 @@ class BusinessPermission(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return True
         elif request.user.is_authenticated():
-            if request.method == 'POST':
-                return True
-            elif request.method in ('PUT', 'PATCH'):
+            if request.method in ('POST', 'PUT', 'PATCH'):
                 # Handled by Object Permissions
                 return True
         return False
 
 
 class BusinessMembershipPermission(permissions.BasePermission):
-    def has_object_permission(self, request, view, obj):
+    def has_object_permission(self, request, view, business):
         """
         Permissions for business membership instances
         """
@@ -47,9 +45,11 @@ class BusinessMembershipPermission(permissions.BasePermission):
             return True
         elif request.user.is_authenticated():
             if request.method == 'POST':
-                return request.user.has_perm('business.add_businessmembership', obj.business)
+                return request.user.has_perm('business.add_businessmembership', business)
             elif request.method in ('PUT', 'PATCH'):
-                return request.user.has_perm('business.change_businessmembership', obj)
+                return request.user.has_perm('business.change_businessmembership', business)
+            elif request.method == 'DELETE':
+                return request.user.has_perm('business.delete_businessmembership', business)
         return False
 
     def has_permission(self, request, view):
