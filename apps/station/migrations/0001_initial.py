@@ -9,7 +9,7 @@ import uuid
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('business', '0011_remove_business_created_by'),
+        ('business', '0001_initial'),
     ]
 
     operations = [
@@ -22,8 +22,6 @@ class Migration(migrations.Migration):
                 ('uuid', models.CharField(default=uuid.uuid4, help_text=b'What is the universally unique identifier for this station?', unique=True, max_length=36, validators=[django.core.validators.RegexValidator(regex=b'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$')])),
             ],
             options={
-                'default_permissions': ('add', 'change', 'delete'),
-                'permissions': (('add_stationbusiness', 'Can add a station business for this station'),),
             },
             bases=(models.Model,),
         ),
@@ -36,7 +34,6 @@ class Migration(migrations.Migration):
                 ('station', models.ForeignKey(help_text=b'Which station comprises this station to business membership?', to='station.Station')),
             ],
             options={
-                'default_permissions': ('change', 'delete'),
             },
             bases=(models.Model,),
         ),

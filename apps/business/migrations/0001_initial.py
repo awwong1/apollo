@@ -22,11 +22,10 @@ class Migration(migrations.Migration):
                 ('address_1', models.CharField(help_text=b'What is the address of this business?', max_length=60)),
                 ('address_2', models.CharField(help_text=b'What is the address of this business?', max_length=60, blank=True)),
                 ('postal_code', models.CharField(help_text=b'What is the postal code of this business?', max_length=6)),
-                ('city', models.ForeignKey(help_text=b'Which city does this business belong in?', to='cities_light.City')),
+                ('city', models.ForeignKey(blank=True, to='cities_light.City', help_text=b'Which city does this business belong in?', null=True)),
             ],
             options={
                 'verbose_name_plural': 'businesses',
-                'permissions': ('edit_business_instance', 'Can edit this business instance'),
             },
             bases=(models.Model,),
         ),
@@ -34,11 +33,9 @@ class Migration(migrations.Migration):
             name='BusinessMembership',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('user_accepted', models.BooleanField(default=False, help_text=b'Has the user accepted this membership?')),
-                ('business_accepted', models.BooleanField(default=False, help_text=b'Has the business accepted this membership?')),
                 ('business_administrator', models.BooleanField(default=False, help_text=b'Is this user an administrator of this business?')),
-                ('business', models.ForeignKey(help_text=b'Which business is part of this membership?', to='business.Business')),
-                ('user', models.ForeignKey(help_text=b'Which user is part of this membership?', to=settings.AUTH_USER_MODEL)),
+                ('business', models.ForeignKey(help_text=b'Which business is part of this membership? Cannot be edited once membership is created.', to='business.Business')),
+                ('user', models.ForeignKey(help_text=b'Which user is part of this membership? Cannot be edited once membership is created.', to=settings.AUTH_USER_MODEL)),
             ],
             options={
             },
@@ -47,9 +44,5 @@ class Migration(migrations.Migration):
         migrations.AlterUniqueTogether(
             name='businessmembership',
             unique_together=set([('user', 'business')]),
-        ),
-        migrations.AlterIndexTogether(
-            name='businessmembership',
-            index_together=set([('user', 'business')]),
         ),
     ]
