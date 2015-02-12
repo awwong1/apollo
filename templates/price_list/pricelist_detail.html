@@ -1,19 +1,29 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <ol class="breadcrumb">
-    <li><a href="/">Home</a></li>
-    <li><a href="{% url 'pricelist_list' %}">Price Lists</a></li>
-    <li class="active">{{ pricelist }}</li>
-  </ol>
-  <h1>{{ pricelist.name }}</h1>
-  <div class="panel panel-default">
-    <div class="panel-body">{% include 'snippet/staff_disclaimer.html' %}
-      {% if can_create %}
-        <a class="btn btn-primary" href="{% url 'activity_pli_create' pl_id=pricelist.id %}">Create Activity Price List
-          Item</a>
-      {% endif %}
-    </div>
+<ol class="breadcrumb">
+  <li><a href="/">Home</a></li>
+  <li><a href="{% url 'pricelist_list' %}">Price Lists</a></li>
+  <li class="active">{{ pricelist }}</li>
+</ol>
+<h1>{{ pricelist.name }}</h1>
+<div class="panel panel-default">
+  <div class="panel-body">{% include 'snippet/staff_disclaimer.html' %}
+    {% if can_create %}
+    <a class="btn btn-primary" href="{% url 'pricelist_update' pl_id=pricelist.id %}">Update Price List</a>
+    <a class="btn btn-warning" href="{% url 'pricelist_delete' pl_id=pricelist.id %}">Delete Price list</a>
+    <br><br>
+    <a class="btn btn-primary" href="{% url 'activity_pricelistitem_create' pl_id=pricelist.id %}">Create Activity Price
+      List Item</a>
+    {% endif %}
   </div>
-  {{ pricelist }}
+</div>
+{{ pricelist }}
+<h2>Activity Price List Items</h2>
+<ul>
+  {% for activity_item in pricelist.activitypricelistitem_set.all %}
+    <li><a href="{% url 'activity_pricelistitem_detail' pk=activity_item.pk %}">{{ activity_item }}</a></li>
+  {% empty %}
+  {% endfor %}
+</ul>
 {% endblock %}

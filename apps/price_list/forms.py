@@ -1,6 +1,5 @@
 from apollo.choices import PRICE_LIST_PRE_RELEASE
-from apps.price_list.models import PriceList, ActivityPriceListItem, TimePriceListItem, UnitPriceListItem, \
-    PriceListBundle, ActivityBundleItem, TimeBundleItem, UnitBundleItem
+from apps.price_list.models import PriceList, ActivityPriceListItem, TimePriceListItem, UnitPriceListItem
 from django.forms import ModelForm
 
 
@@ -42,28 +41,4 @@ class TimePriceListItemForm(ModelForm):
 class UnitPriceListItemForm(ModelForm):
     class Meta:
         model = UnitPriceListItem
-        fields = "__all__"
-
-
-class PriceListBundleForm(ModelForm):
-    class Meta:
-        model = PriceListBundle
-        fields = "__all__"
-
-
-class ActivityBundleItemForm(ModelForm):
-    class Meta:
-        model = ActivityBundleItem
-        fields = "__all__"
-
-
-class TimeBundleItemForm(ModelForm):
-    class Meta:
-        model = TimeBundleItem
-        fields = "__all__"
-
-
-class UnitBundleItemForm(ModelForm):
-    class Meta:
-        model = UnitBundleItem
         fields = "__all__"

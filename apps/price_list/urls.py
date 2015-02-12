@@ -10,5 +10,11 @@ urlpatterns = patterns(
     url(r'^(?P<pl_id>\d)/delete/$', views.PriceListViewDelete.as_view(), name='pricelist_delete'),
     # Activity Item Creation
     url(r'^(?P<pl_id>\d)/create/activity/$', views.ActivityPriceListItemViewCreate.as_view(),
-        name='activity_pli_create'),
+        name='activity_pricelistitem_create'),
+    url(r'^activity/(?P<pk>\d)/$', views.ActivityPriceListItemViewDetail.as_view(),
+        name='activity_pricelistitem_detail'),
+    url(r'^activity/(?P<pk>\d)/update/$', views.ActivityPriceListItemViewUpdate.as_view(),
+        name='activity_pricelistitem_update'),
+    url(r'^activity/(?P<pk>\d)/delete/$', views.ActivityPriceListItemViewDelete.as_view(),
+        name='activity_pricelistitem_delete'),
 )

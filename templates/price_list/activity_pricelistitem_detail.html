@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+
+{% block content %}
+<ol class="breadcrumb">
+  <li><a href="/">Home</a></li>
+  <li><a href="{% url 'pricelist_list' %}">Price Lists</a></li>
+  <li><a href="{% url 'pricelist_detail' pl_id=pricelist.id %}">{{ pricelist }}</a></li>
+  <li class="active">{{ activityitem.name }}</li>
+</ol>
+<h1>{{ activityitem.name }}</h1>
+<div class="panel panel-default">
+  <div class="panel-body">{% include 'snippet/staff_disclaimer.html' %}
+    {% if can_create %}
+    <a class="btn btn-primary" href="{% url 'activity_pricelistitem_update' pk=activityitem.pk %}">Update Activity Price
+      List Item</a>
+    <a class="btn btn-warning" href="{% url 'activity_pricelistitem_delete' pk=activityitem.pk %}">Delete Activity Price
+      List Item</a>
+    <br><br>
+    <a class="btn btn-primary" href="#">Add Equipment Relation</a>
+    <a class="btn btn-primary" href="#">Add Service Relation</a>
+    {% endif %}
+  </div>
+</div>
+{{ activityitem }}
+{% endblock %}
