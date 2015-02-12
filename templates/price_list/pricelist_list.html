@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 
 {% block content %}
+<ol class="breadcrumb">
+  <li><a href="/">Home</a></li>
+  <li class="active">Price Lists</li>
+</ol>
 <h1>Price Lists</h1>
 <ul>
   {% for pricelist in pricelists %}

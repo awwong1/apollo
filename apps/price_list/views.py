@@ -22,35 +22,49 @@ class PriceList_Detail(DetailView):
 class PriceList_Create(SuccessMessageMixin, CreateView):
     context_object_name = 'pricelist'
     model = PriceList
-    template_name = "price_list/pricelist_create.html"
-    success_message = "%(name)s was created successfully!"
-    slug_url_kwarg = 'pl_id'
     slug_field = 'id'
+    slug_url_kwarg = 'pl_id'
+    success_message = "%(name)s was created successfully!"
+    template_name = "price_list/pricelist_form.html"
 
     def get_success_url(self):
         return reverse_lazy('pricelist_detail', kwargs={'pl_id': self.object.pk})
+
+    def get_context_data(self, **kwargs):
+        context = super(PriceList_Create, self).get_context_data(**kwargs)
+        context['action'] = "Create New"
+        return context
 
 
 class PriceList_Update(SuccessMessageMixin, UpdateView):
     context_object_name = 'pricelist'
     model = PriceList
-    template_name = "price_list/pricelist_update.html"
-    success_message = "%(name)s was updated successfully!"
-    slug_url_kwarg = 'pl_id'
     slug_field = 'id'
+    slug_url_kwarg = 'pl_id'
+    success_message = "%(name)s was updated successfully!"
+    template_name = "price_list/pricelist_form.html"
 
     def get_success_url(self):
         return reverse_lazy('pricelist_detail', kwargs={'pl_id': self.object.pk})
 
+    def get_context_data(self, **kwargs):
+        context = super(PriceList_Update, self).get_context_data(**kwargs)
+        context['action'] = "Update"
+        return context
 
-class PriceList_Delete(SuccessMessageMixin, DeleteView):
+
+class PriceList_Delete(DeleteView):
     context_object_name = 'pricelist'
     model = PriceList
-    template_name = "price_list/pricelist_delete.html"
-    success_url = reverse_lazy('pricelist_list')
-    success_message = "%(name)s was deleted successfully!"
-    slug_url_kwarg = 'pl_id'
     slug_field = 'id'
+    slug_url_kwarg = 'pl_id'
+    success_url = reverse_lazy('pricelist_list')
+    template_name = "price_list/pricelist_form.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(PriceList_Create, self).get_context_data(**kwargs)
+        context['action'] = "Delete"
+        return context
 
 
 class ActivityPriceListItem_Create(SuccessMessageMixin, CreateView):
