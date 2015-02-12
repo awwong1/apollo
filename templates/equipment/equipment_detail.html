@@ -1,16 +1,25 @@
 {% extends "base.html" %}
 {% block content %}
-  <ol class="breadcrumb">
-    <li><a href="/">Home</a></li>
-    <li><a href="{% url 'equipment_list' %}">Equipment</a></li>
-    <li class="active">{{ equipment }}</li>
-  </ol>
-  <h1>{{ equipment.name }}</h1>
-  <div class="panel panel-default">
-    <div class="panel-body">{% include 'snippet/staff_disclaimer.html' %}
-      <a class="btn btn-primary" href="{% url 'equipment_update' pk=equipment.pk %}">Update Equipment</a>
-      <a class="btn btn-warning" href="{% url 'equipment_delete' pk=equipment.pk %}">Delete Equipment</a>
-    </div>
+<ol class="breadcrumb">
+  <li><a href="/">Home</a></li>
+  <li><a href="{% url 'equipment_list' %}">Equipment</a></li>
+  <li class="active">{{ equipment }}</li>
+</ol>
+<h1>{{ equipment.name }}</h1>
+<div class="panel panel-default">
+  <div class="panel-body">{% include 'snippet/staff_disclaimer.html' %}
+    <a class="btn btn-primary" href="{% url 'equipment_update' pk=equipment.pk %}">Update Equipment</a>
+    <a class="btn btn-warning" href="{% url 'equipment_delete' pk=equipment.pk %}">Delete Equipment</a>
   </div>
-  {{ equipment }}
+</div>
+<h2>Description</h2>
+{{ equipment.description|linebreaks }}
+<h2>Service Activators</h2>
+<ul>
+  {% for service in equipment.service_set.all %}
+  <li><a href="{% url 'service_detail' pk=service.pk %}">{{ service.name }}</a></li>
+  {% empty %}
+  <li>No services activate this equipment.</li>
+  {% endfor %}
+</ul>
 {% endblock %}

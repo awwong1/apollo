@@ -102,14 +102,51 @@ class PriceListItemEquipment(models.Model):
     """
     Model through relation for mapping equipment to specific price list items
     """
-    price_list = models.ForeignKey('PriceList', help_text="Which price list does this bundle item reference?")
+    price_list = models.ForeignKey('PriceList', help_text="Which price list does this equipment item reference?")
     item_uuid = models.CharField(
-        max_length=36, help_text="What is the item specific UUID?",
+        max_length=36, help_text="What is the price list item specific UUID?",
         validators=[RegexValidator(regex="^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")]
     )
     equipment = models.ForeignKey(
         'assets.Equipment', related_name="equipment",
         help_text="Which equipment does this price list item map to?"
+    )
+    count = models.PositiveSmallIntegerField(
+        help_text="How many counts of equipment should this price list item reference?",
+        default=1, validators=[MinValueValidator(1)]
+    )
+
+    class Meta:
+        unique_together = ('price_list', 'item_uuid', 'equipment')
+
+    def clean(self):
+        price_list_items = list(
+            chain(self.price_list.activitypricelistitem_set.all(), self.price_list.timepricelistitem_set.all(),
+                  self.price_list.unitpricelistitem_set.all()))
+        for price_list_item in price_list_items:
+            if self.item_uuid == price_list_item.item_uuid:
+                return
+        raise ValidationError({'item_uuid': 'This uuid does not map to any price list item within this price list!'})
+
+    def __str__(self):
+        return "{equipment} x {count}".format(equipment=self.equipment, count=self.count)
+
+    def __unicode__(self):
+        return u"{equipment} x {count}".format(equipment=self.equipment, count=self.count)
+
+
+class PriceListItemService(models.Model):
+    """
+    Model through relation for mapping services to specific price list items
+    """
+    price_list = models.ForeignKey('PriceList', help_text="Which price list does this service item reference?")
+    item_uuid = models.CharField(
+        max_length=36, help_text="What is the price list item specific UUID?",
+        validators=[RegexValidator(regex="^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")]
+    )
+    service = models.ForeignKey(
+        'assets.Service', related_name="service",
+        help_text="Which service does this price list item map to?"
     )
     count = models.PositiveSmallIntegerField(
         help_text="How many counts of equipment should this price list item reference?",
@@ -126,23 +163,11 @@ class PriceListItemEquipment(models.Model):
         raise ValidationError({'item_uuid': 'This uuid does not map to any price list item within this price list!'})
 
 
-class PriceListItemService(models.Model):
-    """
-    Model through relation for mapping services to specific price list items
-    """
-    price_list = models.ForeignKey('PriceList', help_text="Which price list does this bundle item reference?")
-    item_uuid = models.CharField(
-        max_length=36, help_text="What is the item specific UUID?",
-        validators=[RegexValidator(regex="^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")]
-    )
-    service = models.ForeignKey(
-        'assets.Service', related_name="service",
-        help_text="Which service does this price list item map to?"
-    )
-    count = models.PositiveSmallIntegerField(
-        help_text="How many counts of equipment should this price list item reference?",
-        default=1, validators=[MinValueValidator(1)]
-    )
+    def __str__(self):
+        return "{service} x {count}".format(equipment=self.service, count=self.count)
+
+    def __unicode__(self):
+        return u"{service} x {count}".format(equipment=self.service, count=self.count)
 
 
 class ActivityPriceListItem(AbstractPriceListItem):

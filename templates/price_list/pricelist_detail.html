@@ -18,12 +18,14 @@
     {% endif %}
   </div>
 </div>
-{{ pricelist }}
+<h2>Description</h2>
+{{ pricelist.description|linebreaks }}
 <h2>Activity Price List Items</h2>
 <ul>
   {% for activity_item in pricelist.activitypricelistitem_set.all %}
     <li><a href="{% url 'activity_pricelistitem_detail' pk=activity_item.pk %}">{{ activity_item }}</a></li>
   {% empty %}
+    <li>No activity price list items exist for this price list.</li>
   {% endfor %}
 </ul>
 {% endblock %}

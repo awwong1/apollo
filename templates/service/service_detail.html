@@ -1,16 +1,19 @@
 {% extends "base.html" %}
 {% block content %}
-  <ol class="breadcrumb">
-    <li><a href="/">Home</a></li>
-    <li><a href="{% url 'service_list' %}">Services</a></li>
-    <li class="active">{{ service }}</li>
-  </ol>
-  <h1>{{ service.name }}</h1>
-  <div class="panel panel-default">
-    <div class="panel-body">{% include 'snippet/staff_disclaimer.html' %}
-      <a class="btn btn-primary" href="{% url 'service_update' pk=equipment.pk %}">Update Service</a>
-      <a class="btn btn-warning" href="{% url 'service_delete' pk=equipment.pk %}">Delete Service</a>
-    </div>
+<ol class="breadcrumb">
+  <li><a href="/">Home</a></li>
+  <li><a href="{% url 'service_list' %}">Services</a></li>
+  <li class="active">{{ service }}</li>
+</ol>
+<h1>{{ service.name }}</h1>
+<div class="panel panel-default">
+  <div class="panel-body">{% include 'snippet/staff_disclaimer.html' %}
+    <a class="btn btn-primary" href="{% url 'service_update' pk=service.pk %}">Update Service</a>
+    <a class="btn btn-warning" href="{% url 'service_delete' pk=service.pk %}">Delete Service</a>
   </div>
-  {{ service }}
+</div>
+<h2>Activation ID</h2>
+<strong>Regex String: </strong><code>{{ service.activation_id }}</code>
+<h2>Activated Equipment</h2>
+<a href="{% url 'equipment_detail' pk=service.activate.pk %}">{{ service.activate }}</a>
 {% endblock %}

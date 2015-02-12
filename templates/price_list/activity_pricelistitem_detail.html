@@ -6,9 +6,9 @@
   <li><a href="/">Home</a></li>
   <li><a href="{% url 'pricelist_list' %}">Price Lists</a></li>
   <li><a href="{% url 'pricelist_detail' pl_id=pricelist.id %}">{{ pricelist }}</a></li>
-  <li class="active">{{ activityitem.name }}</li>
+  <li class="active">Activity Item: {{ activityitem.name }}</li>
 </ol>
-<h1>{{ activityitem.name }}</h1>
+<h1>Activity Item: {{ activityitem.name }}</h1>
 <div class="panel panel-default">
   <div class="panel-body">{% include 'snippet/staff_disclaimer.html' %}
     {% if can_create %}
@@ -17,10 +17,35 @@
     <a class="btn btn-warning" href="{% url 'activity_pricelistitem_delete' pk=activityitem.pk %}">Delete Activity Price
       List Item</a>
     <br><br>
-    <a class="btn btn-primary" href="#">Add Equipment Relation</a>
+    <a class="btn btn-primary"
+       href="{% url 'equipment_pricelistitem_create' pl_id=pricelist.pk item_uuid=activityitem.item_uuid %}">
+      Add Equipment Relation
+    </a>
     <a class="btn btn-primary" href="#">Add Service Relation</a>
     {% endif %}
   </div>
 </div>
-{{ activityitem }}
+<h2>Activity Item Fields</h2>
+<ul class="list-unstyled">
+  <li><strong>Item UUID: </strong><code>{{ activityitem.item_uuid }}</code></li>
+  <li><strong>Cost (Amount/Unit): </strong>${{ activityitem.price_per_unit }}/{{ activityitem.unit_measurement }}</li>
+</ul>
+<h2>Description</h2>
+{{ activityitem.description }}
+<h2>Equipment</h2>
+<ul>
+  {% for equipment in equipmentplir_set %}
+  <li><a href="{% url 'equipment_pricelistitem_detail' pk=equipment.pk %}">{{ equipment }}</a></li>
+  {% empty %}
+  <li>No equipment is associated with this price list item.</li>
+  {% endfor %}
+</ul>
+<h2>Services</h2>
+<ul>
+  {% for service in serviceplir_set %}
+  <li><a href="{% url 'service_detail' pk=service.pk %}">{{ service.name }}</a></li>
+  {% empty %}
+  <li>No service is associated with this price list item.</li>
+  {% endfor %}
+</ul>
 {% endblock %}

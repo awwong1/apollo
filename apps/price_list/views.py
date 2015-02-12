@@ -1,7 +1,7 @@
 from apollo.choices import PRICE_LIST_PRE_RELEASE
 from apollo.viewmixins import LoginRequiredMixin
-from apps.price_list.forms import ActivityPriceListItemForm, PriceListForm
-from apps.price_list.models import PriceList, ActivityPriceListItem
+from apps.price_list.forms import ActivityPriceListItemForm, PriceListForm, PriceListItemEquipmentForm
+from apps.price_list.models import PriceList, ActivityPriceListItem, PriceListItemEquipment, PriceListItemService
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse_lazy
 from django.shortcuts import get_object_or_404
@@ -96,9 +96,13 @@ class ActivityPriceListItemViewCreate(LoginRequiredMixin, SuccessMessageMixin, C
     model = ActivityPriceListItem
     template_name = "price_list/activity_pricelistitem_form.html"
     success_message = "%(name)s was created successfully!"
+    form_class = ActivityPriceListItemForm
 
     def get_success_url(self):
         return reverse_lazy('activity_pricelistitem_detail', kwargs={'pk': self.object.pk})
+
+    def get_form(self, form_class):
+        return form_class(pl_id=self.kwargs['pl_id'], **self.get_form_kwargs())
 
     def get_context_data(self, **kwargs):
         context = super(ActivityPriceListItemViewCreate, self).get_context_data(**kwargs)
@@ -112,6 +116,7 @@ class ActivityPriceListItemViewUpdate(LoginRequiredMixin, SuccessMessageMixin, U
     model = ActivityPriceListItem
     success_message = "%(name)s was updated successfully!"
     template_name = "price_list/activity_pricelistitem_form.html"
+    form_class = ActivityPriceListItemForm
 
     def get_success_url(self):
         return reverse_lazy('activity_pricelistitem_detail', kwargs={'pk': self.object.pk})
@@ -146,5 +151,74 @@ class ActivityPriceListItemViewDetail(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(ActivityPriceListItemViewDetail, self).get_context_data(**kwargs)
         context['can_create'] = self.object.price_list.status == PRICE_LIST_PRE_RELEASE
+        context['pricelist'] = self.object.price_list
+        context['equipmentplir_set'] = PriceListItemEquipment.objects.filter(item_uuid=self.object.item_uuid,
+                                                                             price_list=self.object.price_list)
+        context['serviceplir_set'] = PriceListItemService.objects.filter(item_uuid=self.object.item_uuid,
+                                                                         price_list=self.object.price_list)
+        return context
+
+
+"""
+Price List Item Equipment Relation Model generic views.
+"""
+
+
+class PriceListItemEquipmentViewCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+    context_object_name = 'equipmentplir'
+    model = PriceListItemEquipment
+    template_name = "price_list/equipment_pricelistitem_form.html"
+    success_message = "'%(item_uuid)s: %(equipment)s x %(count)s' was added successfully!"
+    form_class = PriceListItemEquipmentForm
+
+    def get_form(self, form_class):
+        return form_class(pl_id=self.kwargs['pl_id'], item_uuid=self.kwargs['item_uuid'], **self.get_form_kwargs())
+
+    def get_success_url(self):
+        return reverse_lazy('equipment_pricelistitem_detail', kwargs={'pk': self.object.pk})
+
+    def get_context_data(self, **kwargs):
+        context = super(PriceListItemEquipmentViewCreate, self).get_context_data(**kwargs)
+        context['pricelist'] = get_object_or_404(PriceList, pk=self.kwargs['pl_id'])
+        return context
+
+
+class PriceListItemEquipmentViewDetail(LoginRequiredMixin, DetailView):
+    context_object_name = 'equipmentplir'
+    model = PriceListItemEquipment
+    template_name = "price_list/equipment_pricelistitem_detail.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(PriceListItemEquipmentViewDetail, self).get_context_data(**kwargs)
+        context['can_create'] = self.object.price_list.status == PRICE_LIST_PRE_RELEASE
+        return context
+
+
+class PriceListItemEquipmentViewUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+    context_object_name = 'equipmentplir'
+    model = PriceListItemEquipment
+    template_name = "price_list/equipment_pricelistitem_form.html"
+    success_message = "'%(item_uuid)s: %(equipment)s x %(count)s' was updated successfully!"
+    form_class = PriceListItemEquipmentForm
+
+    def get_success_url(self):
+        return reverse_lazy('equipment_pricelistitem_detail', kwargs={'pk': self.object.pk})
+
+    def get_context_data(self, **kwargs):
+        context = super(PriceListItemEquipmentViewUpdate, self).get_context_data(**kwargs)
+        context['pricelist'] = self.object.price_list
+        return context
+
+
+class PriceListItemEquipmentViewDelete(LoginRequiredMixin, DeleteView):
+    context_object_name = 'equipmentplir'
+    model = PriceListItemEquipment
+    template_name = "price_list/equipment_pricelistitem_form.html"
+
+    def get_success_url(self):
+        return reverse_lazy('pricelist_detail', kwargs={'pk': self.object.price_list.pk})
+
+    def get_context_data(self, **kwargs):
+        context = super(PriceListItemEquipmentViewDelete, self).get_context_data(**kwargs)
         context['pricelist'] = self.object.price_list
         return context

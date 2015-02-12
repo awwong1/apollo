@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+
+{% block content %}
+<ol class="breadcrumb">
+  <li><a href="/">Home</a></li>
+  <li><a href="{% url 'pricelist_list' %}">Price Lists</a></li>
+  <li><a href="{% url 'pricelist_detail' pl_id=equipmentplir.price_list.id %}">{{ equipmentplir.price_list }}</a>
+  </li>
+  <li class="active">Equipment Price List Item Relation</li>
+</ol>
+<h1>{{ equipmentplir }}</h1>
+<div class="panel panel-default">
+  <div class="panel-body">{% include 'snippet/staff_disclaimer.html' %}
+    {% if can_create %}
+    <a class="btn btn-primary" href="{% url 'equipment_pricelistitem_update' pk=equipmentplir.pk %}">Update Equipment
+      Price List Item Relation</a>
+    <a class="btn btn-warning" href="{% url 'equipment_pricelistitem_delete' pk=equipmentplir.pk %}">Delete Equipment
+      Price List ItemRelation</a>
+    {% endif %}
+  </div>
+</div>
+<h2>Equipment Relation Information</h2>
+<ul class="list-unstyled">
+  <li><strong>Price List: </strong><a href="{% url 'pricelist_detail' pl_id=equipmentplir.price_list.pk %}">
+    {{ equipmentplir.price_list }}</a></li>
+  <li><strong>Item UUID: </strong><code>{{ equipmentplir.item_uuid }}</code></li>
+  <li><strong>Equipment: </strong><a href="{% url 'equipment_detail' pk=equipmentplir.equipment.pk %}">
+    {{ equipmentplir.equipment }}</a></li>
+  <li><strong>Count: </strong>{{ equipmentplir.count }}</li>
+</ul>
+{% endblock %}
