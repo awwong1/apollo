@@ -18,7 +18,3 @@ router.register(r'price_list/time_item', TimePriceListItemViewSet, base_name='ti
 router.register(r'price_list/unit_item', UnitPriceListItemViewSet, base_name='unit-price-list-item')
 router.register(r'price_list/bundle', PriceListBundleViewSet, base_name='price-list-bundle')
 '''
-# Cities light contrib rest framework 3
-router.register(r'cities', CityModelViewSet, base_name='cities-light-api-city')
-router.register(r'countries', CountryModelViewSet, base_name='cities-light-api-country')
-router.register(r'regions', RegionModelViewSet, base_name='cities-light-api-region')
