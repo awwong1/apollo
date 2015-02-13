@@ -76,24 +76,27 @@ def price_list_post_save_callback(sender, instance, created, **kwargs):
     When creating a new price list, populate all fields with the previous price list's data
     """
     if created:
-        last_pricelist = sender.objects.all()[1]
-        for activity_item in last_pricelist.activitypricelistitem_set.all():
+        price_lists = sender.objects.all()
+        if len(price_lists) < 2:
+            return
+        last_price_list = price_lists[1]
+        for activity_item in last_price_list.activitypricelistitem_set.all():
             activity_item.pk = None
             activity_item.price_list = instance
             activity_item.save()
-        for time_item in last_pricelist.timepricelistitem_set.all():
+        for time_item in last_price_list.timepricelistitem_set.all():
             time_item.pk = None
             time_item.price_list = instance
             time_item.save()
-        for unit_item in last_pricelist.unitpricelistitem_set.all():
+        for unit_item in last_price_list.unitpricelistitem_set.all():
             unit_item.pk = None
             unit_item.price_list = instance
             unit_item.save()
-        for equipmentplir in last_pricelist.pricelistitemequipment_set.all():
+        for equipmentplir in last_price_list.pricelistitemequipment_set.all():
             equipmentplir.pk = None
             equipmentplir.price_list = instance
             equipmentplir.save()
-        for serviceplir in last_pricelist.pricelistitemservice_set.all():
+        for serviceplir in last_price_list.pricelistitemservice_set.all():
             serviceplir.pk = None
             serviceplir.price_list = instance
             serviceplir.save()
