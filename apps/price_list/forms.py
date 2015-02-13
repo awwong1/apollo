@@ -26,6 +26,7 @@ class ActivityPriceListItemForm(ModelForm):
         if price_list_id is not None:
             self.fields['price_list'].queryset = PriceList.objects.filter(pk=price_list_id)
         elif kwargs.get('instance') is not None:
+            self.fields['item_uuid'].widget.attrs['readonly'] = 'readonly'
             self.fields['price_list'].queryset = PriceList.objects.filter(pk=kwargs['instance'].price_list.pk)
         self.fields['price_list'].empty_label = None
         self.fields['price_list'].widget.attrs['readonly'] = 'readonly'
@@ -36,11 +37,33 @@ class TimePriceListItemForm(ModelForm):
         model = TimePriceListItem
         fields = "__all__"
 
+    def __init__(self, *args, **kwargs):
+        price_list_id = kwargs.pop('pl_id', None)
+        super(TimePriceListItemForm, self).__init__(*args, **kwargs)
+        if price_list_id is not None:
+            self.fields['price_list'].queryset = PriceList.objects.filter(pk=price_list_id)
+        elif kwargs.get('instance') is not None:
+            self.fields['item_uuid'].widget.attrs['readonly'] = 'readonly'
+            self.fields['price_list'].queryset = PriceList.objects.filter(pk=kwargs['instance'].price_list.pk)
+        self.fields['price_list'].empty_label = None
+        self.fields['price_list'].widget.attrs['readonly'] = 'readonly'
+
 
 class UnitPriceListItemForm(ModelForm):
     class Meta:
         model = UnitPriceListItem
         fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        price_list_id = kwargs.pop('pl_id', None)
+        super(UnitPriceListItemForm, self).__init__(*args, **kwargs)
+        if price_list_id is not None:
+            self.fields['price_list'].queryset = PriceList.objects.filter(pk=price_list_id)
+        elif kwargs.get('instance') is not None:
+            self.fields['item_uuid'].widget.attrs['readonly'] = 'readonly'
+            self.fields['price_list'].queryset = PriceList.objects.filter(pk=kwargs['instance'].price_list.pk)
+        self.fields['price_list'].empty_label = None
+        self.fields['price_list'].widget.attrs['readonly'] = 'readonly'
 
 
 class PriceListItemEquipmentForm(ModelForm):

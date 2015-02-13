@@ -1,4 +1,3 @@
-from copy import copy
 from uuid import uuid4
 from itertools import chain
 from apollo.choices import PRICE_LIST_STATUS_TYPES, PRICE_LIST_PRE_RELEASE, TIME_MEASUREMENT_CHOICES
@@ -50,6 +49,18 @@ class PriceList(models.Model):
         else:
             return super(PriceList, self).delete(*args, **kwargs)
 
+    def get_item_from_uuid(self, item_uuid):
+        items = self.activitypricelistitem_set.all().filter(item_uuid=item_uuid)
+        if len(items) > 0:
+            return items[0]
+        items = self.timepricelistitem_set.all().filter(item_uuid=item_uuid)
+        if len(items) > 0:
+            return items[0]
+        items = self.unitpricelistitem_set.all().filter(item_uuid=item_uuid)
+        if len(items) > 0:
+            return items[0]
+        return None
+
     def __str__(self):
         return "({status}) {0}: {1}".format(self.pk, self.name, status=self.get_status_display())
 
@@ -92,6 +103,11 @@ class AbstractPriceListItem(models.Model):
             raise ValidationError(
                 {'price_list': "Price list has been released. Cannot modify associated price list items."})
 
+    def delete(self, using=None):
+        PriceListItemEquipment.objects.filter(price_list=self.price_list, item_uuid=self.item_uuid).delete()
+        PriceListItemService.objects.filter(price_list=self.price_list, item_uuid=self.item_uuid).delete()
+        super(AbstractPriceListItem, self).delete(using=using)
+
     def __str__(self):
         return self.name
 
@@ -111,6 +127,11 @@ class ActivityPriceListItem(AbstractPriceListItem):
         max_length=15, default="Unit",
         help_text="What is the unit measurement for this activity? (Example: 'hour' or 'kb')"
     )
+
+    def clean_fields(self, exclude=None):
+        if self.pk is not None:
+            self.item_uuid = ActivityPriceListItem.objects.get(pk=self.pk).item_uuid
+        return super(ActivityPriceListItem, self).clean_fields(exclude=exclude)
 
     def __str__(self):
         return "{name} (${price}/{measurement})".format(name=self.name, price=self.price_per_unit,
@@ -134,13 +155,18 @@ class TimePriceListItem(AbstractPriceListItem):
         help_text="What is the unit of time measurement?"
     )
 
+    def clean_fields(self, exclude=None):
+        if self.pk is not None:
+            self.item_uuid = TimePriceListItem.objects.get(pk=self.pk).item_uuid
+        return super(TimePriceListItem, self).clean_fields(exclude=exclude)
+
     def __str__(self):
         return "{name} (${price}/{measurement})".format(name=self.name, price=self.price_per_time,
-                                                        measurement=self.unit_time)
+                                                        measurement=self.get_unit_time_display())
 
     def __unicode__(self):
         return u"{name} (${price}/{measurement})".format(name=self.name, price=self.price_per_time,
-                                                         measurement=self.unit_time)
+                                                         measurement=self.get_unit_time_display())
 
 
 class UnitPriceListItem(AbstractPriceListItem):
@@ -153,11 +179,16 @@ class UnitPriceListItem(AbstractPriceListItem):
         help_text="How much does this price list item cost?"
     )
 
+    def clean_fields(self, exclude=None):
+        if self.pk is not None:
+            self.item_uuid = UnitPriceListItem.objects.get(pk=self.pk).item_uuid
+        return super(UnitPriceListItem, self).clean_fields(exclude=exclude)
+
     def __str__(self):
-        return "{name} (${price}/{measurement})".format(name=self.name, price=self.price_per_unit)
+        return "{name} (${price})".format(name=self.name, price=self.price_per_unit)
 
     def __unicode__(self):
-        return u"{name} (${price}/{measurement})".format(name=self.name, price=self.price_per_unit)
+        return u"{name} (${price})".format(name=self.name, price=self.price_per_unit)
 
 
 class PriceListItemEquipment(models.Model):

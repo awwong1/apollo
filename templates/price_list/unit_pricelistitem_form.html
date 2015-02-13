@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+
+{% block content %}
+  <ol class="breadcrumb">
+    <li><a href="/">Home</a></li>
+    <li><a href="{% url 'pricelist_list' %}">Price Lists</a></li>
+    <li><a href="{% url 'pricelist_detail' pl_id=pricelist.id %}">{{ pricelist.name }}</a></li>
+    <li class="active">{{ action }} Unit Price List Item</li>
+  </ol>
+  <h1>{% if unititem %}Unit Item: {{ unititem.name }}{% else %}Create New Unit Price List Item{% endif %}</h1>
+  <form method="POST">
+    {% csrf_token %}
+    {% if form %}
+      {% bootstrap_form form %}
+      <input class="btn btn-primary" type="submit" value="Submit"/>
+    {% else %}
+      <p>Are you sure you want to delete {{ unititem }}?</p>
+      <input class="btn btn-danger" type="submit" value="Delete"/>
+    {% endif %}
+  </form>
+{% endblock %}

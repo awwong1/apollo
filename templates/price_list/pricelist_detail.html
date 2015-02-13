@@ -13,8 +13,9 @@
     <a class="btn btn-primary" href="{% url 'pricelist_update' pl_id=pricelist.id %}">Update Price List</a>
     <a class="btn btn-warning" href="{% url 'pricelist_delete' pl_id=pricelist.id %}">Delete Price list</a>
     <br><br>
-    <a class="btn btn-primary" href="{% url 'activity_pricelistitem_create' pl_id=pricelist.id %}">Create Activity Price
-      List Item</a>
+    <a class="btn btn-primary" href="{% url 'activity_pricelistitem_create' pl_id=pricelist.id %}">Create Activity Price List Item</a>
+    <a class="btn btn-primary" href="{% url 'time_pricelistitem_create' pl_id=pricelist.id %}">Create Time Price List Item</a>
+    <a class="btn btn-primary" href="{% url 'unit_pricelistitem_create' pl_id=pricelist.id %}">Create Unit Price List Item</a>
     {% endif %}
   </div>
 </div>
@@ -26,6 +27,22 @@
     <li><a href="{% url 'activity_pricelistitem_detail' pk=activity_item.pk %}">{{ activity_item }}</a></li>
   {% empty %}
     <li>No activity price list items exist for this price list.</li>
+  {% endfor %}
+</ul>
+<h2>Time Price List Items</h2>
+<ul>
+  {% for time_item in pricelist.timepricelistitem_set.all %}
+    <li><a href="{% url 'time_pricelistitem_detail' pk=time_item.pk %}">{{ time_item }}</a></li>
+  {% empty %}
+    <li>No time price list items exist for this price list.</li>
+  {% endfor %}
+</ul>
+<h2>Unit Price List Items</h2>
+<ul>
+  {% for unit_item in pricelist.unitpricelistitem_set.all %}
+    <li><a href="{% url 'unit_pricelistitem_detail' pk=unit_item.pk %}">{{ unit_item }}</a></li>
+  {% empty %}
+    <li>No time price list items exist for this price list.</li>
   {% endfor %}
 </ul>
 {% endblock %}

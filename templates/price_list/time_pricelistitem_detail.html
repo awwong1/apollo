@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+
+{% block content %}
+<ol class="breadcrumb">
+  <li><a href="/">Home</a></li>
+  <li><a href="{% url 'pricelist_list' %}">Price Lists</a></li>
+  <li><a href="{% url 'pricelist_detail' pl_id=pricelist.id %}">{{ pricelist }}</a></li>
+  <li class="active">Time Item: {{ timeitem.name }}</li>
+</ol>
+<h1>Time Item: {{ timeitem.name }}</h1>
+<div class="panel panel-default">
+  <div class="panel-body">{% include 'snippet/staff_disclaimer.html' %}
+    {% if can_create %}
+    <a class="btn btn-primary" href="{% url 'time_pricelistitem_update' pk=timeitem.pk %}">Update Time Price
+      List Item</a>
+    <a class="btn btn-warning" href="{% url 'time_pricelistitem_delete' pk=timeitem.pk %}">Delete Time Price
+      List Item</a>
+    <br><br>
+    <a class="btn btn-primary"
+       href="{% url 'equipment_pricelistitem_create' pl_id=pricelist.pk item_uuid=timeitem.item_uuid %}">
+      Add Equipment Relation
+    </a>
+    <a class="btn btn-primary"
+       href="{% url 'service_pricelistitem_create' pl_id=pricelist.pk item_uuid=timeitem.item_uuid %}">
+      Add Service Relation
+    </a>
+    {% endif %}
+  </div>
+</div>
+<h2>Time Item Fields</h2>
+<ul class="list-unstyled">
+  <li><strong>Item UUID: </strong><code>{{ timeitem.item_uuid }}</code></li>
+  <li><strong>Cost (Amount/Unit): </strong>${{ timeitem.price_per_time }}/{{ timeitem.get_unit_time_display }}</li>
+</ul>
+<h2>Description</h2>
+{{ timeitem.description }}
+<h2>Equipment</h2>
+<ul>
+  {% for equipment in equipmentplir_set %}
+  <li><a href="{% url 'equipment_pricelistitem_detail' pk=equipment.pk %}">{{ equipment }}</a></li>
+  {% empty %}
+  <li>No equipment is associated with this price list item.</li>
+  {% endfor %}
+</ul>
+<h2>Services</h2>
+<ul>
+  {% for service in serviceplir_set %}
+  <li><a href="{% url 'service_pricelistitem_detail' pk=service.pk %}">{{ service }}</a></li>
+  {% empty %}
+  <li>No service is associated with this price list item.</li>
+  {% endfor %}
+</ul>
+{% endblock %}
