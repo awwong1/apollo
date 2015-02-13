@@ -9,9 +9,9 @@
   <li class="active">Unit Item: {{ unititem.name }}</li>
 </ol>
 <h1>Unit Item: {{ unititem.name }}</h1>
+{% if can_create %}
 <div class="panel panel-default">
   <div class="panel-body">{% include 'snippet/staff_disclaimer.html' %}
-    {% if can_create %}
     <a class="btn btn-primary" href="{% url 'unit_pricelistitem_update' pk=unititem.pk %}">Update Unit Price
       List Item</a>
     <a class="btn btn-warning" href="{% url 'unit_pricelistitem_delete' pk=unititem.pk %}">Delete Unit Price
@@ -25,9 +25,9 @@
        href="{% url 'service_pricelistitem_create' pl_id=pricelist.pk item_uuid=unititem.item_uuid %}">
       Add Service Relation
     </a>
-    {% endif %}
   </div>
 </div>
+{% endif %}
 <h2>Unit Item Fields</h2>
 <ul class="list-unstyled">
   <li><strong>Item UUID: </strong><code>{{ unititem.item_uuid }}</code></li>

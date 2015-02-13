@@ -10,16 +10,16 @@
   <li class="active">Equipment Price List Item Relation</li>
 </ol>
 <h1>{{ equipmentplir }}</h1>
+{% if can_create %}
 <div class="panel panel-default">
   <div class="panel-body">{% include 'snippet/staff_disclaimer.html' %}
-    {% if can_create %}
     <a class="btn btn-primary" href="{% url 'equipment_pricelistitem_update' pk=equipmentplir.pk %}">Update Equipment
       Price List Item Relation</a>
     <a class="btn btn-warning" href="{% url 'equipment_pricelistitem_delete' pk=equipmentplir.pk %}">Delete Equipment
       Price List ItemRelation</a>
-    {% endif %}
   </div>
 </div>
+{% endif %}
 <h2>Equipment Relation Information</h2>
 <ul class="list-unstyled">
   <li><strong>Price List: </strong><a href="{% url 'pricelist_detail' pl_id=equipmentplir.price_list.pk %}">

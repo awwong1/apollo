@@ -7,18 +7,18 @@
   <li class="active">{{ pricelist }}</li>
 </ol>
 <h1>{{ pricelist.name }}</h1>
+{% if can_create %}
 <div class="panel panel-default">
   <div class="panel-body">{% include 'snippet/staff_disclaimer.html' %}
-    {% if can_create %}
     <a class="btn btn-primary" href="{% url 'pricelist_update' pl_id=pricelist.id %}">Update Price List</a>
     <a class="btn btn-warning" href="{% url 'pricelist_delete' pl_id=pricelist.id %}">Delete Price list</a>
     <br><br>
     <a class="btn btn-primary" href="{% url 'activity_pricelistitem_create' pl_id=pricelist.id %}">Create Activity Price List Item</a>
     <a class="btn btn-primary" href="{% url 'time_pricelistitem_create' pl_id=pricelist.id %}">Create Time Price List Item</a>
     <a class="btn btn-primary" href="{% url 'unit_pricelistitem_create' pl_id=pricelist.id %}">Create Unit Price List Item</a>
-    {% endif %}
   </div>
 </div>
+{% endif %}
 <h2>Description</h2>
 {{ pricelist.description|linebreaks }}
 <h2>Activity Price List Items</h2>

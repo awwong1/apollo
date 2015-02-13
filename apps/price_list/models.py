@@ -2,8 +2,10 @@ from uuid import uuid4
 from itertools import chain
 from apollo.choices import PRICE_LIST_STATUS_TYPES, PRICE_LIST_PRE_RELEASE, TIME_MEASUREMENT_CHOICES
 from django.core.exceptions import ValidationError
-from django.core.validators import RegexValidator, MinValueValidator, MaxValueValidator
+from django.core.validators import RegexValidator, MinValueValidator
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.shortcuts import get_object_or_404
 
 
@@ -68,6 +70,35 @@ class PriceList(models.Model):
         return u"({status}) {0}: {1}".format(self.pk, self.name, status=self.get_status_display())
 
 
+@receiver(post_save, sender=PriceList)
+def price_list_post_save_callback(sender, instance, created, **kwargs):
+    """
+    When creating a new price list, populate all fields with the previous price list's data
+    """
+    if created:
+        last_pricelist = sender.objects.all()[1]
+        for activity_item in last_pricelist.activitypricelistitem_set.all():
+            activity_item.pk = None
+            activity_item.price_list = instance
+            activity_item.save()
+        for time_item in last_pricelist.timepricelistitem_set.all():
+            time_item.pk = None
+            time_item.price_list = instance
+            time_item.save()
+        for unit_item in last_pricelist.unitpricelistitem_set.all():
+            unit_item.pk = None
+            unit_item.price_list = instance
+            unit_item.save()
+        for equipmentplir in last_pricelist.pricelistitemequipment_set.all():
+            equipmentplir.pk = None
+            equipmentplir.price_list = instance
+            equipmentplir.save()
+        for serviceplir in last_pricelist.pricelistitemservice_set.all():
+            serviceplir.pk = None
+            serviceplir.price_list = instance
+            serviceplir.save()
+
+
 class AbstractPriceListItem(models.Model):
     """
     Abstract model for the Price List Item object.
@@ -86,7 +117,7 @@ class AbstractPriceListItem(models.Model):
         help_text="What is the name of this price list item?"
     )
     description = models.TextField(
-        help_text="What is the description of this price list item?", blank=True
+        help_text="What is the description of this price list item?"
     )
     terms_of_service = models.ForeignKey(
         'terms_of_service.TermsOfService',

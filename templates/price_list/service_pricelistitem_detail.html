@@ -10,16 +10,16 @@
   <li class="active">Service Price List Item Relation</li>
 </ol>
 <h1>{{ serviceplir.service.activation_id }} <small>{{ serviceplir.service.activate }}</small></h1>
+{% if can_create %}
 <div class="panel panel-default">
   <div class="panel-body">{% include 'snippet/staff_disclaimer.html' %}
-    {% if can_create %}
     <a class="btn btn-primary" href="{% url 'service_pricelistitem_update' pk=serviceplir.pk %}">Update Service
       Price List Item Relation</a>
     <a class="btn btn-warning" href="{% url 'service_pricelistitem_delete' pk=serviceplir.pk %}">Delete Service
       Price List Item Relation</a>
-    {% endif %}
   </div>
 </div>
+{% endif %}
 <h2>Service Relation Information</h2>
 <ul class="list-unstyled">
   <li><strong>Price List: </strong><a href="{% url 'pricelist_detail' pl_id=serviceplir.price_list.pk %}">

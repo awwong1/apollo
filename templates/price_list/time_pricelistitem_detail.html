@@ -9,9 +9,9 @@
   <li class="active">Time Item: {{ timeitem.name }}</li>
 </ol>
 <h1>Time Item: {{ timeitem.name }}</h1>
+{% if can_create %}
 <div class="panel panel-default">
   <div class="panel-body">{% include 'snippet/staff_disclaimer.html' %}
-    {% if can_create %}
     <a class="btn btn-primary" href="{% url 'time_pricelistitem_update' pk=timeitem.pk %}">Update Time Price
       List Item</a>
     <a class="btn btn-warning" href="{% url 'time_pricelistitem_delete' pk=timeitem.pk %}">Delete Time Price
@@ -25,9 +25,9 @@
        href="{% url 'service_pricelistitem_create' pl_id=pricelist.pk item_uuid=timeitem.item_uuid %}">
       Add Service Relation
     </a>
-    {% endif %}
   </div>
 </div>
+{% endif %}
 <h2>Time Item Fields</h2>
 <ul class="list-unstyled">
   <li><strong>Item UUID: </strong><code>{{ timeitem.item_uuid }}</code></li>
