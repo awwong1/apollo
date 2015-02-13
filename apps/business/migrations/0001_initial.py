@@ -9,7 +9,6 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('cities_light', '0003_auto_20141120_0342'),
     ]
 
     operations = [
@@ -21,8 +20,10 @@ class Migration(migrations.Migration):
                 ('description', models.TextField(help_text=b'What is the description for this business?', blank=True)),
                 ('address_1', models.CharField(help_text=b'What is the address of this business?', max_length=60)),
                 ('address_2', models.CharField(help_text=b'What is the address of this business?', max_length=60, blank=True)),
-                ('postal_code', models.CharField(help_text=b'What is the postal code of this business?', max_length=6)),
-                ('city', models.ForeignKey(blank=True, to='cities_light.City', help_text=b'Which city does this business belong in?', null=True)),
+                ('country', models.CharField(help_text=b'Which country is this business located in?', max_length=60, blank=True)),
+                ('region', models.CharField(help_text=b'Which province, territory, or region is this business located in?', max_length=60, blank=True)),
+                ('city', models.CharField(help_text=b'Which city is this business located in?', max_length=60, blank=True)),
+                ('postal_code', models.CharField(help_text=b'What is the postal/zip code of this business?', max_length=6)),
             ],
             options={
                 'verbose_name_plural': 'businesses',

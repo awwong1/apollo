@@ -1,5 +1,4 @@
-from cities_light.models import City
-from django.contrib.auth.models import User, Permission
+from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
 
@@ -20,11 +19,17 @@ class Business(models.Model):
     address_2 = models.CharField(
         max_length=60, blank=True, help_text="What is the address of this business?"
     )
-    city = models.ForeignKey(
-        City, blank=True, null=True, help_text="Which city does this business belong in?"
+    country = models.CharField(
+        max_length=60, blank=True, help_text="Which country is this business located in?"
+    )
+    region = models.CharField(
+        max_length=60, blank=True, help_text="Which province, territory, or region is this business located in?"
+    )
+    city = models.CharField(
+        max_length=60, blank=True, help_text="Which city is this business located in?"
     )
     postal_code = models.CharField(
-        max_length=6, help_text="What is the postal code of this business?"
+        max_length=6, help_text="What is the postal/zip code of this business?"
     )
 
     class Meta:

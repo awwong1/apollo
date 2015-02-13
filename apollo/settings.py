@@ -62,7 +62,6 @@ INSTALLED_APPS = (
     'allauth.account',
     'allauth.socialaccount',
     'bootstrap3',
-    'cities_light',
     'djangular',
     'rest_framework',
 )
@@ -206,10 +205,3 @@ REST_FRAMEWORK = {
     ),
     'TEST_REQUEST_DEFAULT_FORMAT': 'json'
 }
-
-# Django Cities Light Settings
-TRANSLATION_LANGUAGES = ['en']
-
-# Django Guardian Settings
-ANONYMOUS_USER_ID = -1
-GUARDIAN_RAISE_403 = True
