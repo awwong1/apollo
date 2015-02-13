@@ -10,7 +10,7 @@ urlpatterns = patterns(
     url(r'^(?P<pl_id>\d)/update/$', views.PriceListViewUpdate.as_view(), name='pricelist_update'),
     url(r'^(?P<pl_id>\d)/delete/$', views.PriceListViewDelete.as_view(), name='pricelist_delete'),
     # Equipment Relation
-    url(r'^(?P<pl_id>\d)/create/equipment/(?P<item_uuid>.*)/$', views.PriceListItemEquipmentViewCreate.as_view(),
+    url(r'^(?P<pl_id>\d)/create/equipment_relation/(?P<item_uuid>.*)/$', views.PriceListItemEquipmentViewCreate.as_view(),
         name='equipment_pricelistitem_create'),
     url('equipment_relation/(?P<pk>\d)/$', views.PriceListItemEquipmentViewDetail.as_view(),
         name='equipment_pricelistitem_detail'),
@@ -18,6 +18,17 @@ urlpatterns = patterns(
         name='equipment_pricelistitem_update'),
     url('equipment_relation/(?P<pk>\d)/delete/$', views.PriceListItemEquipmentViewDelete.as_view(),
         name='equipment_pricelistitem_delete'),
+    # Service Relation
+    url(r'^(?P<pl_id>\d)/create/service_relation/(?P<item_uuid>.*)/$', views.PriceListItemServiceViewCreate.as_view(),
+        name='service_pricelistitem_create'),
+    url('service_relation/(?P<pk>\d)/$', views.PriceListItemServiceViewDetail.as_view(),
+        name='service_pricelistitem_detail'),
+    url('service_relation/(?P<pk>\d)/update/$', views.PriceListItemServiceViewUpdate.as_view(),
+        name='service_pricelistitem_update'),
+    url('service_relation/(?P<pk>\d)/delete/$', views.PriceListItemServiceViewDelete.as_view(),
+        name='service_pricelistitem_delete'),
+    # Generic Price List Item Redirection
+    url('^(?P<pl_id>\d)/(?P<item_uuid>.*)/$', views.PriceListItemRedirect, name='pricelistitem_redirect'),
     # Activity Item
     url(r'^(?P<pl_id>\d)/create/activity/$', views.ActivityPriceListItemViewCreate.as_view(),
         name='activity_pricelistitem_create'),

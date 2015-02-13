@@ -1,11 +1,27 @@
 from apollo.choices import PRICE_LIST_PRE_RELEASE
 from apollo.viewmixins import LoginRequiredMixin
-from apps.price_list.forms import ActivityPriceListItemForm, PriceListForm, PriceListItemEquipmentForm
+from apps.price_list.forms import ActivityPriceListItemForm, PriceListForm, PriceListItemEquipmentForm, \
+    PriceListItemServiceForm
 from apps.price_list.models import PriceList, ActivityPriceListItem, PriceListItemEquipment, PriceListItemService
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse_lazy
-from django.shortcuts import get_object_or_404
+from django.http import Http404
+from django.shortcuts import get_object_or_404, redirect
+from django.template import RequestContext
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+
+
+def PriceListItemRedirect(request, pl_id=None, item_uuid=None):
+    """
+    Given a price list item id and an item guid, redirect to the price list item detail page.
+    """
+    price_list = get_object_or_404(PriceList, pk=pl_id)
+    act_items = ActivityPriceListItem.objects.filter(price_list=price_list, item_uuid=item_uuid)
+    if len(act_items) > 0:
+        return redirect('activity_pricelistitem_detail', pk=act_items[0].pk)
+    raise Http404(
+        "No item exists with price list id {pl_id} and item uuid {item_uuid}".format(pl_id=pl_id, item_uuid=item_uuid)
+    )
 
 
 """
@@ -220,5 +236,70 @@ class PriceListItemEquipmentViewDelete(LoginRequiredMixin, DeleteView):
 
     def get_context_data(self, **kwargs):
         context = super(PriceListItemEquipmentViewDelete, self).get_context_data(**kwargs)
+        context['pricelist'] = self.object.price_list
+        return context
+
+
+"""
+Price List Item Service Relation Model generic views.
+"""
+
+
+class PriceListItemServiceViewCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+    context_object_name = 'serviceplir'
+    model = PriceListItemService
+    template_name = "price_list/service_pricelistitem_form.html"
+    success_message = "'%(item_uuid)s: %(service)s x %(count)s' was added successfully!"
+    form_class = PriceListItemServiceForm
+
+    def get_form(self, form_class):
+        return form_class(pl_id=self.kwargs['pl_id'], item_uuid=self.kwargs['item_uuid'], **self.get_form_kwargs())
+
+    def get_success_url(self):
+        return reverse_lazy('service_pricelistitem_detail', kwargs={'pk': self.object.pk})
+
+    def get_context_data(self, **kwargs):
+        context = super(PriceListItemServiceViewCreate, self).get_context_data(**kwargs)
+        context['pricelist'] = get_object_or_404(PriceList, pk=self.kwargs['pl_id'])
+        return context
+
+
+class PriceListItemServiceViewDetail(LoginRequiredMixin, DetailView):
+    context_object_name = 'serviceplir'
+    model = PriceListItemService
+    template_name = "price_list/service_pricelistitem_detail.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(PriceListItemServiceViewDetail, self).get_context_data(**kwargs)
+        context['can_create'] = self.object.price_list.status == PRICE_LIST_PRE_RELEASE
+        return context
+
+
+class PriceListItemServiceViewUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+    context_object_name = 'serviceplir'
+    model = PriceListItemService
+    template_name = "price_list/service_pricelistitem_form.html"
+    success_message = "'%(item_uuid)s: %(service)s x %(count)s' was updated successfully!"
+    form_class = PriceListItemServiceForm
+
+    def get_success_url(self):
+        return reverse_lazy('service_pricelistitem_detail', kwargs={'pk': self.object.pk})
+
+    def get_context_data(self, **kwargs):
+        context = super(PriceListItemServiceViewUpdate, self).get_context_data(**kwargs)
+        context['pricelist'] = self.object.price_list
+        return context
+
+
+class PriceListItemServiceViewDelete(LoginRequiredMixin, DeleteView):
+    context_object_name = 'serviceplir'
+    model = PriceListItemService
+    template_name = "price_list/service_pricelistitem_form.html"
+
+    def get_success_url(self):
+        return reverse_lazy('pricelist_detail', kwargs={'pl_id': self.object.price_list.pk})
+
+    def get_context_data(self, **kwargs):
+        context = super(PriceListItemServiceViewDelete, self).get_context_data(**kwargs)
         context['pricelist'] = self.object.price_list
         return context

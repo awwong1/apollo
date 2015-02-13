@@ -89,13 +89,75 @@ class AbstractPriceListItem(models.Model):
 
     def clean(self):
         if self.price_list.status != PRICE_LIST_PRE_RELEASE:
-            raise ValidationError({'price_list': "Price list has been released. Cannot modify associated price list items."})
+            raise ValidationError(
+                {'price_list': "Price list has been released. Cannot modify associated price list items."})
 
     def __str__(self):
         return self.name
 
     def __unicode__(self):
         return u"%s" % self.name
+
+
+class ActivityPriceListItem(AbstractPriceListItem):
+    """
+    Model for activity based price list items. Pricing is based by price per unit over unit measurement.
+    """
+    price_per_unit = models.DecimalField(
+        max_digits=7, decimal_places=2,
+        help_text="How much does this price list item cost per unit measurement?"
+    )
+    unit_measurement = models.CharField(
+        max_length=15, default="Unit",
+        help_text="What is the unit measurement for this activity? (Example: 'hour' or 'kb')"
+    )
+
+    def __str__(self):
+        return "{name} (${price}/{measurement})".format(name=self.name, price=self.price_per_unit,
+                                                        measurement=self.unit_measurement)
+
+    def __unicode__(self):
+        return u"{name} (${price}/{measurement})".format(name=self.name, price=self.price_per_unit,
+                                                         measurement=self.unit_measurement)
+
+
+class TimePriceListItem(AbstractPriceListItem):
+    """
+    Model for time based price list items. Pricing is by price per number of minutes.
+    """
+    price_per_time = models.DecimalField(
+        max_digits=7, decimal_places=2,
+        help_text="How much does this price list item cost per unit of time?"
+    )
+    unit_time = models.PositiveIntegerField(
+        choices=TIME_MEASUREMENT_CHOICES,
+        help_text="What is the unit of time measurement?"
+    )
+
+    def __str__(self):
+        return "{name} (${price}/{measurement})".format(name=self.name, price=self.price_per_time,
+                                                        measurement=self.unit_time)
+
+    def __unicode__(self):
+        return u"{name} (${price}/{measurement})".format(name=self.name, price=self.price_per_time,
+                                                         measurement=self.unit_time)
+
+
+class UnitPriceListItem(AbstractPriceListItem):
+    """
+    Model for unit based price list items. Pricing is price per unit.
+    Suitable for flat rate charges, such as a charge to deliver a piece of equipment/part
+    """
+    price_per_unit = models.DecimalField(
+        max_digits=7, decimal_places=2,
+        help_text="How much does this price list item cost?"
+    )
+
+    def __str__(self):
+        return "{name} (${price}/{measurement})".format(name=self.name, price=self.price_per_unit)
+
+    def __unicode__(self):
+        return u"{name} (${price}/{measurement})".format(name=self.name, price=self.price_per_unit)
 
 
 class PriceListItemEquipment(models.Model):
@@ -153,6 +215,9 @@ class PriceListItemService(models.Model):
         default=1, validators=[MinValueValidator(1)]
     )
 
+    class Meta:
+        unique_together = ('price_list', 'item_uuid', 'service')
+
     def clean(self):
         price_list_items = list(
             chain(self.price_list.activitypricelistitem_set.all(), self.price_list.timepricelistitem_set.all(),
@@ -162,51 +227,11 @@ class PriceListItemService(models.Model):
                 return
         raise ValidationError({'item_uuid': 'This uuid does not map to any price list item within this price list!'})
 
-
     def __str__(self):
-        return "{service} x {count}".format(equipment=self.service, count=self.count)
+        return "{service} x {count}".format(service=self.service, count=self.count)
 
     def __unicode__(self):
-        return u"{service} x {count}".format(equipment=self.service, count=self.count)
-
-
-class ActivityPriceListItem(AbstractPriceListItem):
-    """
-    Model for activity based price list items. Pricing is based by price per unit over unit measurement.
-    """
-    price_per_unit = models.DecimalField(
-        max_digits=7, decimal_places=2,
-        help_text="How much does this price list item cost per unit measurement?"
-    )
-    unit_measurement = models.CharField(
-        max_length=15, default="Unit",
-        help_text="What is the unit measurement for this activity? (Example: 'hour' or 'kb')"
-    )
-
-
-class TimePriceListItem(AbstractPriceListItem):
-    """
-    Model for time based price list items. Pricing is by price per number of minutes.
-    """
-    price_per_time = models.DecimalField(
-        max_digits=7, decimal_places=2,
-        help_text="How much does this price list item cost per unit of time?"
-    )
-    unit_time = models.PositiveIntegerField(
-        choices=TIME_MEASUREMENT_CHOICES,
-        help_text="What is the unit of time measurement?"
-    )
-
-
-class UnitPriceListItem(AbstractPriceListItem):
-    """
-    Model for unit based price list items. Pricing is price per unit.
-    Suitable for flat rate charges, such as a charge to deliver a piece of equipment/part
-    """
-    price_per_unit = models.DecimalField(
-        max_digits=7, decimal_places=2,
-        help_text="How much does this price list item cost?"
-    )
+        return u"{service} x {count}".format(service=self.service, count=self.count)
 
 
 '''

@@ -24,7 +24,11 @@
 <ul class="list-unstyled">
   <li><strong>Price List: </strong><a href="{% url 'pricelist_detail' pl_id=equipmentplir.price_list.pk %}">
     {{ equipmentplir.price_list }}</a></li>
-  <li><strong>Item UUID: </strong><code>{{ equipmentplir.item_uuid }}</code></li>
+  <li><strong>Item UUID: </strong>
+    <a href="{% url 'pricelistitem_redirect' pl_id=equipmentplir.price_list.pk item_uuid=equipmentplir.item_uuid %}">
+      {{ equipmentplir.item_uuid }}
+    </a>
+  </li>
   <li><strong>Equipment: </strong><a href="{% url 'equipment_detail' pk=equipmentplir.equipment.pk %}">
     {{ equipmentplir.equipment }}</a></li>
   <li><strong>Count: </strong>{{ equipmentplir.count }}</li>

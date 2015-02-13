@@ -21,7 +21,10 @@
        href="{% url 'equipment_pricelistitem_create' pl_id=pricelist.pk item_uuid=activityitem.item_uuid %}">
       Add Equipment Relation
     </a>
-    <a class="btn btn-primary" href="#">Add Service Relation</a>
+    <a class="btn btn-primary"
+       href="{% url 'service_pricelistitem_create' pl_id=pricelist.pk item_uuid=activityitem.item_uuid %}">
+      Add Service Relation
+    </a>
     {% endif %}
   </div>
 </div>
@@ -43,7 +46,7 @@
 <h2>Services</h2>
 <ul>
   {% for service in serviceplir_set %}
-  <li><a href="{% url 'service_detail' pk=service.pk %}">{{ service.name }}</a></li>
+  <li><a href="{% url 'service_pricelistitem_detail' pk=service.pk %}">{{ service }}</a></li>
   {% empty %}
   <li>No service is associated with this price list item.</li>
   {% endfor %}

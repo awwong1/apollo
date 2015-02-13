@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+
+{% block content %}
+<ol class="breadcrumb">
+  <li><a href="/">Home</a></li>
+  <li><a href="{% url 'pricelist_list' %}">Price Lists</a></li>
+  <li><a href="{% url 'pricelist_detail' pl_id=serviceplir.price_list.id %}">{{ serviceplir.price_list }}</a>
+  </li>
+  <li class="active">Equipment Price List Item Relation</li>
+</ol>
+<h1>{{ serviceplir.service.activation_id }} <small>{{ serviceplir.service.activate }}</small></h1>
+<div class="panel panel-default">
+  <div class="panel-body">{% include 'snippet/staff_disclaimer.html' %}
+    {% if can_create %}
+    <a class="btn btn-primary" href="{% url 'service_pricelistitem_update' pk=serviceplir.pk %}">Update Service
+      Price List Item Relation</a>
+    <a class="btn btn-warning" href="{% url 'service_pricelistitem_delete' pk=serviceplir.pk %}">Delete Service
+      Price List Item Relation</a>
+    {% endif %}
+  </div>
+</div>
+<h2>Service Relation Information</h2>
+<ul class="list-unstyled">
+  <li><strong>Price List: </strong><a href="{% url 'pricelist_detail' pl_id=serviceplir.price_list.pk %}">
+    {{ serviceplir.price_list }}</a></li>
+  <li><strong>Item UUID: </strong>
+    <a href="{% url 'pricelistitem_redirect' pl_id=serviceplir.price_list.pk item_uuid=serviceplir.item_uuid %}">
+      {{ serviceplir.item_uuid }}
+    </a>
+  </li>
+  <li><strong>Service: </strong><a href="{% url 'service_detail' pk=serviceplir.service.pk %}">
+    {{ serviceplir.service }}</a></li>
+  <li><strong>Count: </strong>{{ serviceplir.count }}</li>
+</ul>
+{% endblock %}

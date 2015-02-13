@@ -1,6 +1,6 @@
 from apollo.choices import PRICE_LIST_PRE_RELEASE
 from apps.price_list.models import PriceList, ActivityPriceListItem, TimePriceListItem, UnitPriceListItem, \
-    PriceListItemEquipment
+    PriceListItemEquipment, PriceListItemService
 from django.forms import ModelForm
 
 
@@ -52,6 +52,27 @@ class PriceListItemEquipmentForm(ModelForm):
         pl_id = kwargs.pop('pl_id', None)
         uuid = kwargs.pop('item_uuid', None)
         super(PriceListItemEquipmentForm, self).__init__(*args, **kwargs)
+        if pl_id is not None:
+            self.fields['price_list'].queryset = PriceList.objects.filter(pk=pl_id)
+        if uuid is not None:
+            self.fields['item_uuid'].initial = uuid
+        if kwargs.get('instance') is not None:
+            self.fields['price_list'].queryset = PriceList.objects.filter(pk=kwargs['instance'].price_list.pk)
+            self.fields['item_uuid'].initial = kwargs['instance'].item_uuid
+        self.fields['price_list'].empty_label = None
+        self.fields['price_list'].widget.attrs['readonly'] = 'readonly'
+        self.fields['item_uuid'].widget.attrs['readonly'] = 'readonly'
+
+
+class PriceListItemServiceForm(ModelForm):
+    class Meta:
+        model = PriceListItemService
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        pl_id = kwargs.pop('pl_id', None)
+        uuid = kwargs.pop('item_uuid', None)
+        super(PriceListItemServiceForm, self).__init__(*args, **kwargs)
         if pl_id is not None:
             self.fields['price_list'].queryset = PriceList.objects.filter(pk=pl_id)
         if uuid is not None:
