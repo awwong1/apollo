@@ -120,6 +120,10 @@ class Migration(migrations.Migration):
             index_together=set([('price_list', 'item_uuid')]),
         ),
         migrations.AlterUniqueTogether(
+            name='pricelistitemservice',
+            unique_together=set([('price_list', 'item_uuid', 'service')]),
+        ),
+        migrations.AlterUniqueTogether(
             name='pricelistitemequipment',
             unique_together=set([('price_list', 'item_uuid', 'equipment')]),
         ),
