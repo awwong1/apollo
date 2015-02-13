@@ -129,13 +129,21 @@ class AbstractPriceListItem(models.Model):
 
     class Meta:
         abstract = True
-        unique_together = ('price_list', 'item_uuid')
         index_together = ('price_list', 'item_uuid')
+        # Django bug, this is not enforced!!
+        unique_together = ('price_list', 'item_uuid')
 
     def clean(self):
         if self.price_list.status != PRICE_LIST_PRE_RELEASE:
             raise ValidationError(
                 {'price_list': "Price list has been released. Cannot modify associated price list items."})
+        if self.pk is None:
+            activity_items = ActivityPriceListItem.objects.filter(price_list=self.price_list)
+            time_items = TimePriceListItem.objects.filter(price_list=self.price_list)
+            unit_items = UnitPriceListItem.objects.filter(price_list=self.price_list)
+            for item in chain(activity_items, time_items, unit_items):
+                if item.item_uuid == self.item_uuid:
+                    raise ValidationError({'item_uuid': "Price list item with this item uuid already exists!"})
 
     def delete(self, using=None):
         PriceListItemEquipment.objects.filter(price_list=self.price_list, item_uuid=self.item_uuid).delete()
