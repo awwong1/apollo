@@ -26,52 +26,60 @@
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       {% if user.is_authenticated %}
-        <ul class="nav navbar-nav">
-          <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Staff Models
-              <span class="caret"></span></a>
-            <ul class="dropdown-menu" role="menu">
-              <li><a href="{% url 'termsofservice_list' %}">Terms of Services</a></li>
-              <li><a href="{% url 'equipment_list' %}">Equipment</a></li>
-              <li><a href="{% url 'service_list' %}">Services</a></li>
-              <li><a href="{% url 'pricelist_list' %}">Price Lists</a></li>
-            </ul>
-          </li>
-        </ul>
-        <ul class="nav navbar-nav navbar-right">
-          <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-              Account <span class="caret"></span></a>
-            <ul class="dropdown-menu" role="menu">
-              <li><a href="{% url 'account_email' %}">Manage E-mail</a></li>
-              <li><a href="{% url 'account_change_password' %}">Change Password</a></li>
-              <li class="divider"></li>
-              <li><a href="{% url 'account_logout' %}">Sign Out</a></li>
-            </ul>
-          </li>
-        </ul>
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Backbone Models
+            <span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li><a href="{% url 'termsofservice_list' %}">Terms of Services</a></li>
+            <li><a href="{% url 'equipment_list' %}">Equipment</a></li>
+            <li><a href="{% url 'service_list' %}">Services</a></li>
+            <li><a href="{% url 'pricelist_list' %}">Price Lists</a></li>
+            <li><a href="{% url 'business_list' %}">All Businesses</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+            Account <span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li><a href="{% url 'account_email' %}">Manage E-mail</a></li>
+            <li><a href="{% url 'account_change_password' %}">Change Password</a></li>
+            <li><a href="{% url 'toggle_staff' %}">Toggle Staff Privilege</a></li>
+            <li class="divider"></li>
+            <li><a href="{% url 'account_logout' %}">Sign Out</a></li>
+          </ul>
+        </li>
+      </ul>
       {% else %}
-        <ul class="nav navbar-nav">
-          <li><a href="{% url 'base_idea' %}">Billing Beyond the Rig</a></li>
-          <li><a href="{% url 'base_prototype' %}">Prototype Details</a></li>
-          <li><a href="{% url 'base_contact' %}">Contact</a></li>
-        </ul>
-        <ul class="nav navbar-nav navbar-right">
-          <li><a href="{% url 'account_login' %}">Sign In</a></li>
-          <li><a href="{% url 'account_signup' %}">Sign Up</a></li>
-        </ul>
+      <ul class="nav navbar-nav">
+        <li><a href="{% url 'base_idea' %}">Billing Beyond the Rig</a></li>
+        <li><a href="{% url 'base_prototype' %}">Prototype Details</a></li>
+        <li><a href="{% url 'base_contact' %}">Contact</a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="{% url 'account_login' %}">Sign In</a></li>
+        <li><a href="{% url 'account_signup' %}">Sign Up</a></li>
+      </ul>
       {% endif %}
     </div>
   </div>
 </nav>
 <div class="container-fluid">
+  {% if user.is_staff %}
+  <div class="alert alert-info" role="alert">You are currently using Apollo with staff privliges. Please be courtious to
+    other users. You may revert back to regular user permissions by clicking <strong>Account > Toggle Staff
+      Privilege</strong>.
+  </div>
+  {% endif %}
   {% bootstrap_messages %}
   {% block content %}
-    <div ng-app="apollo">
-      <application></application>
-      <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular.min.js"></script>
-      <script src="{% static 'js/app.js' %}"></script>
-    </div>
+  <div ng-app="apollo">
+    <application></application>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular.min.js"></script>
+    <script src="{% static 'js/app.js' %}"></script>
+  </div>
   {% endblock %}
 </div>
 <footer class="footer">

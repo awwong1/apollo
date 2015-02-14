@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<ol class="breadcrumb">
+  <li><a href="/">Home</a></li>
+  <li class="active">Businesses</li>
+</ol>
+<h1>Businesses</h1>
+<ul>
+  {% for business in businesses %}
+  <li><a href="{% url 'business_detail' pk=business.pk %}">{{ business }}</a></li>
+  {% empty %}
+  <li>No business has been created yet.</li>
+  {% endfor %}
+</ul>
+{% endblock %}

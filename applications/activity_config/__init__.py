@@ -1,0 +1,1 @@
+default_app_config = 'applications.activity_config.activity_config.ActivityConfig'

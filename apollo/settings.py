@@ -52,11 +52,11 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # Internally Installed Applications
-    'apps.business',
-    'apps.assets',
-    'apps.price_list',
-    'apps.station',
-    'apps.terms_of_service',
+    'applications.business',
+    'applications.assets',
+    'applications.price_list',
+    'applications.station',
+    'applications.terms_of_service',
     # Externally Installed Applications
     'allauth',
     'allauth.account',
@@ -64,6 +64,9 @@ INSTALLED_APPS = (
     'bootstrap3',
     'djangular',
     'rest_framework',
+    # Activity Stream Manager
+    'actstream',
+    'applications.activity_config'
 )
 
 MIDDLEWARE_CLASSES = (

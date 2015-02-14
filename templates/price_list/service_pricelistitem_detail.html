@@ -9,8 +9,10 @@
   </li>
   <li class="active">Service Price List Item Relation</li>
 </ol>
-<h1>{{ serviceplir.service.activation_id }} <small>{{ serviceplir.service.activate }}</small></h1>
-{% if can_create %}
+<h1>{{ serviceplir.service.activation_id }}
+  <small>{{ serviceplir.service.activate }}</small>
+</h1>
+{% if can_create and request.user.is_staff %}
 <div class="panel panel-default">
   <div class="panel-body">{% include 'snippet/staff_disclaimer.html' %}
     <a class="btn btn-primary" href="{% url 'service_pricelistitem_update' pk=serviceplir.pk %}">Update Service

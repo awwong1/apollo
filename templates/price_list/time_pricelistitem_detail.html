@@ -9,7 +9,7 @@
   <li class="active">Time Item: {{ timeitem.name }}</li>
 </ol>
 <h1>Time Item: {{ timeitem.name }}</h1>
-{% if can_create %}
+{% if can_create and request.user.is_staff %}
 <div class="panel panel-default">
   <div class="panel-body">{% include 'snippet/staff_disclaimer.html' %}
     <a class="btn btn-primary" href="{% url 'time_pricelistitem_update' pk=timeitem.pk %}">Update Time Price

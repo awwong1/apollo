@@ -1,21 +1,23 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <ol class="breadcrumb">
-    <li><a href="/">Home</a></li>
-    <li class="active">Services</li>
-  </ol>
-  <h1>Services</h1>
-  <div class="panel panel-default">
-    <div class="panel-body">{% include 'snippet/staff_disclaimer.html' %}
-      <a class="btn btn-primary" href="{% url 'service_create' %}">Create Service</a>
-    </div>
+<ol class="breadcrumb">
+  <li><a href="/">Home</a></li>
+  <li class="active">Services</li>
+</ol>
+<h1>Services</h1>
+{% if request.user.is_staff %}
+<div class="panel panel-default">
+  <div class="panel-body">{% include 'snippet/staff_disclaimer.html' %}
+    <a class="btn btn-primary" href="{% url 'service_create' %}">Create Service</a>
   </div>
-  <ul>
-    {% for service in services %}
-      <li><a href="{% url 'service_detail' pk=service.pk %}">{{ service }}</a></li>
-    {% empty %}
-      <li>No service has been created yet.</li>
-    {% endfor %}
-  </ul>
+</div>
+{% endif %}
+<ul>
+  {% for service in services %}
+  <li><a href="{% url 'service_detail' pk=service.pk %}">{{ service }}</a></li>
+  {% empty %}
+  <li>No service has been created yet.</li>
+  {% endfor %}
+</ul>
 {% endblock %}

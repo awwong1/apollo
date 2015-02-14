@@ -1,23 +1,23 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <ol class="breadcrumb">
-    <li><a href="/">Home</a></li>
-    <li class="active">Price Lists</li>
-  </ol>
-  <h1>Price Lists</h1>
-  <div class="panel panel-default">
-    <div class="panel-body">{% include 'snippet/staff_disclaimer.html' %}
-      {% if can_create %}
-        <a class="btn btn-primary" href="{% url 'pricelist_create' %}">Create Price List</a>
-      {% endif %}
-    </div>
+<ol class="breadcrumb">
+  <li><a href="/">Home</a></li>
+  <li class="active">Price Lists</li>
+</ol>
+<h1>Price Lists</h1>
+{% if can_create and request.user.is_staff %}
+<div class="panel panel-default">
+  <div class="panel-body">{% include 'snippet/staff_disclaimer.html' %}
+    <a class="btn btn-primary" href="{% url 'pricelist_create' %}">Create Price List</a>
   </div>
-  <ul>
-    {% for pricelist in pricelists %}
-      <li><a href="{% url 'pricelist_detail' pl_id=pricelist.id %}">{{ pricelist }}</a></li>
-    {% empty %}
-      <li>No price list has been created yet.</li>
-    {% endfor %}
-  </ul>
+</div>
+{% endif %}
+<ul>
+  {% for pricelist in pricelists %}
+  <li><a href="{% url 'pricelist_detail' pl_id=pricelist.id %}">{{ pricelist }}</a></li>
+  {% empty %}
+  <li>No price list has been created yet.</li>
+  {% endfor %}
+</ul>
 {% endblock %}

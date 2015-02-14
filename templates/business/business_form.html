@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+
+{% block content %}
+  <ol class="breadcrumb">
+    <li><a href="/">Home</a></li>
+    <li class="active">{{ action }} Business</li>
+  </ol>
+  <h1>{% if business %}{{ business.name }}{% else %}Create New Business{% endif %}</h1>
+  <form method="POST">
+    {% csrf_token %}
+    {% if form %}
+      {% bootstrap_form form %}
+      <input class="btn btn-primary" type="submit" value="Submit"/>
+    {% else %}
+      <p>Are you sure you want to delete {{ business }}?</p>
+      <input class="btn btn-danger" type="submit" value="Delete"/>
+    {% endif %}
+  </form>
+{% endblock %}

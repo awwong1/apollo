@@ -6,12 +6,14 @@
   <li class="active">{{ service }}</li>
 </ol>
 <h1>{{ service.name }}</h1>
+{% if request.user.is_staff %}
 <div class="panel panel-default">
   <div class="panel-body">{% include 'snippet/staff_disclaimer.html' %}
     <a class="btn btn-primary" href="{% url 'service_update' pk=service.pk %}">Update Service</a>
     <a class="btn btn-warning" href="{% url 'service_delete' pk=service.pk %}">Delete Service</a>
   </div>
 </div>
+{% endif %}
 <h2>Activation ID</h2>
 <strong>Regex String: </strong><code>{{ service.activation_id }}</code>
 <h2>Activated Equipment</h2>
