@@ -6,7 +6,7 @@
   <li class="active">{{ termsofservice }}</li>
 </ol>
 <h1>{{ termsofservice.title }}</h1>
-{% if request.user.is_staff %}
+{% if user.is_staff %}
 <div class="panel panel-default">
   <div class="panel-body">{% include 'snippet/staff_disclaimer.html' %}
     <a class="btn btn-primary" href="{% url 'termsofservice_update' pk=termsofservice.pk %}">Update Terms of

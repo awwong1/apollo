@@ -6,7 +6,7 @@
   <li class="active">Price Lists</li>
 </ol>
 <h1>Price Lists</h1>
-{% if can_create and request.user.is_staff %}
+{% if can_create and user.is_staff %}
 <div class="panel panel-default">
   <div class="panel-body">{% include 'snippet/staff_disclaimer.html' %}
     <a class="btn btn-primary" href="{% url 'pricelist_create' %}">Create Price List</a>

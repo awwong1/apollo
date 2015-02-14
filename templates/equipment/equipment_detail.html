@@ -6,7 +6,7 @@
   <li class="active">{{ equipment }}</li>
 </ol>
 <h1>{{ equipment.name }}</h1>
-{% if request.user.is_staff %}
+{% if user.is_staff %}
 <div class="panel panel-default">
   <div class="panel-body">{% include 'snippet/staff_disclaimer.html' %}
     <a class="btn btn-primary" href="{% url 'equipment_update' pk=equipment.pk %}">Update Equipment</a>

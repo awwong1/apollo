@@ -9,7 +9,7 @@
   <li class="active">Unit Item: {{ unititem.name }}</li>
 </ol>
 <h1>Unit Item: {{ unititem.name }}</h1>
-{% if can_create and request.user.is_staff %}
+{% if can_create and user.is_staff %}
 <div class="panel panel-default">
   <div class="panel-body">{% include 'snippet/staff_disclaimer.html' %}
     <a class="btn btn-primary" href="{% url 'unit_pricelistitem_update' pk=unititem.pk %}">Update Unit Price
