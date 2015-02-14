@@ -8,7 +8,6 @@
 {% if business_editable %}
 <div class="panel panel-default">
   <div class="panel-body">
-    <p>Welcome back, {{ user }}!</p>
     <a class="btn btn-primary" href="{% url 'business_update' pk=business.pk %}">Update Business</a>
     <a class="btn btn-warning" href="{% url 'business_delete' pk=business.pk %}">Delete Business</a>
   </div>
@@ -37,9 +36,20 @@
   <dd>{{ business.postal_code }}</dd>
 </dl>
 <h2>Business Members</h2>
-<ul class="list-unstyled">
+{% if business_editable %}
+<div class="panel panel-default">
+  <div class="panel-body">
+    <a class="btn btn-primary" href="{% url 'businessmembership_create' business_pk=business.pk %}">Create Business Membership</a>
+  </div>
+</div>
+{% endif %}
+<ul>
   {% for bmembership in business.businessmembership_set.all %}
-  <li>{{ bmembership.user }}</li>
+  <li>{% if business_editable %}
+    <a class="btn btn-warning btn-xs" href="{% url 'businessmembership_delete' pk=bmembership.pk %}">Delete</a> |
+    {% endif %}
+    <strong>Username: </strong>{{ bmembership.user }}
+  </li>
   {% empty %}
   <li>This business has no members.</li>
   {% endfor %}

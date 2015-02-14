@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<ol class="breadcrumb">
+  <li class="active">Home</li>
+</ol>
+<h1>My Businesses</h1>
+<div class="panel panel-default">
+  <div class="panel-body">
+    <a class="btn btn-primary" href="{% url 'business_create' %}">Create Business</a>
+  </div>
+</div>
+<ul class="list-unstyled">
+  {% for business in businesses %}
+  <li><a href="{% url 'business_detail' pk=business.pk %}">{{ business }}</a></li>
+  {% empty %}
+  <li>You are not a member of any businesses. Why not get started and create a business?</li>
+  {% endfor %}
+</ul>
+{% endblock %}

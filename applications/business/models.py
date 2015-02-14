@@ -46,14 +46,23 @@ class BusinessMembership(models.Model):
     Mapping between users and businesses.
     """
     user = models.ForeignKey(
-        User, help_text="Which user is part of this membership? Cannot be edited once membership is created."
+        User, help_text="Which user is part of this membership?"
     )
     business = models.ForeignKey(
-        Business, help_text="Which business is part of this membership? Cannot be edited once membership is created."
+        Business, help_text="Which business is part of this membership?"
     )
 
     class Meta:
         unique_together = ("user", "business")
+
+    def delete(self, using=None):
+        """
+        Ensure that the user cannot delete the last business membership for this business
+        """
+        all_business_members = self.business.businessmembership_set.all()
+        if len(all_business_members) == 1:
+            return
+        return super(BusinessMembership, self).delete(using=using)
 
     def __str__(self):
         return "{business}: {uname}".format(uname=self.user.username, business=self.business.name)

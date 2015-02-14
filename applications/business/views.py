@@ -1,8 +1,16 @@
 from apollo.viewmixins import LoginRequiredMixin, ActivitySendMixin
+from applications.business.forms import BusinessMembershipForm
 from applications.business.models import Business, BusinessMembership
+from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse_lazy
+from django.shortcuts import redirect, get_object_or_404
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
+
+
+"""
+Business Generic Views
+"""
 
 
 class BusinessViewCreate(LoginRequiredMixin, SuccessMessageMixin, ActivitySendMixin, CreateView):
@@ -60,10 +68,73 @@ class BusinessViewUpdate(LoginRequiredMixin, SuccessMessageMixin, ActivitySendMi
 class BusinessViewDelete(LoginRequiredMixin, DeleteView):
     context_object_name = 'business'
     model = Business
-    success_url = reverse_lazy('business_list')
+    success_url = reverse_lazy('base')
     template_name = "business/business_form.html"
 
     def get_context_data(self, **kwargs):
         context = super(BusinessViewDelete, self).get_context_data(**kwargs)
         context['action'] = "Delete"
+        return context
+
+
+"""
+Business Membership Generic Views
+"""
+
+
+class BusinessMembershipViewCreate(LoginRequiredMixin, ActivitySendMixin, SuccessMessageMixin, CreateView):
+    context_object_name = 'businessmembership'
+    model = BusinessMembership
+    form_class = BusinessMembershipForm
+    template_name = 'business/businessmembership_form.html'
+    activity_verb = 'created business membership'
+    success_message = '"%(business)s: %(user)s was created successfully!"'
+
+    def dispatch(self, *args, **kwargs):
+        business = get_object_or_404(Business, pk=self.kwargs['business_pk'])
+        not_member = len(business.businessmembership_set.all().filter(user=self.request.user)) != 1
+        if not_member:
+            messages.warning(self.request, "You do not have permissions to create a membership for this business.")
+            return redirect('business_detail', pk=business.pk)
+        else:
+            return super(BusinessMembershipViewCreate, self).dispatch(*args, **kwargs)
+
+    def get_form(self, form_class):
+        return form_class(business_pk=self.kwargs['business_pk'], **self.get_form_kwargs())
+
+    def get_context_data(self, **kwargs):
+        context = super(BusinessMembershipViewCreate, self).get_context_data(**kwargs)
+        context['business'] = get_object_or_404(Business, pk=self.kwargs['business_pk'])
+        context['action'] = 'Create'
+        return context
+
+    def get_success_url(self):
+        return reverse_lazy('business_detail', kwargs={'pk': self.object.business.pk})
+
+
+class BusinessMembershipViewDelete(LoginRequiredMixin, DeleteView):
+    context_object_name = 'businessmembership'
+    model = BusinessMembership
+    template_name = 'business/businessmembership_form.html'
+
+    def dispatch(self, *args, **kwargs):
+        business = get_object_or_404(BusinessMembership, pk=kwargs.get('pk', -1)).business
+        members = business.businessmembership_set.all()
+        not_member = len(members.filter(user=self.request.user)) != 1
+        if not_member:
+            messages.warning(self.request, "You do not have permissions to delete a membership for this business.")
+            return redirect('business_detail', pk=business.pk)
+        elif len(members) == 1:
+            messages.warning(self.request, "You cannot delete the last membership in a business.")
+            return redirect('business_detail', pk=business.pk)
+        else:
+            return super(BusinessMembershipViewDelete, self).dispatch(*args, **kwargs)
+
+    def get_success_url(self):
+        return reverse_lazy('business_detail', kwargs={'pk': self.object.business.pk})
+
+    def get_context_data(self, **kwargs):
+        context = super(BusinessMembershipViewDelete, self).get_context_data(**kwargs)
+        context['business'] = self.object.business
+        context['action'] = 'Delete'
         return context

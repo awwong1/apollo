@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+
+{% block content %}
+<ol class="breadcrumb">
+  <li><a href="/">Home</a></li>
+  <li><a href="{% url 'business_detail' pk=business.pk %}">{{ business }}</a></li>
+  <li class="active">{{ action }} Business Membership</li>
+</ol>
+<h1>{% if businessmembership %}{{ businessmembership }}{% else %}Create New Business Membership{% endif %}</h1>
+<form method="POST">
+  {% csrf_token %}
+  {% if form %}
+  {% bootstrap_form form %}
+  <input class="btn btn-primary" type="submit" value="Submit"/>
+  {% else %}
+  <p>Are you sure you want to delete {{ businessmembership }}?</p>
+  <input class="btn btn-danger" type="submit" value="Delete"/>
+  {% endif %}
+</form>
+{% endblock %}

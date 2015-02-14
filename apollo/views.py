@@ -1,4 +1,6 @@
+from actstream import action
 from apollo.forms import ToggleStaffForm
+from applications.business.models import Business
 from django.contrib import messages
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
@@ -6,7 +8,9 @@ from django.template import RequestContext
 
 def base(request):
     if request.user.is_authenticated():
-        return render_to_response('base.html', {}, context_instance=RequestContext(request))
+        data = dict()
+        data['businesses'] = Business.objects.filter(businessmembership__user=request.user)
+        return render_to_response('business/business_home.html', data, context_instance=RequestContext(request))
     else:
         return base_idea(request)
 
@@ -36,5 +40,6 @@ def toggle_staff_view(request):
         if form.is_valid():
             form.save()
             messages.success(request, "You have successfully edited your staff privileges.")
+            action.send(request.user, verb='toggled staff mode {boolean}'.format(boolean=form.cleaned_data['is_staff']))
             return redirect('/')
     return render_to_response('account/toggle_staff.html', data, context_instance=RequestContext(request))
