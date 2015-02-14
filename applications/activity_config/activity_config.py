@@ -20,6 +20,9 @@ class ActivityConfig(AppConfig):
         registry.register(apps.get_model('price_list.UnitPriceListItem'))
         registry.register(apps.get_model('price_list.PriceListItemEquipment'))
         registry.register(apps.get_model('price_list.PriceListItemService'))
+        # Station Activity Registration
+        registry.register(apps.get_model('station.Station'))
+        registry.register(apps.get_model('station.StationBusiness'))
         # Service Activity Registration
         registry.register(apps.get_model('terms_of_service.TermsOfService'))
 

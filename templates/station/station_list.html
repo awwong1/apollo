@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<ol class="breadcrumb">
+  <li><a href="/">Home</a></li>
+  <li class="active">Stations</li>
+</ol>
+<h1>Stations</h1>
+<ul>
+  {% for station in stations %}
+  <li><a href="{% url 'station_detail' pk=station.pk %}">{{ station }}</a></li>
+  {% empty %}
+  <li>No station has been created yet.</li>
+  {% endfor %}
+</ul>
+{% endblock %}

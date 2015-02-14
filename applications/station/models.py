@@ -1,5 +1,5 @@
 from uuid import uuid4
-from django.core.exceptions import ValidationError
+from apollo.choices import STATION_TYPE_CHOICES, STATION_RIG
 from django.core.validators import RegexValidator
 from django.db import models
 
@@ -10,6 +10,9 @@ class Station(models.Model):
     Also known as a rig in most cases, however the terminology is now more general (in the future, in case we start
     renting out equipment to other places, like a drilling pit)
     """
+    type = models.CharField(
+        max_length=60, help_text="What type of station is this?", choices=STATION_TYPE_CHOICES, default=STATION_RIG
+    )
     name = models.CharField(
         max_length=255, help_text="What is the name of this station?"
     )
@@ -23,10 +26,10 @@ class Station(models.Model):
     )
 
     def __str__(self):
-        return self.name
+        return "{type}: {name}".format(type=self.get_type_display(), name=self.name)
 
     def __unicode__(self):
-        return u"%s" % self.name
+        return u"{type}: {name}".format(type=self.get_type_display(), name=self.name)
 
 
 class StationBusiness(models.Model):
@@ -45,22 +48,8 @@ class StationBusiness(models.Model):
         unique_together = ('station', 'business')
         index_together = ('station', 'business')
 
-    def clean(self):
-        # Do not allow modification of membership such that there are no administrators
-        station_admins = self.business.stationbusiness_set.all().filter(station_administrator=True)
-        if len(station_admins) == 1:
-            if station_admins[0].pk == self.pk and self.station_administrator is False:
-                raise ValidationError('Cannot remove administrator status from last station administrator')
-        # Do not allow modification of user and business after creation, revert fields back to original state
-        if self.pk is not None:
-            existing = StationBusiness.objects.get(pk=self.pk)
-            self.station = existing.station
-            self.business = existing.business
-
     def __str__(self):
-        return "{business}{admin}: {uname}".format(uname=self.station.name, business=self.business.name,
-                                                   admin=' (Admin)' if self.station_administrator else ' ')
+        return "{uname}: {business}".format(uname=self.station, business=self.business.name)
 
     def __unicode__(self):
-        return u"{business}{admin}: {uname}".format(uname=self.station.name, business=self.business.name,
-                                                    admin=u' (Admin)' if self.station_administrator else u' ')
+        return u"{uname}: {business}".format(uname=self.station, business=self.business.name)

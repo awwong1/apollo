@@ -7,11 +7,10 @@
 </ol>
 <h1>{{ equipment.name }}</h1>
 {% if user.is_staff %}
-<div class="panel panel-default">
-  <div class="panel-body">{% include 'snippet/staff_disclaimer.html' %}
-    <a class="btn btn-primary" href="{% url 'equipment_update' pk=equipment.pk %}">Update Equipment</a>
-    <a class="btn btn-warning" href="{% url 'equipment_delete' pk=equipment.pk %}">Delete Equipment</a>
-  </div>
+<div class="well well-sm">
+  {% include 'snippet/staff_disclaimer.html' %}
+  <a class="btn btn-primary" href="{% url 'equipment_update' pk=equipment.pk %}">Update Equipment</a>
+  <a class="btn btn-warning" href="{% url 'equipment_delete' pk=equipment.pk %}">Delete Equipment</a>
 </div>
 {% endif %}
 <h2>Description</h2>

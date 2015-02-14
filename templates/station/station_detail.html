@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<ol class="breadcrumb">
+  <li><a href="/">Home</a></li>
+  <li class="active">{{ station }}</li>
+</ol>
+<h1>{{ station }}</h1>
+{% if can_modify %}
+<div class="well well-sm">
+  <a class="btn btn-primary" href="{% url 'station_update' pk=station.pk %}">Update Station</a>
+  <a class="btn btn-warning" href="{% url 'station_delete' pk=station.pk %}">Delete Station</a>
+</div>
+{% endif %}
+<h2>Description</h2>
+{{ station.description|linebreaks }}
+<h2>Associated Businesses</h2>
+{% if can_modify %}
+<div class="well well-sm">
+  <a class="btn btn-primary" href="{% url 'stationbusiness_create' station_pk=station.pk %}">
+    Create Station Business Association
+  </a>
+</div>
+{% endif %}
+<ul>
+  {% for sb in station.stationbusiness_set.all %}
+  <li>{% if can_modify %}
+    <a class="btn btn-warning btn-xs" href="{% url 'stationbusiness_delete' pk=sb.pk %}">Delete</a> |
+    {% endif %}<a href="{% url 'business_detail' pk=sb.business.pk %}">{{ sb.business }}</a></li>
+  {% empty %}
+  <li>No business is associated with this station!</li>
+  {% endfor %}
+</ul>
+{% endblock %}

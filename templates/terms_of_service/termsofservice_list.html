@@ -7,10 +7,9 @@
 </ol>
 <h1>Terms of Services</h1>
 {% if user.is_staff %}
-<div class="panel panel-default">
-  <div class="panel-body">{% include 'snippet/staff_disclaimer.html' %}
-    <a class="btn btn-primary" href="{% url 'termsofservice_create' %}">Create Terms of Service</a>
-  </div>
+<div class="well well-sm">
+  {% include 'snippet/staff_disclaimer.html' %}
+  <a class="btn btn-primary" href="{% url 'termsofservice_create' %}">Create Terms of Service</a>
 </div>
 {% endif %}
 <ul>

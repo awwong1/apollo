@@ -13,13 +13,12 @@
   <small>{{ serviceplir.service.activate }}</small>
 </h1>
 {% if can_create and user.is_staff %}
-<div class="panel panel-default">
-  <div class="panel-body">{% include 'snippet/staff_disclaimer.html' %}
-    <a class="btn btn-primary" href="{% url 'service_pricelistitem_update' pk=serviceplir.pk %}">Update Service
-      Price List Item Relation</a>
-    <a class="btn btn-warning" href="{% url 'service_pricelistitem_delete' pk=serviceplir.pk %}">Delete Service
-      Price List Item Relation</a>
-  </div>
+<div class="well well-sm">
+  {% include 'snippet/staff_disclaimer.html' %}
+  <a class="btn btn-primary" href="{% url 'service_pricelistitem_update' pk=serviceplir.pk %}">Update Service
+    Price List Item Relation</a>
+  <a class="btn btn-warning" href="{% url 'service_pricelistitem_delete' pk=serviceplir.pk %}">Delete Service
+    Price List Item Relation</a>
 </div>
 {% endif %}
 <h2>Service Relation Information</h2>

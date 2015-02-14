@@ -7,11 +7,10 @@
 </ol>
 <h1>{{ service.name }}</h1>
 {% if user.is_staff %}
-<div class="panel panel-default">
-  <div class="panel-body">{% include 'snippet/staff_disclaimer.html' %}
-    <a class="btn btn-primary" href="{% url 'service_update' pk=service.pk %}">Update Service</a>
-    <a class="btn btn-warning" href="{% url 'service_delete' pk=service.pk %}">Delete Service</a>
-  </div>
+<div class="well well-sm">
+  {% include 'snippet/staff_disclaimer.html' %}
+  <a class="btn btn-primary" href="{% url 'service_update' pk=service.pk %}">Update Service</a>
+  <a class="btn btn-warning" href="{% url 'service_delete' pk=service.pk %}">Delete Service</a>
 </div>
 {% endif %}
 <h2>Activation ID</h2>

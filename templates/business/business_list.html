@@ -6,11 +6,11 @@
   <li class="active">Businesses</li>
 </ol>
 <h1>Businesses</h1>
-<ul>
+<ul class="list-group">
   {% for business in businesses %}
-  <li><a href="{% url 'business_detail' pk=business.pk %}">{{ business }}</a></li>
+  {% include 'snippet/business_element.html' %}
   {% empty %}
-  <li>No business has been created yet.</li>
+  <li class="list-group-item">No business has been created yet.</li>
   {% endfor %}
 </ul>
 {% endblock %}

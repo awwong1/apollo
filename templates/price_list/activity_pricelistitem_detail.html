@@ -10,22 +10,21 @@
 </ol>
 <h1>Activity Item: {{ activityitem.name }}</h1>
 {% if can_create and user.is_staff %}
-<div class="panel panel-default">
-  <div class="panel-body">{% include 'snippet/staff_disclaimer.html' %}
-    <a class="btn btn-primary" href="{% url 'activity_pricelistitem_update' pk=activityitem.pk %}">Update Activity Price
-      List Item</a>
-    <a class="btn btn-warning" href="{% url 'activity_pricelistitem_delete' pk=activityitem.pk %}">Delete Activity Price
-      List Item</a>
-    <br><br>
-    <a class="btn btn-primary"
-       href="{% url 'equipment_pricelistitem_create' pl_id=pricelist.pk item_uuid=activityitem.item_uuid %}">
-      Add Equipment Relation
-    </a>
-    <a class="btn btn-primary"
-       href="{% url 'service_pricelistitem_create' pl_id=pricelist.pk item_uuid=activityitem.item_uuid %}">
-      Add Service Relation
-    </a>
-  </div>
+<div class="well well-sm">
+  {% include 'snippet/staff_disclaimer.html' %}
+  <a class="btn btn-primary" href="{% url 'activity_pricelistitem_update' pk=activityitem.pk %}">Update Activity Price
+    List Item</a>
+  <a class="btn btn-warning" href="{% url 'activity_pricelistitem_delete' pk=activityitem.pk %}">Delete Activity Price
+    List Item</a>
+  <br><br>
+  <a class="btn btn-primary"
+     href="{% url 'equipment_pricelistitem_create' pl_id=pricelist.pk item_uuid=activityitem.item_uuid %}">
+    Add Equipment Relation
+  </a>
+  <a class="btn btn-primary"
+     href="{% url 'service_pricelistitem_create' pl_id=pricelist.pk item_uuid=activityitem.item_uuid %}">
+    Add Service Relation
+  </a>
 </div>
 {% endif %}
 <h2>Activity Item Fields</h2>

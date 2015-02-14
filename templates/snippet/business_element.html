@@ -1,0 +1,11 @@
+<li class="list-group-item">
+  <a href="{% url 'business_detail' pk=business.pk %}">{{ business }}</a><br>
+  <strong>Stations:</strong>
+  <ul>
+    {% for sb in business.stationbusiness_set.all %}
+    <li><a href="{% url 'station_detail' pk=sb.station.pk %}">{{ sb }}</a></li>
+    {% empty %}
+    <li>There are no stations associated with this business!</li>
+    {% endfor %}
+  </ul>
+</li>

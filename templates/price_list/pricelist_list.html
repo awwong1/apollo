@@ -7,10 +7,9 @@
 </ol>
 <h1>Price Lists</h1>
 {% if can_create and user.is_staff %}
-<div class="panel panel-default">
-  <div class="panel-body">{% include 'snippet/staff_disclaimer.html' %}
-    <a class="btn btn-primary" href="{% url 'pricelist_create' %}">Create Price List</a>
-  </div>
+<div class="well well-sm">
+  {% include 'snippet/staff_disclaimer.html' %}
+  <a class="btn btn-primary" href="{% url 'pricelist_create' %}">Create Price List</a>
 </div>
 {% endif %}
 <ul>

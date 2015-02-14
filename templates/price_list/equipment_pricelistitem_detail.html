@@ -11,13 +11,12 @@
 </ol>
 <h1>{{ equipmentplir }}</h1>
 {% if can_create and user.is_staff %}
-<div class="panel panel-default">
-  <div class="panel-body">{% include 'snippet/staff_disclaimer.html' %}
-    <a class="btn btn-primary" href="{% url 'equipment_pricelistitem_update' pk=equipmentplir.pk %}">Update Equipment
-      Price List Item Relation</a>
-    <a class="btn btn-warning" href="{% url 'equipment_pricelistitem_delete' pk=equipmentplir.pk %}">Delete Equipment
-      Price List ItemRelation</a>
-  </div>
+<div class="well well-sm">
+  {% include 'snippet/staff_disclaimer.html' %}
+  <a class="btn btn-primary" href="{% url 'equipment_pricelistitem_update' pk=equipmentplir.pk %}">Update Equipment
+    Price List Item Relation</a>
+  <a class="btn btn-warning" href="{% url 'equipment_pricelistitem_delete' pk=equipmentplir.pk %}">Delete Equipment
+    Price List ItemRelation</a>
 </div>
 {% endif %}
 <h2>Equipment Relation Information</h2>

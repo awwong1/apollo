@@ -35,7 +35,9 @@
             <li><a href="{% url 'equipment_list' %}">Equipment</a></li>
             <li><a href="{% url 'service_list' %}">Services</a></li>
             <li><a href="{% url 'pricelist_list' %}">Price Lists</a></li>
+            <li class="divider"></li>
             <li><a href="{% url 'business_list' %}">All Businesses</a></li>
+            <li><a href="{% url 'station_list' %}">All Stations</a></li>
           </ul>
         </li>
       </ul>
@@ -68,8 +70,8 @@
 </nav>
 <div class="container-fluid">
   {% if user.is_staff %}
-  <div class="alert alert-info" role="alert">You are currently using Apollo with staff privliges. Please be courtious to
-    other users. You may revert back to regular user permissions by clicking <strong>Account > Toggle Staff
+  <div class="alert alert-info" role="alert">You are currently using Apollo with staff privileges. Please be courteous
+    to other users. You may revert back to regular user permissions by clicking <strong>Account &rsaquo; Toggle Staff
       Privilege</strong>.
   </div>
   {% endif %}

@@ -56,6 +56,16 @@ class BusinessViewUpdate(LoginRequiredMixin, SuccessMessageMixin, ActivitySendMi
     activity_verb = 'updated business'
     fields = "__all__"
 
+    def dispatch(self, *args, **kwargs):
+        business = get_object_or_404(Business, pk=self.kwargs['pk'])
+        user_businesses = business.businessmembership_set.all().filter(user=self.request.user)
+        can_modify = len(user_businesses) == 1
+        if can_modify:
+            return super(BusinessViewUpdate, self).dispatch(*args, **kwargs)
+        else:
+            messages.warning(self.request, "You do not have permissions to update this business.")
+            return redirect('business_detail', pk=business.pk)
+
     def get_success_url(self):
         return reverse_lazy('business_detail', kwargs={'pk': self.object.pk})
 
@@ -70,6 +80,16 @@ class BusinessViewDelete(LoginRequiredMixin, DeleteView):
     model = Business
     success_url = reverse_lazy('base')
     template_name = "business/business_form.html"
+
+    def dispatch(self, *args, **kwargs):
+        business = get_object_or_404(Business, pk=self.kwargs['pk'])
+        user_businesses = business.businessmembership_set.all().filter(user=self.request.user)
+        can_modify = len(user_businesses) == 1
+        if can_modify:
+            return super(BusinessViewDelete, self).dispatch(*args, **kwargs)
+        else:
+            messages.warning(self.request, "You do not have permissions to delete this business.")
+            return redirect('business_detail', pk=business.pk)
 
     def get_context_data(self, **kwargs):
         context = super(BusinessViewDelete, self).get_context_data(**kwargs)
@@ -91,7 +111,7 @@ class BusinessMembershipViewCreate(LoginRequiredMixin, ActivitySendMixin, Succes
     success_message = '"%(business)s: %(user)s was created successfully!"'
 
     def dispatch(self, *args, **kwargs):
-        business = get_object_or_404(Business, pk=self.kwargs['business_pk'])
+        business = get_object_or_404(Business, pk=self.kwargs.get('business_pk', '-1'))
         not_member = len(business.businessmembership_set.all().filter(user=self.request.user)) != 1
         if not_member:
             messages.warning(self.request, "You do not have permissions to create a membership for this business.")
@@ -118,7 +138,7 @@ class BusinessMembershipViewDelete(LoginRequiredMixin, DeleteView):
     template_name = 'business/businessmembership_form.html'
 
     def dispatch(self, *args, **kwargs):
-        business = get_object_or_404(BusinessMembership, pk=kwargs.get('pk', -1)).business
+        business = get_object_or_404(BusinessMembership, pk=kwargs.get('pk', '-1')).business
         members = business.businessmembership_set.all()
         not_member = len(members.filter(user=self.request.user)) != 1
         if not_member:

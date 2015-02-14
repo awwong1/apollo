@@ -15,6 +15,7 @@ urlpatterns = patterns(
     url(r'^asset/', include('applications.assets.urls'), name='assets'),
     url(r'^business/', include('applications.business.urls'), name='business'),
     url(r'^pricelist/', include('applications.price_list.urls'), name='pricelist'),
+    url(r'^station/', include('applications.station.urls'), name='station'),
     url(r'^termsofservice/', include('applications.terms_of_service.urls'), name='termsofservice'),
     # Included with external packages
     url(r'^accounts/', include('allauth.urls')),
