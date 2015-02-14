@@ -175,7 +175,7 @@ TEMPLATE_DIRS = (
 # Email & Django All Auth Email Permissions
 # https://docs.djangoproject.com/en/1.7/topics/email/
 ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_AUTHENTICATION_METHOD = 'username'
+ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
 ADMINS = (
     ('Alexander Wong', 'admin@alexander-wong.com'),
 )
