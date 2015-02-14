@@ -52,8 +52,9 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # Internally Installed Applications
-    'applications.business',
     'applications.assets',
+    'applications.business',
+    'applications.charge_list',
     'applications.price_list',
     'applications.station',
     'applications.terms_of_service',

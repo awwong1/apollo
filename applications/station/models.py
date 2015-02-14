@@ -11,7 +11,7 @@ class Station(models.Model):
     renting out equipment to other places, like a drilling pit)
     """
     type = models.CharField(
-        max_length=60, help_text="What type of station is this?", choices=STATION_TYPE_CHOICES, default=STATION_RIG
+        max_length=2, help_text="What type of station is this?", choices=STATION_TYPE_CHOICES, default=STATION_RIG
     )
     name = models.CharField(
         max_length=255, help_text="What is the name of this station?"
