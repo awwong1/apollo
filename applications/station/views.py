@@ -115,7 +115,7 @@ class StationViewDelete(LoginRequiredMixin, DeleteView):
             return super(StationViewDelete, self).dispatch(*args, **kwargs)
         else:
             messages.warning(self.request, "You do not have permissions to delete this station.")
-            return redirect('business_detail', pk=business.pk)
+            return redirect('station_detail', pk=station.pk)
 
     def get_success_url(self):
         return self.success_url
@@ -146,9 +146,7 @@ class StationBusinessViewCreate(LoginRequiredMixin, SuccessMessageMixin, Activit
         if can_modify:
             return super(StationBusinessViewCreate, self).dispatch(*args, **kwargs)
         else:
-            messages.warning(
-                self.request, "You do not have permissions to create a station business relation for this station."
-            )
+            messages.warning(self.request, "You do not have permissions to create this station business.")
             return redirect('station_detail', pk=station.pk)
 
     def get_form(self, form_class):
@@ -181,13 +179,13 @@ class StationBusinessViewDelete(LoginRequiredMixin, DeleteView):
         if can_modify:
             if last_business:
                 messages.warning(self.request, "You cannot delete the last station business for this station!")
-                return redirect('station_detail', kwargs={'pk': station.pk})
+                return redirect('station_detail', pk=station.pk)
             return super(StationBusinessViewDelete, self).dispatch(*args, **kwargs)
         else:
             messages.warning(self.request, "You do not have permissions to delete this a station business.")
-            return redirect('station_detail', kwargs={'pk': station.pk})
+            return redirect('station_detail', pk=station.pk)
 
-        def get_context_data(self, **kwargs):
-            context = super(StationBusinessViewDelete, self).get_context_data(**kwargs)
-            context['station'] = self.object.station
-            return context
+    def get_context_data(self, **kwargs):
+        context = super(StationBusinessViewDelete, self).get_context_data(**kwargs)
+        context['station'] = self.object.station
+        return context
