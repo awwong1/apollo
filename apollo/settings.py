@@ -175,6 +175,7 @@ TEMPLATE_DIRS = (
 # Email & Django All Auth Email Permissions
 # https://docs.djangoproject.com/en/1.7/topics/email/
 ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
 ADMINS = (
     ('Alexander Wong', 'admin@alexander-wong.com'),
 )
@@ -187,7 +188,6 @@ if ON_PAAS:
     EMAIL_SUBJECT_PREFIX = '[Apollo] '
     DEFAULT_FROM_EMAIL = os.environ['OPENSHIFT_DEFAULT_FROM_EMAIL']
     EMAIL_USE_TLS = True
-    ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
     ACCOUNT_EMAIL_VERIFICATION = "mandatory"
     ACCOUNT_EMAIL_SUBJECT_PREFIX = EMAIL_SUBJECT_PREFIX
 else:
