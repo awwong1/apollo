@@ -70,7 +70,7 @@ class ActivityCharge(AbstractChargeListItem):
         help_text="Which actvitiy price list item does this charge list item reference"
     )
     price_per_unit_override = models.DecimalField(
-        max_digits=7, decimal_places=2, blank=True,
+        max_digits=7, decimal_places=2, blank=True, null=True,
         help_text="How much does this price list item cost per unit measurement? (Overrides original price)"
     )
 
@@ -79,7 +79,7 @@ class ActivityCharge(AbstractChargeListItem):
         if not price:
             price = self.price_list_item.price_per_unit
         return "{name} (${price}/{measurement})".format(
-            name=self.price_list_item, price=price,
+            name=self.price_list_item.name, price=price,
             measurement=self.price_list_item.unit_measurement
         )
 
@@ -88,7 +88,7 @@ class ActivityCharge(AbstractChargeListItem):
         if not price:
             price = self.price_list_item.price_per_unit
         return u"{name} (${price}/{measurement})".format(
-            name=self.price_list_item, price=price,
+            name=self.price_list_item.name, price=price,
             measurement=self.price_list_item.unit_measurement
         )
 
@@ -117,11 +117,11 @@ class TimeCharge(AbstractChargeListItem):
         help_text="Which time price list item does this charge list item reference"
     )
     price_per_time_override = models.DecimalField(
-        max_digits=7, decimal_places=2, blank=True,
+        max_digits=7, decimal_places=2, blank=True, null=True,
         help_text="How much does this price list item cost per unit of time?"
     )
-    time_start = models.DateTimeField(blank=True, help_text="When does this time charge begin billing?")
-    time_end = models.DateTimeField(blank=True, help_text="When does this time charge end billing?")
+    time_start = models.DateTimeField(blank=True, null=True, help_text="When does this time charge begin billing?")
+    time_end = models.DateTimeField(blank=True, null=True, help_text="When does this time charge end billing?")
 
     def clean(self):
         if self.time_start:
@@ -135,7 +135,7 @@ class TimeCharge(AbstractChargeListItem):
         if not price:
             price = self.price_list_item.price_per_unit
         return "{name} (${price}/{measurement})".format(
-            name=self.price_list_item, price=price,
+            name=self.price_list_item.name, price=price,
             measurement=self.price_list_item.get_unit_time_display()
         )
 
@@ -144,7 +144,7 @@ class TimeCharge(AbstractChargeListItem):
         if not price:
             price = self.price_list_item.price_per_unit
         return u"{name} (${price}/{measurement})".format(
-            name=self.price_list_item, price=price,
+            name=self.price_list_item.name, price=price,
             measurement=self.price_list_item.get_unit_time_display()
         )
 
@@ -155,7 +155,7 @@ class UnitCharge(AbstractChargeListItem):
         help_text="Which unit price list item does this charge list item reference"
     )
     price_per_unit_override = models.DecimalField(
-        max_digits=7, decimal_places=2, blank=True,
+        max_digits=7, decimal_places=2, blank=True, null=True,
         help_text="How much does this price list item cost?"
     )
 
@@ -164,7 +164,7 @@ class UnitCharge(AbstractChargeListItem):
         if not price:
             price = self.price_list_item.price_per_unit
         return "{name} (${price})".format(
-            name=self.price_list_item, price=price,
+            name=self.price_list_item.name, price=price,
         )
 
     def __unicode__(self):
@@ -172,5 +172,5 @@ class UnitCharge(AbstractChargeListItem):
         if not price:
             price = self.price_list_item.price_per_unit
         return u"{name} (${price})".format(
-            name=self.price_list_item, price=price,
+            name=self.price_list_item.name, price=price,
         )

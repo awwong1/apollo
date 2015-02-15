@@ -1,8 +1,28 @@
+{% load bootstrap3 %}
+<p class="small">
+  <strong>Price List: </strong>
+  <a href="{% url 'pricelist_detail' pl_id=chargelist.price_list.pk %}">{{ chargelist.price_list }}</a>
+</p>
 <div id="chargelist">
   <div class="row">
     <div class="col-md-4">
-      <p class="lead">Activity Charges</p>
+      <p class="lead">
+        Activity Charges
+      </p>
+      {% if can_modify and activitycharge_catalog %}
+      <div class="panel panel-info">
+        <div class="panel-body">
+          <form action="{% url 'activitycharge_create' chargelist_pk=chargelist.pk %}" method="get">
+            {% bootstrap_form activitycharge_catalog %}
+            <input class="btn btn-primary btn-sm" type="submit" value="Add Activity Charge"/>
+          </form>
+        </div>
+      </div>
+      {% endif %}
       {% for act_charge in chargelist.activitycharge_set.all %}
+      <div class="panel panel-primary">
+        <div class="panel-body">{{ act_charge }}</div>
+      </div>
       {% empty %}
       <div class="panel panel-primary">
         <div class="panel-body">No activity charges exist in this charge list!</div>
@@ -11,7 +31,20 @@
     </div>
     <div class="col-md-4">
       <p class="lead">Time Charges</p>
+      {% if can_modify and timecharge_catalog %}
+      <div class="panel panel-info">
+        <div class="panel-body">
+          <form method="get">
+            {% bootstrap_form timecharge_catalog %}
+            <input class="btn btn-primary btn-sm" type="submit" value="Add Time Charge"/>
+          </form>
+        </div>
+      </div>
+      {% endif %}
       {% for time_charge in chargelist.timecharge_set.all %}
+      <div class="panel panel-primary">
+        <div class="panel-body">{{ time_charge }}</div>
+      </div>
       {% empty %}
       <div class="panel panel-primary">
         <div class="panel-body">No time charges exist in this charge list!</div>
@@ -20,7 +53,20 @@
     </div>
     <div class="col-md-4">
       <p class="lead">Unit Charges</p>
+      {% if can_modify and unitcharge_catalog %}
+      <div class="panel panel-info">
+        <div class="panel-body">
+          <form method="get">
+            {% bootstrap_form unitcharge_catalog %}
+            <input class="btn btn-primary btn-sm" type="submit" value="Add Unit Charge"/>
+          </form>
+        </div>
+      </div>
+      {% endif %}
       {% for unit_charge in chargelist.unitcharge_set.all %}
+      <div class="panel panel-primary">
+        <div class="panel-body">{{ unit_charge }}</div>
+      </div>
       {% empty %}
       <div class="panel panel-primary">
         <div class="panel-body">No unit charges exist in this charge list!</div>

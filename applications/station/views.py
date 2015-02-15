@@ -1,6 +1,7 @@
 from apollo.choices import CHARGE_LIST_OPEN
 from apollo.viewmixins import LoginRequiredMixin, ActivitySendMixin, StaffRequiredMixin
 from applications.business.models import Business
+from applications.charge_list.forms import ActivityChargeCatalog, TimeChargeCatalog, UnitChargeCatalog
 from applications.charge_list.models import ChargeList
 from applications.station.forms import StationBusinessForm
 from applications.station.models import Station, StationBusiness
@@ -42,11 +43,17 @@ class StationViewDetail(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(StationViewDetail, self).get_context_data(**kwargs)
-        user_businesses = self.request.user.businessmembership_set.all()
-        context['can_modify'] = self.object.stationbusiness_set.all().filter(business__in=user_businesses)
+        user_businesses = Business.objects.filter(businessmembership__user=self.request.user)
+        station_businesses = self.object.stationbusiness_set.all()
+        context['can_modify'] = station_businesses.filter(business__in=user_businesses)
         active_cl = ChargeList.objects.filter(station=self.object, status=CHARGE_LIST_OPEN)
         if len(active_cl) == 1:
             context['chargelist'] = active_cl[0]
+            if context['can_modify']:
+                price_list_pk = active_cl[0].price_list.pk
+                context['activitycharge_catalog'] = ActivityChargeCatalog(price_list_pk=price_list_pk)
+                context['timecharge_catalog'] = TimeChargeCatalog(price_list_pk=price_list_pk)
+                context['unitcharge_catalog'] = UnitChargeCatalog(price_list_pk=price_list_pk)
         return context
 
 
@@ -61,7 +68,7 @@ class StationViewCreate(LoginRequiredMixin, SuccessMessageMixin, ActivitySendMix
     def dispatch(self, *args, **kwargs):
         business = get_object_or_404(Business, pk=self.kwargs.get('business_pk', '-1'))
         user_businesses = self.request.user.businessmembership_set.all()
-        can_modify = business.stationbusiness_set.all().filter(business__in=user_businesses)
+        can_modify = user_businesses.filter(business=business)
         if can_modify:
             return super(StationViewCreate, self).dispatch(*args, **kwargs)
         else:
