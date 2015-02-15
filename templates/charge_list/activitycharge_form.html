@@ -11,11 +11,35 @@
 <form method="POST">
   {% csrf_token %}
   {% if form %}
-    {% bootstrap_form form %}
-    <input class="btn btn-primary" type="submit" value="Submit"/>
+  {% bootstrap_form form %}
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                  aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">Terms and Conditions</h4>
+        </div>
+        <div class="modal-body">
+          By purchasing this charge, you agree to the following terms and conditions.
+          <hr>
+          {{ terms.title }}
+          <hr>
+          {{ terms.content|linebreaks }}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <input class="btn btn-primary" type="submit" value="Agree and Submit"/>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+    Submit
+  </button>
   {% else %}
-    <p>Are you sure you want to delete {{ activitycharge }}?</p>
-    <input class="btn btn-danger" type="submit" value="Delete"/>
+  <p>Are you sure you want to delete {{ activitycharge }}?</p>
+  <input class="btn btn-danger" type="submit" value="Delete"/>
   {% endif %}
 </form>
 {% endblock %}

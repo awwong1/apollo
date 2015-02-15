@@ -1,6 +1,6 @@
 from apollo.choices import PRICE_LIST_RELEASE
 from applications.business.models import Business
-from applications.charge_list.models import ChargeList, ActivityCharge, TimeCharge
+from applications.charge_list.models import ChargeList, ActivityCharge, TimeCharge, ActivityChargeActivityCount
 from applications.price_list.models import PriceList, TimePriceListItem, ActivityPriceListItem, UnitPriceListItem
 from applications.station.models import Station
 from django import forms
@@ -82,3 +82,33 @@ class ActivityChargeForm(forms.ModelForm):
             self.fields['price_list_item'].queryset = ActivityPriceListItem.objects.filter(pk=activitypli_pk)
             self.fields['price_list_item'].empty_label = None
             self.fields['price_list_item'].widget.attrs['readonly'] = 'readonly'
+
+
+class ActivityChargeUpdateForm(forms.ModelForm):
+    class Meta:
+        model = ActivityCharge
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super(ActivityChargeUpdateForm, self).__init__(*args, **kwargs)
+        self.fields['charge_list'].queryset = ChargeList.objects.filter(pk=kwargs['instance'].charge_list.pk)
+        self.fields['charge_list'].empty_label = None
+        self.fields['charge_list'].widget.attrs['readonly'] = 'readonly'
+        self.fields['price_list_item'].queryset = ActivityPriceListItem.objects.filter(
+            pk=kwargs['instance'].price_list_item.pk)
+        self.fields['price_list_item'].empty_label = None
+        self.fields['price_list_item'].widget.attrs['readonly'] = 'readonly'
+
+
+class ActivityChargeActivityForm(forms.ModelForm):
+    class Meta:
+        model = ActivityChargeActivityCount
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        activitycharge_pk = kwargs.pop('activitycharge_pk', None)
+        super(ActivityChargeActivityForm, self).__init__(*args, **kwargs)
+        if activitycharge_pk is not None:
+            self.fields['activity_charge'].queryset = ActivityCharge.objects.filter(pk=activitycharge_pk)
+            self.fields['activity_charge'].empty_label = None
+            self.fields['activity_charge'].widget.attrs['readonly'] = 'readonly'

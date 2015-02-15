@@ -45,7 +45,7 @@ class StationViewDetail(LoginRequiredMixin, DetailView):
         context = super(StationViewDetail, self).get_context_data(**kwargs)
         user_businesses = Business.objects.filter(businessmembership__user=self.request.user)
         station_businesses = self.object.stationbusiness_set.all()
-        context['can_modify'] = station_businesses.filter(business__in=user_businesses)
+        context['can_modify'] = len(station_businesses.filter(business__in=user_businesses)) >= 1
         active_cl = ChargeList.objects.filter(station=self.object, status=CHARGE_LIST_OPEN)
         if len(active_cl) == 1:
             context['chargelist'] = active_cl[0]

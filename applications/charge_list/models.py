@@ -1,3 +1,4 @@
+from decimal import Decimal
 from apollo.choices import CHARGE_LIST_STATUS_CHOICES, CHARGE_LIST_OPEN, CHARGE_LIST_CLOSED_PAYMENT_RESOLVED, \
     PRICE_LIST_RELEASE
 from django.core.exceptions import ValidationError
@@ -56,7 +57,7 @@ class AbstractChargeListItem(models.Model):
             raise ValidationError('This charge list has already been closed and payment has been resolved.')
         if self.price_list_item.price_list != self.charge_list.price_list:
             raise ValidationError(
-                {'price_list_item', 'This price list item is invalid for the charge list specified price list.'}
+                {'price_list_item': 'This price list item is invalid for the charge list specified price list.'}
             )
 
     class Meta:
@@ -76,7 +77,7 @@ class ActivityCharge(AbstractChargeListItem):
 
     def __str__(self):
         price = self.price_per_unit_override
-        if not price:
+        if price is None:
             price = self.price_list_item.price_per_unit
         return "{name} (${price}/{measurement})".format(
             name=self.price_list_item.name, price=price,
@@ -85,12 +86,26 @@ class ActivityCharge(AbstractChargeListItem):
 
     def __unicode__(self):
         price = self.price_per_unit_override
-        if not price:
+        if price is None:
             price = self.price_list_item.price_per_unit
         return u"{name} (${price}/{measurement})".format(
             name=self.price_list_item.name, price=price,
             measurement=self.price_list_item.unit_measurement
         )
+
+    def get_cost(self):
+        """
+        Return the raw decimal value for what this charge costs
+        :return:
+        """
+        base_price = self.price_list_item.price_per_unit
+        if self.price_per_unit_override:
+            base_price = self.price_per_unit_override
+        charge_activities = self.activitychargeactivitycount_set.all()
+        price = Decimal(0.0)
+        for ca in charge_activities:
+            price += Decimal(ca.activity_count * base_price)
+        return price
 
 
 class ActivityChargeActivityCount(models.Model):
@@ -102,13 +117,16 @@ class ActivityChargeActivityCount(models.Model):
     )
     last_modified = models.DateTimeField(auto_now=True, help_text="When was this activity last created/modified?")
 
+    class Meta:
+        ordering = ['-pk']
+
     def __str__(self):
         return "{count} {unit}".format(count=self.activity_count,
-                                       unit=self.activity_charge.price_list_item.get_unit_measurement_display())
+                                       unit=self.activity_charge.price_list_item.unit_measurement)
 
     def __unicode__(self):
         return u"{count} {unit}".format(count=self.activity_count,
-                                        unit=self.activity_charge.price_list_item.get_unit_measurement_display())
+                                        unit=self.activity_charge.price_list_item.unit_measurement)
 
 
 class TimeCharge(AbstractChargeListItem):
@@ -132,7 +150,7 @@ class TimeCharge(AbstractChargeListItem):
 
     def __str__(self):
         price = self.price_per_time_override
-        if not price:
+        if price is None:
             price = self.price_list_item.price_per_unit
         return "{name} (${price}/{measurement})".format(
             name=self.price_list_item.name, price=price,
@@ -141,7 +159,7 @@ class TimeCharge(AbstractChargeListItem):
 
     def __unicode__(self):
         price = self.price_per_time_override
-        if not price:
+        if price is None:
             price = self.price_list_item.price_per_unit
         return u"{name} (${price}/{measurement})".format(
             name=self.price_list_item.name, price=price,
@@ -161,7 +179,7 @@ class UnitCharge(AbstractChargeListItem):
 
     def __str__(self):
         price = self.price_per_time_override
-        if not price:
+        if price is None:
             price = self.price_list_item.price_per_unit
         return "{name} (${price})".format(
             name=self.price_list_item.name, price=price,
@@ -169,7 +187,7 @@ class UnitCharge(AbstractChargeListItem):
 
     def __unicode__(self):
         price = self.price_per_time_override
-        if not price:
+        if price is None:
             price = self.price_list_item.price_per_unit
         return u"{name} (${price})".format(
             name=self.price_list_item.name, price=price,

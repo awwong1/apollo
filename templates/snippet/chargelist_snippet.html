@@ -21,7 +21,34 @@
       {% endif %}
       {% for act_charge in chargelist.activitycharge_set.all %}
       <div class="panel panel-primary">
-        <div class="panel-body">{{ act_charge }}</div>
+        <div class="panel-body">
+          {{ act_charge }}
+          <ul class="list-unstyled">
+            <li>
+              <strong>Billed to: </strong>
+              <a href="{% url 'businses_detail' pk=act_charge.billing_business.pk">{{ act_charge.billing_business }}</a>
+            </li>
+            <li>
+              <strong>Running Cost: </strong>${{ act_charge.get_cost }}
+              <ul>
+                {% for act in act_charge.activitychargeactivitycount_set.all %}
+                <li>{{ act }}
+                  <small>(Added {{ act.last_modified | timesince }} ago.)</small>
+                  {% if user.is_staff %} | <a
+                          href="{% url 'activitychargeactivity_delete' pk=act.pk %}"
+                          class="btn btn-warning btn-xs">Delete</a>{% endif %}
+                </li>
+                {% endfor %}
+              </ul>
+            </li>
+          </ul>
+          <a href="{% url 'activitychargeactivity_create' activitycharge_pk=act_charge.pk %}"
+             class="btn btn-primary btn-xs">Add Activity</a>
+          {% if user.is_staff %}
+          <a href="{% url 'activitycharge_update' pk=act_charge.pk %}" class="btn btn-primary btn-xs">Update</a>
+          <a href="{% url 'activitycharge_delete' pk=act_charge.pk %}" class="btn btn-warning btn-xs">Delete</a>
+          {% endif %}
+        </div>
       </div>
       {% empty %}
       <div class="panel panel-primary">

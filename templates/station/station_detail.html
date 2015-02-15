@@ -11,6 +11,7 @@
   <a class="btn btn-warning" href="{% url 'station_delete' pk=station.pk %}">Delete Station</a>
 </div>
 {% endif %}
+<strong>Station UUID: </strong><code>{{ station.uuid }}</code>
 <h2>Description</h2>
 {{ station.description|linebreaks }}
 <h2>Current Charge List</h2>

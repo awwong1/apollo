@@ -1,15 +1,16 @@
 from apollo.choices import CHARGE_LIST_OPEN
 from apollo.viewmixins import LoginRequiredMixin, ActivitySendMixin
 from applications.business.models import Business
-from applications.charge_list.forms import ChargeListForm, ActivityChargeForm
-from applications.charge_list.models import ChargeList, ActivityCharge
+from applications.charge_list.forms import ChargeListForm, ActivityChargeForm, ActivityChargeUpdateForm, \
+    ActivityChargeActivityForm
+from applications.charge_list.models import ChargeList, ActivityCharge, ActivityChargeActivityCount
 from applications.price_list.models import ActivityPriceListItem
 from applications.station.models import Station
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse_lazy
 from django.shortcuts import get_object_or_404, redirect
-from django.views.generic import ListView, CreateView, DetailView
+from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
 
 
 class ChargeListViewCreate(LoginRequiredMixin, SuccessMessageMixin, ActivitySendMixin, CreateView):
@@ -80,7 +81,7 @@ class ActivityChargeViewCreate(LoginRequiredMixin, ActivitySendMixin, SuccessMes
         station_business = station.stationbusiness_set.all()
         businesses = Business.objects.filter(businessmembership__user=self.request.user)
         can_modify = station_business.filter(business__in=businesses)
-        if can_modify:
+        if can_modify or self.request.user.is_staff:
             activity_item_pk = self.request.GET.get('activity_items', None)
             if activity_item_pk is None:
                 messages.warning(self.request, "An activity item must be provided to add.")
@@ -106,7 +107,119 @@ class ActivityChargeViewCreate(LoginRequiredMixin, ActivitySendMixin, SuccessMes
     def get_context_data(self, **kwargs):
         context = super(ActivityChargeViewCreate, self).get_context_data(**kwargs)
         charge_list = get_object_or_404(ChargeList, pk=self.kwargs.get('chargelist_pk', '-1'))
+        activity_item_pk = self.request.GET['activity_items']
+        act_item = get_object_or_404(ActivityPriceListItem, pk=activity_item_pk)
         context['station'] = charge_list.station
+        context['terms'] = act_item.terms_of_service
+        context['action'] = "Create"
+        return context
+
+
+class ActivityChargeViewUpdate(LoginRequiredMixin, SuccessMessageMixin, ActivitySendMixin, UpdateView):
+    context_object_name = 'activitycharge'
+    model = ActivityCharge
+    template_name = 'charge_list/activitycharge_form.html'
+    activity_verb = 'updated activity charge'
+    success_message = '%(price_list_item)s successfully updated!'
+    form_class = ActivityChargeUpdateForm
+
+    def dispatch(self, *args, **kwargs):
+        if self.request.user.is_staff:
+            return super(ActivityChargeViewUpdate, self).dispatch(*args, **kwargs)
+        station = self.object.charge_list.station
+        messages.warning(self.request, "Only staff can update charges.")
+        return redirect('station_detail', pl=station.pk)
+
+    def get_success_url(self):
+        station = self.object.charge_list.station
+        return reverse_lazy('station_detail', kwargs={'pk': station.pk})
+
+    def get_context_data(self, **kwargs):
+        context = super(ActivityChargeViewUpdate, self).get_context_data(**kwargs)
+        station = self.object.charge_list.station
+        context['station'] = station
+        context['terms'] = self.object.price_list_item.terms_of_service
+        context['action'] = "Update"
+        return context
+
+
+class ActivityChargeViewDelete(LoginRequiredMixin, DeleteView):
+    context_object_name = 'activitycharge'
+    model = ActivityCharge
+    template_name = 'charge_list/activitycharge_form.html'
+
+    def dispatch(self, *args, **kwargs):
+        if self.request.user.is_staff:
+            return super(ActivityChargeViewDelete, self).dispatch(*args, **kwargs)
+        station = self.object.charge_list.station
+        messages.warning(self.request, "Only staff can delete charges.")
+        return redirect('station_detail', pl=station.pk)
+
+    def get_success_url(self):
+        station = self.object.charge_list.station
+        return reverse_lazy('station_detail', kwargs={'pk': station.pk})
+
+    def get_context_data(self, **kwargs):
+        context = super(ActivityChargeViewDelete, self).get_context_data(**kwargs)
+        station = self.object.charge_list.station
+        context['station'] = station
+        context['terms'] = self.object.price_list_item.terms_of_service
+        context['action'] = "Delete"
+        return context
+
+
+class ActivityChargeActivityViewCreate(LoginRequiredMixin, ActivitySendMixin, SuccessMessageMixin, CreateView):
+    context_object_name = 'activitychargeactivity'
+    model = ActivityChargeActivityCount
+    template_name = 'charge_list/activitychargeactivity_form.html'
+    form_class = ActivityChargeActivityForm
+    activity_verb = 'created activity charge activity'
+    success_message = '%(activity_charge)s: %(activity_count)s units successfully added!'
+
+    def dispatch(self, *args, **kwargs):
+        activity_charge = get_object_or_404(ActivityCharge, pk=self.kwargs.get('activitycharge_pk', '-1'))
+        charge_list = activity_charge.charge_list
+        station = charge_list.station
+        station_business = station.stationbusiness_set.all()
+        businesses = Business.objects.filter(businessmembership__user=self.request.user)
+        can_modify = station_business.filter(business__in=businesses)
+        if can_modify or self.request.user.is_staff:
+            return super(ActivityChargeActivityViewCreate, self).dispatch(*args, **kwargs)
+        else:
+            messages.warning(self.request, "You do not have permissions to add activity this activity charge.")
+            return redirect('station_detail', pk=station.pk)
+
+    def get_form(self, form_class):
+        return form_class(activitycharge_pk=self.kwargs['activitycharge_pk'], **self.get_form_kwargs())
+
+    def get_context_data(self, **kwargs):
+        context = super(ActivityChargeActivityViewCreate, self).get_context_data(**kwargs)
+        activity_charge = get_object_or_404(ActivityCharge, pk=self.kwargs.get('activitycharge_pk', '-1'))
+        context['station'] = activity_charge.charge_list.station
+        context['action'] = "Create"
+        return context
+
+    def get_success_url(self):
+        activity_charge = get_object_or_404(ActivityCharge, pk=self.kwargs.get('activitycharge_pk', '-1'))
+        station = activity_charge.charge_list.station
+        return reverse_lazy('station_detail', kwargs={'pk': station.pk})
+
+
+class ActivityChargeActivityViewDelete(LoginRequiredMixin, DeleteView):
+    context_object_name = 'activitychargeactivity'
+    model = ActivityChargeActivityCount
+    template_name = 'charge_list/activitychargeactivity_form.html'
+
+    def get_success_url(self):
+        activity_charge = self.object.activity_charge
+        station = activity_charge.charge_list.station
+        return reverse_lazy('station_detail', kwargs={'pk': station.pk})
+
+    def get_context_data(self, **kwargs):
+        context = super(ActivityChargeActivityViewDelete, self).get_context_data(**kwargs)
+        activity_charge = self.object.activity_charge
+        context['station'] = activity_charge.charge_list.station
+        context['action'] = "Delete"
         return context
 
 

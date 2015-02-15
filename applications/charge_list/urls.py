@@ -12,4 +12,12 @@ urlpatterns = patterns(
         name='timecharge_create'),
     url(r'^(?P<chargelist_pk>\d*)/create/unitcharge/$', views.UnitChargeViewCreate.as_view(),
         name='unitcharge_create'),
+    # Activity Charge
+    url(r'activitycharge/(?P<pk>\d*)/update/$', views.ActivityChargeViewUpdate.as_view(), name='activitycharge_update'),
+    url(r'activitycharge/(?P<pk>\d*)/delete/$', views.ActivityChargeViewDelete.as_view(), name='activitycharge_delete'),
+    url(r'activitycharge/(?P<activitycharge_pk>\d*)/create/activity/$',
+        views.ActivityChargeActivityViewCreate.as_view(),
+        name='activitychargeactivity_create'),
+    url(r'activitycharge/activity/(?P<pk>\d*)/$', views.ActivityChargeActivityViewDelete.as_view(),
+        name='activitychargeactivity_delete'),
 )
