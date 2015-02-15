@@ -16,5 +16,9 @@
 <h2>Activation ID</h2>
 <strong>Regex String: </strong><code>{{ service.activation_id }}</code>
 <h2>Activated Equipment</h2>
+{% if service.activate %}
 <a href="{% url 'equipment_detail' pk=service.activate.pk %}">{{ service.activate }}</a>
+{% else %}
+<p>This service does not activate any equipment.</p>
+{% endif %}
 {% endblock %}

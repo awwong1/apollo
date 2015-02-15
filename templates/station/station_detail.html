@@ -17,6 +17,8 @@
 <h2>Current Charge List</h2>
 {% if chargelist %}
 {% include 'snippet/chargelist_snippet.html' %}
+<h3>Active Services</h3>
+<samp>{{ chargelist.get_active_services }}</samp>
 {% elif can_modify %}
 <div class="well well-sm">
   <p>There are no current active charge lists for this station. You may begin a new charge list by clicking the

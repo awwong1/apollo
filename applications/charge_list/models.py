@@ -1,6 +1,7 @@
 from decimal import Decimal
 from apollo.choices import CHARGE_LIST_STATUS_CHOICES, CHARGE_LIST_OPEN, CHARGE_LIST_CLOSED_PAYMENT_RESOLVED, \
     PRICE_LIST_RELEASE
+from applications.price_list.models import PriceListItemService
 from django.core.exceptions import ValidationError
 from django.db import models
 
@@ -35,6 +36,55 @@ class ChargeList(models.Model):
     def __unicode__(self):
         return u"({status}) {pricelist} {station}".format(status=self.get_status_display(), pricelist=self.price_list,
                                                           station=self.station)
+
+    def get_active_services(self):
+        """
+        Get a dictionary of billing businesses and their active activation regex ids.
+        """
+        business_services = dict()
+        for act_charge in self.activitycharge_set.all().filter(services_active=True):
+            services = []
+            act_pli = act_charge.price_list_item
+            act_services = PriceListItemService.objects.filter(item_uuid=act_pli.item_uuid,
+                                                               price_list=act_pli.price_list)
+            for act_service in act_services:
+                for iteration in range(0, act_service.count):
+                    services.append(act_service.service.activation_id)
+            if act_charge.billing_business in business_services.keys():
+                existing_services = business_services[act_charge.billing_business]
+                existing_services.extend(services)
+                business_services[act_charge.billing_business] = existing_services
+            else:
+                business_services[act_charge.billing_business] = services
+        for time_charge in self.timecharge_set.all().filter(services_active=True):
+            services = []
+            time_pli = time_charge.price_list_item
+            time_services = PriceListItemService.objects.filter(item_uuid=time_pli.item_uuid,
+                                                                price_list=time_pli.price_list)
+            for time_service in time_services:
+                for iteration in range(0, time_service.count):
+                    services.append(time_service.service.activation_id)
+            if time_charge.billing_business in business_services.keys():
+                existing_services = business_services[time_charge.billing_business]
+                existing_services.extend(services)
+                business_services[time_charge.billing_business] = existing_services
+            else:
+                business_services[time_charge.billing_business] = services
+        for unit_charge in self.unitcharge_set.all().filter(services_active=True):
+            services = []
+            unit_pli = unit_charge.price_list_item
+            unit_services = PriceListItemService.objects.filter(item_uuid=unit_pli.item_uuid,
+                                                                price_list=unit_pli.price_list)
+            for unit_service in unit_services:
+                for iteration in range(0, unit_service.count):
+                    services.append(unit_service.service.activation_id)
+            if unit_charge.billing_business in business_services.keys():
+                existing_services = business_services[unit_charge.billing_business]
+                existing_services.extend(services)
+                business_services[unit_charge.billing_business] = existing_services
+            else:
+                business_services[unit_charge.billing_business] = services
+        return business_services
 
 
 class AbstractChargeListItem(models.Model):

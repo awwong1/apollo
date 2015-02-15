@@ -27,7 +27,7 @@ class Service(models.Model):
         help_text="What is the Python re module activation regex for this service?"
     )
     activate = models.ForeignKey(
-        'Equipment',
+        'Equipment', blank=True, null=True,
         help_text="Which equipment does this service activate?"
     )
 

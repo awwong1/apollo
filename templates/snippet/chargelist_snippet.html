@@ -20,9 +20,9 @@
       </div>
       {% endif %}
       {% for act_charge in chargelist.activitycharge_set.all %}
-      <div class="panel panel-primary">
+      <div class="panel {% if act_charge.services_active %}panel-primary{% else %}panel-warning{% endif %}">
         <div class="panel-body">
-          {{ act_charge }}
+          {{ act_charge }} {% if not act_charge.services_active %}(Services Disabled){% endif %}
           <ul class="list-unstyled">
             <li>
               <strong>Billed to: </strong>
@@ -30,6 +30,8 @@
             </li>
             <li>
               <strong>Running Cost: </strong>${{ act_charge.get_cost }}
+              {% if act_charge.activitychargeactivitycount_set.all %}
+              <hr>
               <ul>
                 {% for act in act_charge.activitychargeactivitycount_set.all %}
                 <li>{{ act }}
@@ -40,6 +42,7 @@
                 </li>
                 {% endfor %}
               </ul>
+              {% endif %}
             </li>
           </ul>
           <a href="{% url 'activitychargeactivity_create' activitycharge_pk=act_charge.pk %}"
