@@ -1,4 +1,4 @@
-from apollo.viewmixins import LoginRequiredMixin, StaffRequiredMixin
+from apollo.viewmixins import LoginRequiredMixin, StaffRequiredMixin, ActivitySendMixin
 from applications.terms_of_service.models import TermsOfService
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse_lazy
@@ -17,11 +17,12 @@ class TermsOfServiceViewDetail(LoginRequiredMixin, DetailView):
     template_name = "terms_of_service/termsofservice_detail.html"
 
 
-class TermsOfServiceViewCreate(LoginRequiredMixin, StaffRequiredMixin, SuccessMessageMixin, CreateView):
+class TermsOfServiceViewCreate(LoginRequiredMixin, StaffRequiredMixin, SuccessMessageMixin, ActivitySendMixin, CreateView):
     context_object_name = 'termsofservice'
     model = TermsOfService
     success_message = "%(title)s was created successfully!"
     template_name = "terms_of_service/termsofservice_form.html"
+    activity_verb = 'created terms of service'
 
     def get_success_url(self):
         return reverse_lazy('termsofservice_detail', kwargs={'pk': self.object.pk})
@@ -32,11 +33,12 @@ class TermsOfServiceViewCreate(LoginRequiredMixin, StaffRequiredMixin, SuccessMe
         return context
 
 
-class TermsOfServiceViewUpdate(LoginRequiredMixin, StaffRequiredMixin, SuccessMessageMixin, UpdateView):
+class TermsOfServiceViewUpdate(LoginRequiredMixin, StaffRequiredMixin, SuccessMessageMixin, ActivitySendMixin, UpdateView):
     context_object_name = 'termsofservice'
     model = TermsOfService
     success_message = "%(title)s was updated successfully!"
     template_name = "terms_of_service/termsofservice_form.html"
+    activity_verb = 'updated terms of service'
 
     def get_success_url(self):
         return reverse_lazy('termsofservice_detail', kwargs={'pk': self.object.pk})
@@ -47,11 +49,13 @@ class TermsOfServiceViewUpdate(LoginRequiredMixin, StaffRequiredMixin, SuccessMe
         return context
 
 
-class TermsOfServiceViewDelete(LoginRequiredMixin, StaffRequiredMixin, DeleteView):
+class TermsOfServiceViewDelete(LoginRequiredMixin, StaffRequiredMixin, ActivitySendMixin, DeleteView):
     context_object_name = 'termsofservice'
     model = TermsOfService
     success_url = reverse_lazy('termsofservice_list')
     template_name = "terms_of_service/termsofservice_form.html"
+    target_object_valid = False
+    activity_verb = 'deleted terms of service'
 
     def get_context_data(self, **kwargs):
         context = super(TermsOfServiceViewDelete, self).get_context_data(**kwargs)

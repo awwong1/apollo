@@ -95,13 +95,15 @@ class PriceListViewUpdate(LoginRequiredMixin, StaffRequiredMixin, SuccessMessage
         return context
 
 
-class PriceListViewDelete(LoginRequiredMixin, StaffRequiredMixin, DeleteView):
+class PriceListViewDelete(LoginRequiredMixin, StaffRequiredMixin, ActivitySendMixin, DeleteView):
     context_object_name = 'pricelist'
     model = PriceList
     slug_field = 'id'
     slug_url_kwarg = 'pl_id'
     success_url = reverse_lazy('pricelist_list')
     template_name = "price_list/pricelist_form.html"
+    activity_verb = 'deleted price list'
+    target_object_valid = False
 
     def get_success_url(self):
         return self.success_url
@@ -158,10 +160,12 @@ class ActivityPriceListItemViewUpdate(LoginRequiredMixin, StaffRequiredMixin, Su
         return context
 
 
-class ActivityPriceListItemViewDelete(LoginRequiredMixin, StaffRequiredMixin, DeleteView):
+class ActivityPriceListItemViewDelete(LoginRequiredMixin, StaffRequiredMixin, ActivitySendMixin, DeleteView):
     context_object_name = 'activityitem'
     model = ActivityPriceListItem
     template_name = "price_list/activity_pricelistitem_form.html"
+    target_object_valid = False
+    activity_verb = 'deleted activity price list item'
 
     def get_success_url(self):
         return reverse_lazy('pricelist_detail', kwargs={'pl_id': self.object.price_list.pk})
@@ -235,10 +239,12 @@ class TimePriceListItemViewUpdate(LoginRequiredMixin, StaffRequiredMixin, Succes
         return context
 
 
-class TimePriceListItemViewDelete(LoginRequiredMixin, StaffRequiredMixin, DeleteView):
+class TimePriceListItemViewDelete(LoginRequiredMixin, StaffRequiredMixin, ActivitySendMixin, DeleteView):
     context_object_name = 'timeitem'
     model = TimePriceListItem
     template_name = "price_list/time_pricelistitem_form.html"
+    activity_verb = 'deleted time price list item'
+    target_object_valid = False
 
     def get_success_url(self):
         return reverse_lazy('pricelist_detail', kwargs={'pl_id': self.object.price_list.pk})
@@ -312,10 +318,12 @@ class UnitPriceListItemViewUpdate(LoginRequiredMixin, StaffRequiredMixin, Succes
         return context
 
 
-class UnitPriceListItemViewDelete(LoginRequiredMixin, StaffRequiredMixin, DeleteView):
+class UnitPriceListItemViewDelete(LoginRequiredMixin, StaffRequiredMixin, ActivitySendMixin, DeleteView):
     context_object_name = 'unititem'
     model = UnitPriceListItem
     template_name = "price_list/unit_pricelistitem_form.html"
+    activity_verb = 'deleted unit price list item'
+    target_object_valid = False
 
     def get_success_url(self):
         return reverse_lazy('pricelist_detail', kwargs={'pl_id': self.object.price_list.pk})
@@ -398,10 +406,12 @@ class PriceListItemEquipmentViewUpdate(LoginRequiredMixin, StaffRequiredMixin, S
         return context
 
 
-class PriceListItemEquipmentViewDelete(LoginRequiredMixin, StaffRequiredMixin, DeleteView):
+class PriceListItemEquipmentViewDelete(LoginRequiredMixin, StaffRequiredMixin, ActivitySendMixin, DeleteView):
     context_object_name = 'equipmentplir'
     model = PriceListItemEquipment
     template_name = "price_list/equipment_pricelistitem_form.html"
+    activity_verb = 'deleted equipment price list item relation'
+    target_object_valid = False
 
     def get_success_url(self):
         return reverse_lazy('pricelist_detail', kwargs={'pk': self.object.price_list.pk})
@@ -467,10 +477,12 @@ class PriceListItemServiceViewUpdate(LoginRequiredMixin, StaffRequiredMixin, Suc
         return context
 
 
-class PriceListItemServiceViewDelete(LoginRequiredMixin, StaffRequiredMixin, DeleteView):
+class PriceListItemServiceViewDelete(LoginRequiredMixin, StaffRequiredMixin, ActivitySendMixin, DeleteView):
     context_object_name = 'serviceplir'
     model = PriceListItemService
     template_name = "price_list/service_pricelistitem_form.html"
+    target_object_valid = False
+    activity_verb = 'deleted service price list item relation'
 
     def get_success_url(self):
         return reverse_lazy('pricelist_detail', kwargs={'pl_id': self.object.price_list.pk})

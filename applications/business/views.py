@@ -75,11 +75,13 @@ class BusinessViewUpdate(LoginRequiredMixin, SuccessMessageMixin, ActivitySendMi
         return context
 
 
-class BusinessViewDelete(LoginRequiredMixin, DeleteView):
+class BusinessViewDelete(LoginRequiredMixin, ActivitySendMixin, DeleteView):
     context_object_name = 'business'
     model = Business
     success_url = reverse_lazy('base')
     template_name = "business/business_form.html"
+    activity_verb = 'deleted business'
+    target_object_valid = False
 
     def dispatch(self, *args, **kwargs):
         business = get_object_or_404(Business, pk=self.kwargs['pk'])
@@ -132,10 +134,12 @@ class BusinessMembershipViewCreate(LoginRequiredMixin, ActivitySendMixin, Succes
         return reverse_lazy('business_detail', kwargs={'pk': self.object.business.pk})
 
 
-class BusinessMembershipViewDelete(LoginRequiredMixin, DeleteView):
+class BusinessMembershipViewDelete(LoginRequiredMixin, ActivitySendMixin, DeleteView):
     context_object_name = 'businessmembership'
     model = BusinessMembership
     template_name = 'business/businessmembership_form.html'
+    activity_verb = 'deleted business membership'
+    target_object_valid = False
 
     def dispatch(self, *args, **kwargs):
         business = get_object_or_404(BusinessMembership, pk=kwargs.get('pk', '-1')).business

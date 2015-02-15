@@ -1,5 +1,7 @@
+from apollo.choices import CHARGE_LIST_OPEN
 from apollo.viewmixins import LoginRequiredMixin, ActivitySendMixin, StaffRequiredMixin
 from applications.business.models import Business
+from applications.charge_list.models import ChargeList
 from applications.station.forms import StationBusinessForm
 from applications.station.models import Station, StationBusiness
 from django.contrib import messages
@@ -42,6 +44,9 @@ class StationViewDetail(LoginRequiredMixin, DetailView):
         context = super(StationViewDetail, self).get_context_data(**kwargs)
         user_businesses = self.request.user.businessmembership_set.all()
         context['can_modify'] = self.object.stationbusiness_set.all().filter(business__in=user_businesses)
+        active_cl = ChargeList.objects.filter(station=self.object, status=CHARGE_LIST_OPEN)
+        if len(active_cl) == 1:
+            context['chargelist'] = active_cl[0]
         return context
 
 
@@ -101,11 +106,13 @@ class StationViewUpdate(LoginRequiredMixin, SuccessMessageMixin, ActivitySendMix
         return context
 
 
-class StationViewDelete(LoginRequiredMixin, DeleteView):
+class StationViewDelete(LoginRequiredMixin, ActivitySendMixin, DeleteView):
     context_object_name = 'station'
     model = Station
     success_url = reverse_lazy('base')
     template_name = "station/station_form.html"
+    activity_verb = 'deleted station'
+    target_object_valid = False
 
     def dispatch(self, *args, **kwargs):
         station = get_object_or_404(Station, pk=self.kwargs.get('pk', '-1'))
@@ -161,10 +168,12 @@ class StationBusinessViewCreate(LoginRequiredMixin, SuccessMessageMixin, Activit
         return context
 
 
-class StationBusinessViewDelete(LoginRequiredMixin, DeleteView):
+class StationBusinessViewDelete(LoginRequiredMixin, ActivitySendMixin, DeleteView):
     context_object_name = 'stationbusiness'
     model = StationBusiness
     template_name = "station/stationbusiness_form.html"
+    activity_verb = 'deleted station business association'
+    target_object_valid = False
 
     def get_success_url(self):
         return reverse_lazy('station_detail', kwargs={'pk': self.object.station.pk})

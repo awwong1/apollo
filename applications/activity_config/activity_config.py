@@ -13,6 +13,12 @@ class ActivityConfig(AppConfig):
         # Business Activity Registration
         registry.register(apps.get_model('business.Business'))
         registry.register(apps.get_model('business.BusinessMembership'))
+        # Charge List Activity Registration
+        registry.register(apps.get_model('charge_list.ChargeList'))
+        registry.register(apps.get_model('charge_list.ActivityCharge'))
+        registry.register(apps.get_model('charge_list.TimeCharge'))
+        registry.register(apps.get_model('charge_list.UnitCharge'))
+        registry.register(apps.get_model('charge_list.ActivityChargeActivityCount'))
         # Price List Activity Registration
         registry.register(apps.get_model('price_list.PriceList'))
         registry.register(apps.get_model('price_list.ActivityPriceListItem'))

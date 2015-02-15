@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<ol class="breadcrumb">
+  <li><a href="/">Home</a></li>
+  <li class="active">Activity Stream</li>
+</ol>
+<h1>My Activity Stream</h1>
+<ul>
+  {% for act in activity %}
+  <li>{{ act }}</li>
+  {% empty %}
+  <li>No actions have been performed yet.</li>
+  {% endfor %}
+</ul>
+{% endblock %}

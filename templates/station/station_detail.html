@@ -14,17 +14,24 @@
 <h2>Description</h2>
 {{ station.description|linebreaks }}
 <h2>Current Charge List</h2>
-{% if can_modify %}
+{% if chargelist %}
+{% include 'snippet/chargelist_snippet.html' %}
+{% elif can_modify %}
 <div class="well well-sm">
-  <a class="btn btn-primary" href="#">View Prior Charge Lists</a>
+  <p>There are no current active charge lists for this station. You may begin a new charge list by clicking the
+    following:</p>
+  <p><a class="btn btn-primary" href="{% url 'chargelist_create' station_pk=station.pk %}">Create Charge list</a></p>
+</div>
+{% else %}
+<div class="well well-sm">
+  There are no current active charge lists for this station.
 </div>
 {% endif %}
-{% include 'snippet/chargelist_snippet.html' %}
 <h2>Associated Businesses</h2>
 {% if can_modify %}
 <div class="well well-sm">
   <a class="btn btn-primary" href="{% url 'stationbusiness_create' station_pk=station.pk %}">
-    Create Station Business Association
+    Associate Station Business
   </a>
 </div>
 {% endif %}

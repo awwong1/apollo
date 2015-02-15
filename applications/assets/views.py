@@ -51,11 +51,13 @@ class EquipmentViewUpdate(LoginRequiredMixin, StaffRequiredMixin, SuccessMessage
         return context
 
 
-class EquipmentViewDelete(LoginRequiredMixin, StaffRequiredMixin, DeleteView):
+class EquipmentViewDelete(LoginRequiredMixin, StaffRequiredMixin, ActivitySendMixin, DeleteView):
     context_object_name = 'equipment'
     model = Equipment
     success_url = reverse_lazy('equipment_list')
     template_name = "equipment/equipment_form.html"
+    activity_verb = 'deleted equipment'
+    target_object_valid = False
 
     def get_context_data(self, **kwargs):
         context = super(EquipmentViewDelete, self).get_context_data(**kwargs)
@@ -109,11 +111,13 @@ class ServiceViewUpdate(LoginRequiredMixin, StaffRequiredMixin, SuccessMessageMi
         return context
 
 
-class ServiceViewDelete(LoginRequiredMixin, StaffRequiredMixin, DeleteView):
+class ServiceViewDelete(LoginRequiredMixin, StaffRequiredMixin, ActivitySendMixin, DeleteView):
     context_object_name = 'service'
     model = Service
     success_url = reverse_lazy('service_list')
     template_name = "service/service_form.html"
+    activity_verb = 'deleted service'
+    target_object_valid = False
 
     def get_context_data(self, **kwargs):
         context = super(ServiceViewDelete, self).get_context_data(**kwargs)

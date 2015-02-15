@@ -2,12 +2,30 @@
   <div class="row">
     <div class="col-md-4">
       <p class="lead">Activity Charges</p>
+      {% for act_charge in chargelist.activitycharge_set.all %}
+      {% empty %}
+      <div class="panel panel-primary">
+        <div class="panel-body">No activity charges exist in this charge list!</div>
+      </div>
+      {% endfor %}
     </div>
     <div class="col-md-4">
       <p class="lead">Time Charges</p>
+      {% for time_charge in chargelist.timecharge_set.all %}
+      {% empty %}
+      <div class="panel panel-primary">
+        <div class="panel-body">No time charges exist in this charge list!</div>
+      </div>
+      {% endfor %}
     </div>
     <div class="col-md-4">
       <p class="lead">Unit Charges</p>
+      {% for unit_charge in chargelist.unitcharge_set.all %}
+      {% empty %}
+      <div class="panel panel-primary">
+        <div class="panel-body">No unit charges exist in this charge list!</div>
+      </div>
+      {% endfor %}
     </div>
   </div>
 </div>

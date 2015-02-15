@@ -40,6 +40,7 @@ class AbstractChargeListItem(models.Model):
     charge_list = models.ForeignKey('ChargeList', help_text="Which charge list does this charge list item reference?")
     billing_business = models.ForeignKey('business.Business', help_text="Which business is this charge billed to?")
     last_modified = models.DateTimeField(auto_now=True, help_text="When was this charge list modified?")
+    services_active = models.BooleanField(default=True, help_text="Are these charge's associated services enabled?")
 
     def clean(self):
         """

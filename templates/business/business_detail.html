@@ -22,7 +22,7 @@
 {% endif %}
 <ul>
   {% for sb in business.stationbusiness_set.all %}
-  <li><a href="{% url 'station_detail' pk=sb.station.pk %}">{{ sb }}</a></li>
+  <li><a href="{% url 'station_detail' pk=sb.station.pk %}">{{ sb.station }}</a></li>
   {% empty %}
   <li>No station is associated with this business!</li>
   {% endfor %}

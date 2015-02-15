@@ -11,9 +11,11 @@ urlpatterns = patterns(
     url(r'^prototype/$', views.base_prototype, name='base_prototype'),
     url(r'^contact/$', views.base_contact, name='base_contact'),
     url(r'^api/', include(router.urls), name='api'),
+    url(r'^my-activity/$', views.view_self_activity, name='my_activity'),
     # Internal application urls
     url(r'^asset/', include('applications.assets.urls'), name='assets'),
     url(r'^business/', include('applications.business.urls'), name='business'),
+    url(r'^chargelist/', include('applications.charge_list.urls'), name='chargelist'),
     url(r'^pricelist/', include('applications.price_list.urls'), name='pricelist'),
     url(r'^station/', include('applications.station.urls'), name='station'),
     url(r'^termsofservice/', include('applications.terms_of_service.urls'), name='termsofservice'),
