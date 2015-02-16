@@ -5,9 +5,9 @@
 <ol class="breadcrumb">
   <li><a href="/">Home</a></li>
   <li><a href="{% url 'station_detail' pk=station.pk %}">{{ station }}</a></li>
-  <li class="active">{{ action }} Activity Charge</li>
+  <li class="active">{{ action }} Time Charge</li>
 </ol>
-<h1>{% if activitycharge %}{{ activitycharge }}{% else %}Create New Activity Charge{% endif %}</h1>
+<h1>{% if timecharge %}{{ timecharge }}{% else %}Create New Time Charge{% endif %}</h1>
 <form method="POST">
   {% csrf_token %}
   {% if form %}
@@ -44,7 +44,7 @@
     Submit
   </button>
   {% else %}
-  <p>Are you sure you want to delete {{ activitycharge }}?</p>
+  <p>Are you sure you want to delete {{ timecharge }}?</p>
   <input class="btn btn-danger" type="submit" value="Delete"/>
   {% endif %}
 </form>

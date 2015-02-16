@@ -2,9 +2,9 @@ from apollo.choices import CHARGE_LIST_OPEN
 from apollo.viewmixins import LoginRequiredMixin, ActivitySendMixin
 from applications.business.models import Business
 from applications.charge_list.forms import ChargeListForm, ActivityChargeForm, ActivityChargeUpdateForm, \
-    ActivityChargeActivityForm
-from applications.charge_list.models import ChargeList, ActivityCharge, ActivityChargeActivityCount
-from applications.price_list.models import ActivityPriceListItem
+    ActivityChargeActivityForm, TimeChargeForm, TimeChargeUpdateForm
+from applications.charge_list.models import ChargeList, ActivityCharge, ActivityChargeActivityCount, TimeCharge
+from applications.price_list.models import ActivityPriceListItem, TimePriceListItem
 from applications.station.models import Station
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
@@ -92,7 +92,8 @@ class ActivityChargeViewCreate(LoginRequiredMixin, ActivitySendMixin, SuccessMes
                 return redirect('station_detail', pk=station.pk)
             return super(ActivityChargeViewCreate, self).dispatch(*args, **kwargs)
         else:
-            messages.warning(self.request, "You do not have permissions to create a charge list for this station.")
+            messages.warning(self.request,
+                             "You do not have permissions to create an activity charge for this charge list.")
             return redirect('station_detail', pk=station.pk)
 
     def get_form(self, form_class):
@@ -112,6 +113,7 @@ class ActivityChargeViewCreate(LoginRequiredMixin, ActivitySendMixin, SuccessMes
         context['station'] = charge_list.station
         context['terms'] = act_item.terms_of_service
         context['action'] = "Create"
+        context['price_list_item'] = act_item
         return context
 
 
@@ -166,6 +168,11 @@ class ActivityChargeViewDelete(LoginRequiredMixin, DeleteView):
         context['terms'] = self.object.price_list_item.terms_of_service
         context['action'] = "Delete"
         return context
+
+
+"""
+Nested Activity Charge Activity Generic Views
+"""
 
 
 class ActivityChargeActivityViewCreate(LoginRequiredMixin, ActivitySendMixin, SuccessMessageMixin, CreateView):
@@ -223,8 +230,109 @@ class ActivityChargeActivityViewDelete(LoginRequiredMixin, DeleteView):
         return context
 
 
-class TimeChargeViewCreate(LoginRequiredMixin, CreateView):
-    pass
+class TimeChargeViewCreate(LoginRequiredMixin, ActivitySendMixin, SuccessMessageMixin, CreateView):
+    """
+    Requires url encoded chargelist_pk, get parameter activity_items=<TimePriceListItem.pk>
+    """
+    context_object_name = 'timecharge'
+    model = TimeCharge
+    template_name = 'charge_list/timecharge_form.html'
+    form_class = TimeChargeForm
+    activity_verb = 'created time charge'
+    success_message = '%(price_list_item)s successfully added!'
+
+    def dispatch(self, *args, **kwargs):
+        charge_list = get_object_or_404(ChargeList, pk=self.kwargs.get('chargelist_pk', '-1'))
+        station = charge_list.station
+        station_business = station.stationbusiness_set.all()
+        businesses = Business.objects.filter(businessmembership__user=self.request.user)
+        can_modify = station_business.filter(business__in=businesses)
+        if can_modify or self.request.user.is_staff:
+            time_item_pk = self.request.GET.get('time_items', None)
+            if time_item_pk is None:
+                messages.warning(self.request, "An time item must be provided to add.")
+                return redirect('station_detail', pk=station.pk)
+            time_item = get_object_or_404(TimePriceListItem, pk=time_item_pk)
+            if time_item.price_list != charge_list.price_list:
+                messages.warning(self.request, "The provided time item must be part of the current price list.")
+                return redirect('station_detail', pk=station.pk)
+            return super(TimeChargeViewCreate, self).dispatch(*args, **kwargs)
+        else:
+            messages.warning(self.request, "You do not have permissions to create a time charge for this charge list.")
+            return redirect('station_detail', pk=station.pk)
+
+    def get_form(self, form_class):
+        return form_class(chargelist_pk=self.kwargs['chargelist_pk'], timepli_pk=self.request.GET['time_items'],
+                          **self.get_form_kwargs())
+
+    def get_success_url(self):
+        charge_list = get_object_or_404(ChargeList, pk=self.kwargs.get('chargelist_pk', '-1'))
+        station = charge_list.station
+        return reverse_lazy('station_detail', kwargs={'pk': station.pk})
+
+    def get_context_data(self, **kwargs):
+        context = super(TimeChargeViewCreate, self).get_context_data(**kwargs)
+        charge_list = get_object_or_404(ChargeList, pk=self.kwargs.get('chargelist_pk', '-1'))
+        time_item_pk = self.request.GET['time_items']
+        time_item = get_object_or_404(TimePriceListItem, pk=time_item_pk)
+        context['station'] = charge_list.station
+        context['terms'] = time_item.terms_of_service
+        context['action'] = "Create"
+        context['price_list_item'] = time_item
+        return context
+
+
+class TimeChargeViewUpdate(LoginRequiredMixin, SuccessMessageMixin, ActivitySendMixin, UpdateView):
+    context_object_name = 'timecharge'
+    model = TimeCharge
+    template_name = 'charge_list/timecharge_form.html'
+    activity_verb = 'updated time charge'
+    success_message = '%(price_list_item)s successfully updated!'
+    form_class = TimeChargeUpdateForm
+
+    def dispatch(self, *args, **kwargs):
+        if self.request.user.is_staff:
+            return super(TimeChargeViewUpdate, self).dispatch(*args, **kwargs)
+        station = self.object.charge_list.station
+        messages.warning(self.request, "Only staff can update charges.")
+        return redirect('station_detail', pl=station.pk)
+
+    def get_success_url(self):
+        station = self.object.charge_list.station
+        return reverse_lazy('station_detail', kwargs={'pk': station.pk})
+
+    def get_context_data(self, **kwargs):
+        context = super(TimeChargeViewUpdate, self).get_context_data(**kwargs)
+        station = self.object.charge_list.station
+        context['station'] = station
+        context['terms'] = self.object.price_list_item.terms_of_service
+        context['action'] = "Update"
+        return context
+
+
+class TimeChargeViewDelete(LoginRequiredMixin, DeleteView):
+    context_object_name = 'timecharge'
+    model = TimeCharge
+    template_name = 'charge_list/timecharge_form.html'
+
+    def dispatch(self, *args, **kwargs):
+        if self.request.user.is_staff:
+            return super(TimeChargeViewDelete, self).dispatch(*args, **kwargs)
+        station = self.object.charge_list.station
+        messages.warning(self.request, "Only staff can delete charges.")
+        return redirect('station_detail', pl=station.pk)
+
+    def get_success_url(self):
+        station = self.object.charge_list.station
+        return reverse_lazy('station_detail', kwargs={'pk': station.pk})
+
+    def get_context_data(self, **kwargs):
+        context = super(TimeChargeViewDelete, self).get_context_data(**kwargs)
+        station = self.object.charge_list.station
+        context['station'] = station
+        context['terms'] = self.object.price_list_item.terms_of_service
+        context['action'] = "Delete"
+        return context
 
 
 class UnitChargeViewCreate(LoginRequiredMixin, CreateView):

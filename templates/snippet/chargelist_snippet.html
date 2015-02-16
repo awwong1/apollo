@@ -64,7 +64,7 @@
       {% if can_modify and timecharge_catalog %}
       <div class="panel panel-info">
         <div class="panel-body">
-          <form method="get">
+          <form action="{% url 'timecharge_create' chargelist_pk=chargelist.pk %}" method="get">
             {% bootstrap_form timecharge_catalog %}
             <input class="btn btn-primary btn-sm" type="submit" value="Add Time Charge"/>
           </form>
@@ -72,8 +72,43 @@
       </div>
       {% endif %}
       {% for time_charge in chargelist.timecharge_set.all %}
-      <div class="panel panel-primary">
-        <div class="panel-body">{{ time_charge }}</div>
+      <div class="panel {% if time_charge.services_active %}panel-primary{% else %}panel-warning{% endif %}">
+        <div class="panel-body">
+          {{ time_charge }} {% if not time_charge.services_active %}(Services Disabled){% endif %}
+          <ul class="list-unstyled">
+            <li>
+              <strong>Billed to: </strong>
+              <a href="{% url 'businses_detail' pk=time_charge.billing_business.pk">
+                {{ time_charge.billing_business }}</a>
+            </li>
+            <li>
+              <strong>Running Cost: </strong>${{ time_charge.get_cost }}
+              <ul>
+                <li><strong>Start Time: </strong>
+                  {% if time_charge.time_start %}
+                  {{ time_charge.time_start | date:"D, d F Y \a\t H:i T" }}
+                  {% else %}
+                  Billing start time has not been set yet.
+                  {% endif %}
+                </li>
+                {% if time_charge.time_start %}
+                <li><strong>End Time: </strong>
+                  {% if time_charge.time_end %}
+                  {{ time_charge.time_end | date:"D, d F Y \a\t H:i T" }}
+                  {% else %}
+                  {% now "D, d F Y \a\t H:i T" %}
+                  <small>Billing end time has not been set yet. Default to now.</small>
+                  {% endif %}
+                </li>
+                {% endif %}
+              </ul>
+            </li>
+          </ul>
+          {% if user.is_staff %}
+          <a href="{% url 'timecharge_update' pk=time_charge.pk %}" class="btn btn-primary btn-xs">Update</a>
+          <a href="{% url 'timecharge_delete' pk=time_charge.pk %}" class="btn btn-warning btn-xs">Delete</a>
+          {% endif %}
+        </div>
       </div>
       {% empty %}
       <div class="panel panel-primary">

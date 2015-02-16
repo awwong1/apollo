@@ -1,9 +1,11 @@
 from decimal import Decimal
 from apollo.choices import CHARGE_LIST_STATUS_CHOICES, CHARGE_LIST_OPEN, CHARGE_LIST_CLOSED_PAYMENT_RESOLVED, \
-    PRICE_LIST_RELEASE
+    PRICE_LIST_RELEASE, TIME_MEASUREMENT_DAY, TIME_MEASUREMENT_HOUR
 from applications.price_list.models import PriceListItemService
 from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator
 from django.db import models
+from django.utils import timezone
 
 
 class ChargeList(models.Model):
@@ -163,7 +165,8 @@ class ActivityChargeActivityCount(models.Model):
         ActivityCharge, help_text="Which activity charge is this activity charge activity count applied to?"
     )
     activity_count = models.PositiveIntegerField(
-        help_text="How many units of activity is being applied to this activity charge?"
+        help_text="How many units of activity is being applied to this activity charge?",
+        validators=[MinValueValidator(1)]
     )
     last_modified = models.DateTimeField(auto_now=True, help_text="When was this activity last created/modified?")
 
@@ -195,13 +198,15 @@ class TimeCharge(AbstractChargeListItem):
         if self.time_start:
             if self.time_end and self.time_end < self.time_start:
                 raise ValidationError({'time_end': 'Charge billing time cannot end before it began.'})
+            if timezone.now() < self.time_start:
+                raise ValidationError({'time_start': 'Charge cannot begin billing in the future.'})
         elif self.time_end:
             raise ValidationError({'time_start': 'Charges with an end time must have a start time specified.'})
 
     def __str__(self):
         price = self.price_per_time_override
         if price is None:
-            price = self.price_list_item.price_per_unit
+            price = self.price_list_item.price_per_time
         return "{name} (${price}/{measurement})".format(
             name=self.price_list_item.name, price=price,
             measurement=self.price_list_item.get_unit_time_display()
@@ -210,11 +215,32 @@ class TimeCharge(AbstractChargeListItem):
     def __unicode__(self):
         price = self.price_per_time_override
         if price is None:
-            price = self.price_list_item.price_per_unit
+            price = self.price_list_item.price_per_time
         return u"{name} (${price}/{measurement})".format(
             name=self.price_list_item.name, price=price,
             measurement=self.price_list_item.get_unit_time_display()
         )
+
+    def get_cost(self):
+        """
+        Return the raw decimal value for what this charge costs
+        :return:
+        """
+        base_price = self.price_list_item.price_per_time
+        if self.price_per_time_override:
+            base_price = self.price_per_unit_override
+        price = Decimal(0.0)
+        if self.time_start is not None:
+            end = self.time_end
+            if end is None:
+                end = timezone.now()
+            diff_time = end - self.time_start
+            if self.price_list_item.unit_time == TIME_MEASUREMENT_DAY:
+                price = base_price * Decimal(diff_time.days)
+            elif self.price_list_item.unit_time == TIME_MEASUREMENT_HOUR:
+                price += Decimal(diff_time.days) * 24 * base_price
+                price += Decimal(diff_time.seconds/3600) * base_price
+        return price
 
 
 class UnitCharge(AbstractChargeListItem):
