@@ -5,8 +5,9 @@ from applications.charge_list.forms import ChargeListForm, ActivityChargeForm, A
     ActivityChargeActivityForm, TimeChargeForm, TimeChargeUpdateForm, UnitChargeForm, UnitChargeUpdateForm
 from applications.charge_list.models import ChargeList, ActivityCharge, ActivityChargeActivityCount, TimeCharge, \
     UnitCharge
-from applications.price_list.models import ActivityPriceListItem, TimePriceListItem, UnitPriceListItem
-from applications.station.models import Station
+from applications.price_list.models import ActivityPriceListItem, TimePriceListItem, UnitPriceListItem, \
+    PriceListItemEquipment
+from applications.station.models import Station, StationRental
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse_lazy
@@ -104,6 +105,12 @@ class ActivityChargeViewCreate(LoginRequiredMixin, ActivitySendMixin, SuccessMes
     def get_success_url(self):
         charge_list = get_object_or_404(ChargeList, pk=self.kwargs.get('chargelist_pk', '-1'))
         station = charge_list.station
+        item_uuid = self.object.price_list_item.item_uuid
+        price_list = charge_list.price_list
+        equipment_plirs = PriceListItemEquipment.objects.filter(price_list=price_list, item_uuid=item_uuid)
+        for equipment_plir in equipment_plirs:
+            for iteration in range(0, equipment_plir.count):
+                StationRental.objects.create(station=station, equipment=equipment_plir.equipment)
         return reverse_lazy('station_detail', kwargs={'pk': station.pk})
 
     def get_context_data(self, **kwargs):
@@ -274,6 +281,12 @@ class TimeChargeViewCreate(LoginRequiredMixin, ActivitySendMixin, SuccessMessage
     def get_success_url(self):
         charge_list = get_object_or_404(ChargeList, pk=self.kwargs.get('chargelist_pk', '-1'))
         station = charge_list.station
+        item_uuid = self.object.price_list_item.item_uuid
+        price_list = charge_list.price_list
+        equipment_plirs = PriceListItemEquipment.objects.filter(price_list=price_list, item_uuid=item_uuid)
+        for equipment_plir in equipment_plirs:
+            for iteration in range(0, equipment_plir.count):
+                StationRental.objects.create(station=station, equipment=equipment_plir.equipment)
         return reverse_lazy('station_detail', kwargs={'pk': station.pk})
 
     def get_context_data(self, **kwargs):
@@ -384,6 +397,13 @@ class UnitChargeViewCreate(LoginRequiredMixin, ActivitySendMixin, SuccessMessage
     def get_success_url(self):
         charge_list = get_object_or_404(ChargeList, pk=self.kwargs.get('chargelist_pk', '-1'))
         station = charge_list.station
+
+        item_uuid = self.object.price_list_item.item_uuid
+        price_list = charge_list.price_list
+        equipment_plirs = PriceListItemEquipment.objects.filter(price_list=price_list, item_uuid=item_uuid)
+        for equipment_plir in equipment_plirs:
+            for iteration in range(0, equipment_plir.count):
+                StationRental.objects.create(station=station, equipment=equipment_plir.equipment)
         return reverse_lazy('station_detail', kwargs={'pk': station.pk})
 
     def get_context_data(self, **kwargs):

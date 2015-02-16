@@ -3,8 +3,8 @@ from apollo.viewmixins import LoginRequiredMixin, ActivitySendMixin, StaffRequir
 from applications.business.models import Business
 from applications.charge_list.forms import ActivityChargeCatalog, TimeChargeCatalog, UnitChargeCatalog
 from applications.charge_list.models import ChargeList
-from applications.station.forms import StationBusinessForm
-from applications.station.models import Station, StationBusiness
+from applications.station.forms import StationBusinessForm, StationRentalForm
+from applications.station.models import Station, StationBusiness, StationRental
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse_lazy
@@ -203,4 +203,61 @@ class StationBusinessViewDelete(LoginRequiredMixin, ActivitySendMixin, DeleteVie
     def get_context_data(self, **kwargs):
         context = super(StationBusinessViewDelete, self).get_context_data(**kwargs)
         context['station'] = self.object.station
+        return context
+
+
+"""
+Station Rental generic views
+"""
+
+
+class StationRentalViewUpdate(LoginRequiredMixin, ActivitySendMixin, SuccessMessageMixin, UpdateView):
+    model = StationRental
+    context_object_name = 'stationrental'
+    template_name = "station/stationrental_form.html"
+    activity_verb = 'updated station rental'
+    success_message = '%(equipment)s rental successfully updated!'
+    form_class = StationRentalForm
+
+    def get_success_url(self):
+        return reverse_lazy('station_detail', kwargs={'pk': self.object.station.pk})
+
+    def dispatch(self, *args, **kwargs):
+        station_rental = get_object_or_404(StationRental, pk=self.kwargs.get('pk', '-1'))
+        if self.request.user.is_staff:
+            return super(StationRentalViewUpdate, self).dispatch(*args, **kwargs)
+        else:
+            messages.warning(self.request, "Only staff may update station rentals.")
+            return redirect('station_detail', pk=station_rental.station.pk)
+
+    def get_context_data(self, **kwargs):
+        context = super(StationRentalViewUpdate, self).get_context_data(**kwargs)
+        context['station'] = self.object.station
+        context['action'] = 'Update'
+        return context
+
+
+class StationRentalViewDelete(LoginRequiredMixin, DeleteView):
+    model = StationRental
+    context_object_name = 'stationrental'
+    template_name = "station/stationrental_form.html"
+    activity_verb = 'updated station rental'
+    success_message = '%(equipment)s rental successfully updated!'
+    form_class = StationRentalForm
+
+    def get_success_url(self):
+        return reverse_lazy('station_detail', kwargs={'pk': self.object.station.pk})
+
+    def dispatch(self, *args, **kwargs):
+        station_rental = get_object_or_404(StationRental, pk=self.kwargs.get('pk', '-1'))
+        if self.request.user.is_staff:
+            return super(StationRentalViewDelete, self).dispatch(*args, **kwargs)
+        else:
+            messages.warning(self.request, "Only staff may delete station rentals.")
+            return redirect('station_detail', pk=station_rental.station.pk)
+
+    def get_context_data(self, **kwargs):
+        context = super(StationRentalViewDelete, self).get_context_data(**kwargs)
+        context['station'] = self.object.station
+        context['action'] = 'Delete'
         return context

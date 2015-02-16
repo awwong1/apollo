@@ -2,14 +2,15 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
+import django.core.validators
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('station', '0003_auto_20150214_2248'),
-        ('business', '0004_auto_20150214_1826'),
-        ('price_list', '0002_auto_20150213_2204'),
+        ('station', '0001_initial'),
+        ('price_list', '0001_initial'),
+        ('business', '0001_initial'),
     ]
 
     operations = [
@@ -18,7 +19,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('last_modified', models.DateTimeField(help_text=b'When was this charge list modified?', auto_now=True)),
-                ('price_per_unit_override', models.DecimalField(help_text=b'How much does this price list item cost per unit measurement? (Overrides original price)', max_digits=7, decimal_places=2, blank=True)),
+                ('services_active', models.BooleanField(default=True, help_text=b"Are these charge's associated services enabled?")),
+                ('price_per_unit_override', models.DecimalField(help_text=b'How much does this price list item cost per unit measurement? (Overrides original price)', null=True, max_digits=7, decimal_places=2, blank=True)),
                 ('billing_business', models.ForeignKey(help_text=b'Which business is this charge billed to?', to='business.Business')),
             ],
             options={
@@ -31,11 +33,12 @@ class Migration(migrations.Migration):
             name='ActivityChargeActivityCount',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('activity_count', models.PositiveIntegerField(help_text=b'How many units of activity is being applied to this activity charge?')),
+                ('activity_count', models.PositiveIntegerField(help_text=b'How many units of activity is being applied to this activity charge?', validators=[django.core.validators.MinValueValidator(1)])),
                 ('last_modified', models.DateTimeField(help_text=b'When was this activity last created/modified?', auto_now=True)),
                 ('activity_charge', models.ForeignKey(help_text=b'Which activity charge is this activity charge activity count applied to?', to='charge_list.ActivityCharge')),
             ],
             options={
+                'ordering': ['-pk'],
             },
             bases=(models.Model,),
         ),
@@ -57,9 +60,10 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('last_modified', models.DateTimeField(help_text=b'When was this charge list modified?', auto_now=True)),
-                ('price_per_time_override', models.DecimalField(help_text=b'How much does this price list item cost per unit of time?', max_digits=7, decimal_places=2, blank=True)),
-                ('time_start', models.DateTimeField(help_text=b'When does this time charge begin billing?', blank=True)),
-                ('time_end', models.DateTimeField(help_text=b'When does this time charge end billing?', blank=True)),
+                ('services_active', models.BooleanField(default=True, help_text=b"Are these charge's associated services enabled?")),
+                ('price_per_time_override', models.DecimalField(help_text=b'How much does this price list item cost per unit of time?', null=True, max_digits=7, decimal_places=2, blank=True)),
+                ('time_start', models.DateTimeField(help_text=b'When does this time charge begin billing?', null=True, blank=True)),
+                ('time_end', models.DateTimeField(help_text=b'When does this time charge end billing?', null=True, blank=True)),
                 ('billing_business', models.ForeignKey(help_text=b'Which business is this charge billed to?', to='business.Business')),
                 ('charge_list', models.ForeignKey(help_text=b'Which charge list does this charge list item reference?', to='charge_list.ChargeList')),
                 ('price_list_item', models.ForeignKey(help_text=b'Which time price list item does this charge list item reference', to='price_list.TimePriceListItem')),
@@ -75,7 +79,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('last_modified', models.DateTimeField(help_text=b'When was this charge list modified?', auto_now=True)),
-                ('price_per_unit_override', models.DecimalField(help_text=b'How much does this price list item cost?', max_digits=7, decimal_places=2, blank=True)),
+                ('services_active', models.BooleanField(default=True, help_text=b"Are these charge's associated services enabled?")),
+                ('price_per_unit_override', models.DecimalField(help_text=b'How much does this price list item cost?', null=True, max_digits=7, decimal_places=2, blank=True)),
                 ('billing_business', models.ForeignKey(help_text=b'Which business is this charge billed to?', to='business.Business')),
                 ('charge_list', models.ForeignKey(help_text=b'Which charge list does this charge list item reference?', to='charge_list.ChargeList')),
                 ('price_list_item', models.ForeignKey(help_text=b'Which unit price list item does this charge list item reference', to='price_list.UnitPriceListItem')),

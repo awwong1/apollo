@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+
+{% block content %}
+<ol class="breadcrumb">
+  <li><a href="/">Home</a></li>
+  <li><a href="{% url 'station_detail' pk=station.pk %}">{{ station }}</a></li>
+  <li class="active">{{ action }} Station Rental</li>
+</ol>
+<h1>{% if stationrental %}{{ stationrental }}{% else %}Create New Station Rental{% endif %}</h1>
+<form method="POST">
+  {% csrf_token %}
+  {% if form %}
+    {% bootstrap_form form %}
+    <input class="btn btn-primary" type="submit" value="Submit"/>
+  {% else %}
+    <p>Are you sure you want to delete {{ stationrental }}?</p>
+    <input class="btn btn-danger" type="submit" value="Delete"/>
+  {% endif %}
+</form>
+{% endblock %}

@@ -14,6 +14,19 @@
 <strong>Station UUID: </strong><code>{{ station.uuid }}</code>
 <h2>Description</h2>
 {{ station.description|linebreaks }}
+<h2>Station Rentals</h2>
+<ul>
+  {% for eq_rental in station.stationrental_set.all %}
+  <li>{{ eq_rental }}
+    {% if user.is_staff %} |
+    <a href="{% url 'stationrental_update' pk=eq_rental.pk %}" class="btn btn-primary btn-xs">Update</a>
+    <a href="{% url 'stationrental_delete' pk=eq_rental.pk %}" class="btn btn-warning btn-xs">Delete</a>
+    {% endif %}
+  </li>
+  {% empty %}
+  <li>This station does not contain any rentals.</li>
+  {% endfor %}
+</ul>
 <h2>Current Charge List</h2>
 {% if chargelist %}
 {% include 'snippet/chargelist_snippet.html' %}
@@ -23,6 +36,7 @@
 <div class="well well-sm">
   <p>There are no current active charge lists for this station. You may begin a new charge list by clicking the
     following:</p>
+
   <p><a class="btn btn-primary" href="{% url 'chargelist_create' station_pk=station.pk %}">Create Charge list</a></p>
 </div>
 {% else %}

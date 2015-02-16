@@ -29,6 +29,7 @@ class ActivityConfig(AppConfig):
         # Station Activity Registration
         registry.register(apps.get_model('station.Station'))
         registry.register(apps.get_model('station.StationBusiness'))
+        registry.register(apps.get_model('station.StationRental'))
         # Service Activity Registration
         registry.register(apps.get_model('terms_of_service.TermsOfService'))
 

@@ -19,10 +19,10 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(help_text=b'What is the name of this business?', unique=True, max_length=60)),
                 ('description', models.TextField(help_text=b'What is the description for this business?', blank=True)),
                 ('address_1', models.CharField(help_text=b'What is the address of this business?', max_length=60)),
-                ('address_2', models.CharField(help_text=b'What is the address of this business?', max_length=60, blank=True)),
-                ('country', models.CharField(help_text=b'Which country is this business located in?', max_length=60, blank=True)),
+                ('address_2', models.CharField(help_text=b'What is the address of this business? (Continued)', max_length=60, blank=True)),
+                ('country', models.CharField(help_text=b'Which country is this business located in?', max_length=60)),
                 ('region', models.CharField(help_text=b'Which province, territory, or region is this business located in?', max_length=60, blank=True)),
-                ('city', models.CharField(help_text=b'Which city is this business located in?', max_length=60, blank=True)),
+                ('city', models.CharField(help_text=b'Which city is this business located in?', max_length=60)),
                 ('postal_code', models.CharField(help_text=b'What is the postal/zip code of this business?', max_length=6)),
             ],
             options={
@@ -34,8 +34,8 @@ class Migration(migrations.Migration):
             name='BusinessMembership',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('business', models.ForeignKey(help_text=b'Which business is part of this membership? Cannot be edited once membership is created.', to='business.Business')),
-                ('user', models.ForeignKey(help_text=b'Which user is part of this membership? Cannot be edited once membership is created.', to=settings.AUTH_USER_MODEL)),
+                ('business', models.ForeignKey(help_text=b'Which business is part of this membership?', to='business.Business')),
+                ('user', models.ForeignKey(help_text=b'Which user is part of this membership?', to=settings.AUTH_USER_MODEL)),
             ],
             options={
             },

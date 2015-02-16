@@ -14,4 +14,9 @@ urlpatterns = patterns(
         name='stationbusiness_create'),
     url(r'station_business/(?P<pk>\d*)/delete/$', views.StationBusinessViewDelete.as_view(),
         name='stationbusiness_delete'),
+    # Station Rentals associated generic views
+    url(r'^station_rental/(?P<pk>\d*)/update/$', views.StationRentalViewUpdate.as_view(),
+        name='stationrental_update'),
+    url(r'station_rental/(?P<pk>\d*)/delete/$', views.StationRentalViewDelete.as_view(),
+        name='stationrental_delete'),
 )
