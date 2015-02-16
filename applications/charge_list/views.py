@@ -1,4 +1,4 @@
-from apollo.choices import CHARGE_LIST_OPEN
+from apollo.choices import CHARGE_LIST_OPEN, CHARGE_LIST_CLOSED_PENDING_PAYMENT
 from apollo.viewmixins import LoginRequiredMixin, ActivitySendMixin
 from applications.business.models import Business
 from applications.charge_list.forms import ChargeListForm, ActivityChargeForm, ActivityChargeUpdateForm, \
@@ -59,6 +59,7 @@ class ChargeListViewList(LoginRequiredMixin, ListView):
     context_object_name = 'chargelists'
     model = ChargeList
     template_name = 'charge_list/chargelist_list.html'
+    queryset = ChargeList.objects.filter(status=CHARGE_LIST_CLOSED_PENDING_PAYMENT)
 
 
 """
@@ -468,4 +469,37 @@ class UnitChargeViewDelete(LoginRequiredMixin, DeleteView):
         context['station'] = station
         context['terms'] = self.object.price_list_item.terms_of_service
         context['action'] = "Delete"
+        return context
+
+
+class ChargeListViewClose(LoginRequiredMixin, ActivitySendMixin, SuccessMessageMixin, UpdateView):
+    context_object_name = 'chargelist'
+    model = ChargeList
+    template_name = 'charge_list/chargelist_close.html'
+    activity_verb = 'closed charge list'
+    success_message = 'Charge list successfully closed and sent off for payment and processing. Prototype Workflow End.'
+    fields = ()
+
+    def dispatch(self, *args, **kwargs):
+        charge_list = get_object_or_404(ChargeList, pk=self.kwargs.get('pk', '-1'))
+        station = charge_list.station
+        station_business = station.stationbusiness_set.all()
+        businesses = Business.objects.filter(businessmembership__user=self.request.user)
+        can_modify = station_business.filter(business__in=businesses)
+        if can_modify or self.request.user.is_staff:
+            return super(ChargeListViewClose, self).dispatch(*args, **kwargs)
+        else:
+            messages.warning(self.request, "You do not have permissions to create a unit charge for this charge list.")
+            return redirect('station_detail', pk=station.pk)
+
+    def get_success_url(self):
+        station = self.object.station
+        self.object.status = CHARGE_LIST_CLOSED_PENDING_PAYMENT
+        self.object.save()
+        return reverse_lazy('station_detail', kwargs={'pk': station.pk})
+
+    def get_context_data(self, **kwargs):
+        context = super(ChargeListViewClose, self).get_context_data(**kwargs)
+        station = self.object.station
+        context['station'] = station
         return context

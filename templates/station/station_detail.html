@@ -29,15 +29,16 @@
 </ul>
 <h2>Current Charge List</h2>
 {% if chargelist %}
+<div class="well well-sm">
+  <a class="btn btn-warning" href="{% url 'chargelist_close' pk=chargelist.pk %}">Close Charge List</a>
+</div>
+
 {% include 'snippet/chargelist_snippet.html' %}
 <h3>Active Services</h3>
 <samp>{{ chargelist.get_active_services }}</samp>
 {% elif can_modify %}
 <div class="well well-sm">
-  <p>There are no current active charge lists for this station. You may begin a new charge list by clicking the
-    following:</p>
-
-  <p><a class="btn btn-primary" href="{% url 'chargelist_create' station_pk=station.pk %}">Create Charge list</a></p>
+  <a class="btn btn-primary" href="{% url 'chargelist_create' station_pk=station.pk %}">Create Charge list</a>
 </div>
 {% else %}
 <div class="well well-sm">

@@ -4,7 +4,8 @@ from django.conf.urls import url, patterns
 urlpatterns = patterns(
     '',
     url(r'^create/(?P<station_pk>\d*)/$', views.ChargeListViewCreate.as_view(), name='chargelist_create'),
-    url(r'^$', views.ChargeListViewList.as_view(), name='chargelist_list'),
+    url(r'^$', views.ChargeListViewList.as_view(), name='chargelist_pendingpayment_list'),
+    url(r'^(?P<pk>\d*)/close/$', views.ChargeListViewClose.as_view(), name='chargelist_close'),
     # Charge Catalog Views
     url(r'^(?P<chargelist_pk>\d*)/create/activitycharge/$', views.ActivityChargeViewCreate.as_view(),
         name='activitycharge_create'),

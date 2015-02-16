@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+
+{% block content %}
+<ol class="breadcrumb">
+  <li><a href="/">Home</a></li>
+  <li><a href="{% url 'station_detail' pk=station.pk %}">{{ station }}</a></li>
+  <li class="active">{{ action }} Charge List</li>
+</ol>
+<h1>Close {{ chargelist }}</h1>
+<form method="POST">
+  {% csrf_token %}
+  <p>Are you sure you want to close {{ chargelist }} and begin the payment process?
+    (Prototype workflow ends here.)
+  </p>
+  <input class="btn btn-danger" type="submit" value="Close Charge List"/>
+</form>
+{% endblock %}

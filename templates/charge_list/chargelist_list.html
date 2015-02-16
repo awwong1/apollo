@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<ol class="breadcrumb">
+  <li><a href="/">Home</a></li>
+  <li class="active">Payment Pending Charge Lists</li>
+</ol>
+<h1>Payment Pending Charge Lists</h1>
+<ul>
+  {% for chargelist in chargelists %}
+  <li><a href="{% url 'chargelist_detail' pk=chargelist.pk %}">{{ chargelist }}</a></li>
+  {% empty %}
+  <li>No charge lists are pending payment.</li>
+  {% endfor %}
+</ul>
+{% endblock %}

@@ -1,10 +1,9 @@
-from applications.station.models import Station, StationBusiness
-from applications.station.serializers import StationSerializer, StationBusinessSerializer
-from rest_framework import mixins, viewsets
+from applications.station.models import Station, StationBusiness, StationRental
+from applications.station.serializers import StationSerializer, StationBusinessSerializer, StationRentalSerializer
+from rest_framework import viewsets
 
 
-class StationViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
-                     mixins.ListModelMixin, viewsets.GenericViewSet):
+class StationViewSet(viewsets.ModelViewSet):
     """
     ViewSet for Stations. To search, supply a 'q' get parameter to the url to filter on station name.
     """
@@ -19,12 +18,15 @@ class StationViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.
 
 class StationBusinessViewSet(viewsets.ModelViewSet):
     """
-    ViewSet for Station Businesses. To search, supply a 'q' get parameter to the url to filter on station name.
+    ViewSet for Station Businesses.
     """
     serializer_class = StationBusinessSerializer
+    queryset = StationBusiness.objects.all()
 
-    def get_queryset(self):
-        queryset = StationBusiness.objects.all()
-        if self.request.GET.get('q', None):
-            return queryset.filter(station__name__icontains=self.request.GET['q'])
-        return queryset
+
+class StationRentalViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for Station Rentals.
+    """
+    serializer_class = StationRentalSerializer
+    queryset = StationRental.objects.all()

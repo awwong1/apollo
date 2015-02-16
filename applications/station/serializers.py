@@ -1,5 +1,4 @@
-from applications.business.models import Business
-from applications.station.models import Station
+from applications.station.models import Station, StationBusiness
 from rest_framework import relations
 from rest_framework.serializers import HyperlinkedModelSerializer
 
@@ -9,14 +8,18 @@ class StationSerializer(HyperlinkedModelSerializer):
 
     class Meta:
         model = Station
-        read_only_fields = ('id',)
 
 
 class StationBusinessSerializer(HyperlinkedModelSerializer):
     url = relations.HyperlinkedIdentityField(view_name="station-business-detail")
-    business = relations.HyperlinkedRelatedField(view_name="business-detail", queryset=Business.objects.all())
-    station = relations.HyperlinkedRelatedField(view_name="station-detail", queryset=Station.objects.all())
+    business = relations.HyperlinkedRelatedField(view_name="business-detail", read_only=True)
+    station = relations.HyperlinkedRelatedField(view_name="station-detail", read_only=True)
 
     class Meta:
-        model = Station
-        read_only_fields = ('id',)
+        model = StationBusiness
+
+
+class StationRentalSerializer(HyperlinkedModelSerializer):
+    url = relations.HyperlinkedIdentityField(view_name="station-rental-detail")
+    station = relations.HyperlinkedRelatedField(view_name="station-detail", read_only=True)
+    equipment = relations.HyperlinkedRelatedField(view_name="equipment-detail", read_only=True)

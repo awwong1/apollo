@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<ol class="breadcrumb">
+  <li><a href="/">Home</a></li>
+  <li><a href="#">Payment Pending Charge Lists</a></li>
+  <li class="active">{{ chargelist }}</li>
+</ol>
+<h1>{{ chargelist }}</h1>
+{% include 'snippet/chargelist_snippet.html' %}
+{% endblock %}
