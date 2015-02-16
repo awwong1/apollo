@@ -9,7 +9,7 @@
       <p class="lead">
         Activity Charges
       </p>
-      {% if can_modify and activitycharge_catalog %}
+      {% if can_modify or user.is_staff %}
       <div class="panel panel-info">
         <div class="panel-body">
           <form action="{% url 'activitycharge_create' chargelist_pk=chargelist.pk %}" method="get">
@@ -61,7 +61,7 @@
     </div>
     <div class="col-md-4">
       <p class="lead">Time Charges</p>
-      {% if can_modify and timecharge_catalog %}
+      {% if can_modify or user.is_staff %}
       <div class="panel panel-info">
         <div class="panel-body">
           <form action="{% url 'timecharge_create' chargelist_pk=chargelist.pk %}" method="get">
@@ -118,10 +118,10 @@
     </div>
     <div class="col-md-4">
       <p class="lead">Unit Charges</p>
-      {% if can_modify and unitcharge_catalog %}
+      {% if can_modify or user.is_staff %}
       <div class="panel panel-info">
         <div class="panel-body">
-          <form method="get">
+          <form action="{% url 'unitcharge_create' chargelist_pk=chargelist.pk %}" method="get">
             {% bootstrap_form unitcharge_catalog %}
             <input class="btn btn-primary btn-sm" type="submit" value="Add Unit Charge"/>
           </form>
@@ -129,8 +129,24 @@
       </div>
       {% endif %}
       {% for unit_charge in chargelist.unitcharge_set.all %}
-      <div class="panel panel-primary">
-        <div class="panel-body">{{ unit_charge }}</div>
+      <div class="panel {% if unit_charge.services_active %}panel-primary{% else %}panel-warning{% endif %}">
+        <div class="panel-body">
+          {{ unit_charge }} {% if not unit_charge.services_active %}(Services Disabled){% endif %}
+          <ul class="list-unstyled">
+            <li>
+              <strong>Billed to: </strong>
+              <a href="{% url 'businses_detail' pk=unit_charge.billing_business.pk">
+                {{ unit_charge.billing_business }}</a>
+            </li>
+            <li>
+              <strong>Running Cost: </strong>${{ unit_charge.get_cost }}
+            </li>
+          </ul>
+          {% if user.is_staff %}
+          <a href="{% url 'unitcharge_update' pk=unit_charge.pk %}" class="btn btn-primary btn-xs">Update</a>
+          <a href="{% url 'unitcharge_delete' pk=unit_charge.pk %}" class="btn btn-warning btn-xs">Delete</a>
+          {% endif %}
+        </div>
       </div>
       {% empty %}
       <div class="panel panel-primary">

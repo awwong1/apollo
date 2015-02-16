@@ -254,7 +254,7 @@ class UnitCharge(AbstractChargeListItem):
     )
 
     def __str__(self):
-        price = self.price_per_time_override
+        price = self.price_per_unit_override
         if price is None:
             price = self.price_list_item.price_per_unit
         return "{name} (${price})".format(
@@ -262,9 +262,15 @@ class UnitCharge(AbstractChargeListItem):
         )
 
     def __unicode__(self):
-        price = self.price_per_time_override
+        price = self.price_per_unit_override
         if price is None:
             price = self.price_list_item.price_per_unit
         return u"{name} (${price})".format(
             name=self.price_list_item.name, price=price,
         )
+
+    def get_cost(self):
+        price = self.price_per_unit_override
+        if price is None:
+            price = self.price_list_item.price_per_unit
+        return price

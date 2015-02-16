@@ -1,6 +1,7 @@
 from apollo.choices import PRICE_LIST_RELEASE
 from applications.business.models import Business
-from applications.charge_list.models import ChargeList, ActivityCharge, TimeCharge, ActivityChargeActivityCount
+from applications.charge_list.models import ChargeList, ActivityCharge, TimeCharge, ActivityChargeActivityCount, \
+    UnitCharge
 from applications.price_list.models import PriceList, TimePriceListItem, ActivityPriceListItem, UnitPriceListItem
 from applications.station.models import Station
 from django import forms
@@ -143,8 +144,8 @@ class TimeChargeUpdateForm(forms.ModelForm):
         model = TimeCharge
         fields = "__all__"
         help_texts = {
-            'time_start': 'When does this time charge begin billing? (Format: YYYY-MM-DD HH:MM:SS) (Use UTC time)',
-            'time_end': 'When does this time charge end billing? (Format: YYYY-MM-DD HH:MM:SS) (Use UTC time)',
+            'time_start': 'In UTC time, when does this time charge begin billing? (YYYY-MM-DD HH:MM:SS)',
+            'time_end': 'In UTC time, when does this time charge end billing? (YYYY-MM-DD HH:MM:SS)',
         }
 
     def __init__(self, *args, **kwargs):
@@ -153,6 +154,46 @@ class TimeChargeUpdateForm(forms.ModelForm):
         self.fields['charge_list'].empty_label = None
         self.fields['charge_list'].widget.attrs['readonly'] = 'readonly'
         self.fields['price_list_item'].queryset = TimePriceListItem.objects.filter(
+            pk=kwargs['instance'].price_list_item.pk)
+        self.fields['price_list_item'].empty_label = None
+        self.fields['price_list_item'].widget.attrs['readonly'] = 'readonly'
+
+
+class UnitChargeForm(forms.ModelForm):
+    class Meta:
+        model = UnitCharge
+        fields = "__all__"
+        exclude = ['price_per_unit_override', 'services_active']
+
+    def __init__(self, *args, **kwargs):
+        chargelist_pk = kwargs.pop('chargelist_pk', None)
+        unitpli_pk = kwargs.pop('unitpli_pk', None)
+        super(UnitChargeForm, self).__init__(*args, **kwargs)
+        if chargelist_pk is not None:
+            charge_list_queryset = ChargeList.objects.filter(pk=chargelist_pk)
+            self.fields['charge_list'].queryset = charge_list_queryset
+            self.fields['charge_list'].empty_label = None
+            self.fields['charge_list'].widget.attrs['readonly'] = 'readonly'
+            self.fields['billing_business'].empty_label = None
+            self.fields['billing_business'].queryset = Business.objects.filter(
+                stationbusiness__station=charge_list_queryset[0].station)
+        if unitpli_pk is not None:
+            self.fields['price_list_item'].queryset = UnitPriceListItem.objects.filter(pk=unitpli_pk)
+            self.fields['price_list_item'].empty_label = None
+            self.fields['price_list_item'].widget.attrs['readonly'] = 'readonly'
+
+
+class UnitChargeUpdateForm(forms.ModelForm):
+    class Meta:
+        model = UnitCharge
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super(UnitChargeUpdateForm, self).__init__(*args, **kwargs)
+        self.fields['charge_list'].queryset = ChargeList.objects.filter(pk=kwargs['instance'].charge_list.pk)
+        self.fields['charge_list'].empty_label = None
+        self.fields['charge_list'].widget.attrs['readonly'] = 'readonly'
+        self.fields['price_list_item'].queryset = UnitPriceListItem.objects.filter(
             pk=kwargs['instance'].price_list_item.pk)
         self.fields['price_list_item'].empty_label = None
         self.fields['price_list_item'].widget.attrs['readonly'] = 'readonly'

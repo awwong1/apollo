@@ -49,11 +49,10 @@ class StationViewDetail(LoginRequiredMixin, DetailView):
         active_cl = ChargeList.objects.filter(station=self.object, status=CHARGE_LIST_OPEN)
         if len(active_cl) == 1:
             context['chargelist'] = active_cl[0]
-            if context['can_modify']:
-                price_list_pk = active_cl[0].price_list.pk
-                context['activitycharge_catalog'] = ActivityChargeCatalog(price_list_pk=price_list_pk)
-                context['timecharge_catalog'] = TimeChargeCatalog(price_list_pk=price_list_pk)
-                context['unitcharge_catalog'] = UnitChargeCatalog(price_list_pk=price_list_pk)
+            price_list_pk = active_cl[0].price_list.pk
+            context['activitycharge_catalog'] = ActivityChargeCatalog(price_list_pk=price_list_pk)
+            context['timecharge_catalog'] = TimeChargeCatalog(price_list_pk=price_list_pk)
+            context['unitcharge_catalog'] = UnitChargeCatalog(price_list_pk=price_list_pk)
         return context
 
 

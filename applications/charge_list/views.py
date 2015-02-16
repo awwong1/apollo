@@ -2,9 +2,10 @@ from apollo.choices import CHARGE_LIST_OPEN
 from apollo.viewmixins import LoginRequiredMixin, ActivitySendMixin
 from applications.business.models import Business
 from applications.charge_list.forms import ChargeListForm, ActivityChargeForm, ActivityChargeUpdateForm, \
-    ActivityChargeActivityForm, TimeChargeForm, TimeChargeUpdateForm
-from applications.charge_list.models import ChargeList, ActivityCharge, ActivityChargeActivityCount, TimeCharge
-from applications.price_list.models import ActivityPriceListItem, TimePriceListItem
+    ActivityChargeActivityForm, TimeChargeForm, TimeChargeUpdateForm, UnitChargeForm, UnitChargeUpdateForm
+from applications.charge_list.models import ChargeList, ActivityCharge, ActivityChargeActivityCount, TimeCharge, \
+    UnitCharge
+from applications.price_list.models import ActivityPriceListItem, TimePriceListItem, UnitPriceListItem
 from applications.station.models import Station
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
@@ -230,9 +231,14 @@ class ActivityChargeActivityViewDelete(LoginRequiredMixin, DeleteView):
         return context
 
 
+"""
+Time Charge Item Generic Viewsets
+"""
+
+
 class TimeChargeViewCreate(LoginRequiredMixin, ActivitySendMixin, SuccessMessageMixin, CreateView):
     """
-    Requires url encoded chargelist_pk, get parameter activity_items=<TimePriceListItem.pk>
+    Requires url encoded chargelist_pk, get parameter time_items=<TimePriceListItem.pk>
     """
     context_object_name = 'timecharge'
     model = TimeCharge
@@ -335,5 +341,111 @@ class TimeChargeViewDelete(LoginRequiredMixin, DeleteView):
         return context
 
 
-class UnitChargeViewCreate(LoginRequiredMixin, CreateView):
-    pass
+"""
+Unit Charge Item Generic Viewsets
+"""
+
+
+class UnitChargeViewCreate(LoginRequiredMixin, ActivitySendMixin, SuccessMessageMixin, CreateView):
+    """
+    Requires url encoded chargelist_pk, get parameter unit_items=<UnitPriceListItem.pk>
+    """
+    context_object_name = 'unitcharge'
+    model = UnitCharge
+    template_name = 'charge_list/unitcharge_form.html'
+    form_class = UnitChargeForm
+    activity_verb = 'created unit charge'
+    success_message = '%(price_list_item)s successfully added!'
+
+    def dispatch(self, *args, **kwargs):
+        charge_list = get_object_or_404(ChargeList, pk=self.kwargs.get('chargelist_pk', '-1'))
+        station = charge_list.station
+        station_business = station.stationbusiness_set.all()
+        businesses = Business.objects.filter(businessmembership__user=self.request.user)
+        can_modify = station_business.filter(business__in=businesses)
+        if can_modify or self.request.user.is_staff:
+            unit_item_pk = self.request.GET.get('unit_items', None)
+            if unit_item_pk is None:
+                messages.warning(self.request, "An unit item must be provided to add.")
+                return redirect('station_detail', pk=station.pk)
+            unit_item = get_object_or_404(UnitPriceListItem, pk=unit_item_pk)
+            if unit_item.price_list != charge_list.price_list:
+                messages.warning(self.request, "The provided unit item must be part of the current price list.")
+                return redirect('station_detail', pk=station.pk)
+            return super(UnitChargeViewCreate, self).dispatch(*args, **kwargs)
+        else:
+            messages.warning(self.request, "You do not have permissions to create a unit charge for this charge list.")
+            return redirect('station_detail', pk=station.pk)
+
+    def get_form(self, form_class):
+        return form_class(chargelist_pk=self.kwargs['chargelist_pk'], unitpli_pk=self.request.GET['unit_items'],
+                          **self.get_form_kwargs())
+
+    def get_success_url(self):
+        charge_list = get_object_or_404(ChargeList, pk=self.kwargs.get('chargelist_pk', '-1'))
+        station = charge_list.station
+        return reverse_lazy('station_detail', kwargs={'pk': station.pk})
+
+    def get_context_data(self, **kwargs):
+        context = super(UnitChargeViewCreate, self).get_context_data(**kwargs)
+        charge_list = get_object_or_404(ChargeList, pk=self.kwargs.get('chargelist_pk', '-1'))
+        unit_item_pk = self.request.GET['unit_items']
+        unit_item = get_object_or_404(UnitPriceListItem, pk=unit_item_pk)
+        context['station'] = charge_list.station
+        context['terms'] = unit_item.terms_of_service
+        context['action'] = "Create"
+        context['price_list_item'] = unit_item
+        return context
+
+
+class UnitChargeViewUpdate(LoginRequiredMixin, SuccessMessageMixin, ActivitySendMixin, UpdateView):
+    context_object_name = 'unitcharge'
+    model = UnitCharge
+    template_name = 'charge_list/unitcharge_form.html'
+    activity_verb = 'updated unit charge'
+    success_message = '%(price_list_item)s successfully updated!'
+    form_class = UnitChargeUpdateForm
+
+    def dispatch(self, *args, **kwargs):
+        if self.request.user.is_staff:
+            return super(UnitChargeViewUpdate, self).dispatch(*args, **kwargs)
+        station = self.object.charge_list.station
+        messages.warning(self.request, "Only staff can update charges.")
+        return redirect('station_detail', pl=station.pk)
+
+    def get_success_url(self):
+        station = self.object.charge_list.station
+        return reverse_lazy('station_detail', kwargs={'pk': station.pk})
+
+    def get_context_data(self, **kwargs):
+        context = super(UnitChargeViewUpdate, self).get_context_data(**kwargs)
+        station = self.object.charge_list.station
+        context['station'] = station
+        context['terms'] = self.object.price_list_item.terms_of_service
+        context['action'] = "Update"
+        return context
+
+
+class UnitChargeViewDelete(LoginRequiredMixin, DeleteView):
+    context_object_name = 'unitcharge'
+    model = UnitCharge
+    template_name = 'charge_list/unitcharge_form.html'
+
+    def dispatch(self, *args, **kwargs):
+        if self.request.user.is_staff:
+            return super(UnitChargeViewDelete, self).dispatch(*args, **kwargs)
+        station = self.object.charge_list.station
+        messages.warning(self.request, "Only staff can delete charges.")
+        return redirect('station_detail', pl=station.pk)
+
+    def get_success_url(self):
+        station = self.object.charge_list.station
+        return reverse_lazy('station_detail', kwargs={'pk': station.pk})
+
+    def get_context_data(self, **kwargs):
+        context = super(UnitChargeViewDelete, self).get_context_data(**kwargs)
+        station = self.object.charge_list.station
+        context['station'] = station
+        context['terms'] = self.object.price_list_item.terms_of_service
+        context['action'] = "Delete"
+        return context

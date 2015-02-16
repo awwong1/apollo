@@ -22,5 +22,7 @@ urlpatterns = patterns(
     # Time Charge
     url(r'timecharge/(?P<pk>\d*)/update/$', views.TimeChargeViewUpdate.as_view(), name='timecharge_update'),
     url(r'timecharge/(?P<pk>\d*)/delete/$', views.TimeChargeViewDelete.as_view(), name='timecharge_delete'),
-
+    # Unit Charge
+    url(r'unitcharge/(?P<pk>\d*)/update/$', views.UnitChargeViewUpdate.as_view(), name='unitcharge_update'),
+    url(r'unitcharge/(?P<pk>\d*)/delete/$', views.UnitChargeViewDelete.as_view(), name='unitcharge_delete'),
 )

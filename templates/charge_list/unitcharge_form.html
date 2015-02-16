@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+
+{% block content %}
+<ol class="breadcrumb">
+  <li><a href="/">Home</a></li>
+  <li><a href="{% url 'station_detail' pk=station.pk %}">{{ station }}</a></li>
+  <li class="active">{{ action }} Unit Charge</li>
+</ol>
+<h1>{% if unitcharge %}{{ unitcharge }}{% else %}Create New Unit Charge{% endif %}</h1>
+<form method="POST">
+  {% csrf_token %}
+  {% if form %}
+  {% bootstrap_form form %}
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                  aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">Terms and Conditions</h4>
+        </div>
+        <div class="modal-body">
+          By continuing, you agree to the following terms and conditions.
+          <hr>
+          <h2>{{ terms.title }}</h2>
+          <hr>
+          {{ terms.content|linebreaks }}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <input class="btn btn-primary" type="submit" value="Agree and Submit"/>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% if price_list_item %}
+  <div class="panel panel-primary">
+    <div class="panel-heading"><strong>{{ price_list_item }}</strong></div>
+    <div class="panel-body">{{ price_list_item.description }}</div>
+  </div>
+  {% endif %}
+  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+    Submit
+  </button>
+  {% else %}
+  <p>Are you sure you want to delete {{ unitcharge }}?</p>
+  <input class="btn btn-danger" type="submit" value="Delete"/>
+  {% endif %}
+</form>
+{% endblock %}
