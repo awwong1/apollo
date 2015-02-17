@@ -1,6 +1,54 @@
 {% extends 'base.html' %}
+{% load staticfiles %}
 {% block content %}
-<h1>Prototype Details</h1>
-<p>Todo: Define frameworks used, model simplifications, host environment, github link.</p>
-<p><a href="/api/">Development API</a></p>
+<h1>Apollo Prototype</h1>
+
+<div class="container-fluid">
+
+  <div class="row">
+    <div class="col-sm-4 text-center">
+      <img class="img-circle" src="{% static 'img/django.png' %}" alt="Django" style="width: 140px; height: 140px;">
+
+      <h2>Powered by Django</h2>
+
+      <p>This prototype uses the free and open source Django web framework.</p>
+
+      <p><a class="btn btn-default" href="https://www.djangoproject.com" role="button">Django Project &raquo;</a></p>
+    </div>
+    <div class="col-sm-4 text-center">
+      <img class="img-circle" src="{% static 'img/github.png' %}" alt="GitHub" style="width: 140px; height: 140px;">
+
+      <h2>Viewable on GitHub</h2>
+
+      <p>All code for this prototype is viewable at github. All code is MIT licensed.</p>
+
+      <p><a class="btn btn-default" href="https://github.com/awwong1/apollo" role="button">View source &raquo;</a></p>
+    </div>
+    <div class="col-sm-4 text-center">
+      <img class="img-circle" src="{% static 'img/openshift.gif' %}" alt="OpenShift"
+           style="width: 140px; height: 140px;">
+
+      <h2>Hosted by OpenShift</h2>
+
+      <p>This prototype is hosted on a free small gear at Red Hat's PAAS, OpenShift.</p>
+
+      <p><a class="btn btn-default" href="https://www.openshift.com" role="button">OpenShift &raquo;</a></p>
+    </div>
+  </div>
+
+  <hr class="featurette-divider">
+  <div class="row featurette">
+    <h2 class="featurette-heading">Purchase and Rental Management. <span class="text-muted">On the web.</span></h2>
+
+    <p class="lead">Apollo's purpose is to demonstrate advantages that a web based billing and authentication
+      management application would have over a rig based solution.</p>
+
+    <p>Additionally, a web application programming interface is <a href="/api/">available to browse here</a>. Currently, all permissions are
+      set to be read only.</p>
+  </div>
+
+  <hr class="featurette-divider">
+</div>
+
+
 {% endblock %}

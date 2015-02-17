@@ -13,7 +13,7 @@ def base(request):
         data['businesses'] = Business.objects.filter(businessmembership__user=request.user)
         return render_to_response('business/business_home.html', data, context_instance=RequestContext(request))
     else:
-        return base_idea(request)
+        return base_prototype(request)
 
 
 def base_idea(request):
