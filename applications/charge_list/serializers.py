@@ -15,7 +15,7 @@ class ChargeListSerializer(HyperlinkedModelSerializer):
 
 class ActivityChargeSerializer(HyperlinkedModelSerializer):
     url = relations.HyperlinkedIdentityField(view_name="activity-charge-detail")
-    price_list = relations.HyperlinkedRelatedField(view_name="price-list-detail", read_only=True)
+    price_list_item = relations.HyperlinkedRelatedField(view_name="activity-price-list-item-detail", read_only=True)
     charge_list = relations.HyperlinkedRelatedField(view_name="charge-list-detail", read_only=True)
     billing_business = relations.HyperlinkedRelatedField(view_name="business-detail", read_only=True)
 
@@ -25,7 +25,7 @@ class ActivityChargeSerializer(HyperlinkedModelSerializer):
 
 class TimeChargeSerializer(HyperlinkedModelSerializer):
     url = relations.HyperlinkedIdentityField(view_name="time-charge-detail")
-    price_list = relations.HyperlinkedRelatedField(view_name="price-list-detail", read_only=True)
+    price_list_item = relations.HyperlinkedRelatedField(view_name="time-price-list-item-detail", read_only=True)
     charge_list = relations.HyperlinkedRelatedField(view_name="charge-list-detail", read_only=True)
     billing_business = relations.HyperlinkedRelatedField(view_name="business-detail", read_only=True)
 
@@ -43,7 +43,7 @@ class ActivityChargeActivityCountSerializer(HyperlinkedModelSerializer):
 
 class UnitChargeSerializer(HyperlinkedModelSerializer):
     url = relations.HyperlinkedIdentityField(view_name="unit-charge-detail")
-    price_list = relations.HyperlinkedRelatedField(view_name="price-list-detail", read_only=True)
+    price_list_item = relations.HyperlinkedRelatedField(view_name="unit-price-list-item-detail", read_only=True)
     charge_list = relations.HyperlinkedRelatedField(view_name="charge-list-detail", read_only=True)
     billing_business = relations.HyperlinkedRelatedField(view_name="business-detail", read_only=True)
 
