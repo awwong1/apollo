@@ -1,69 +1,87 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
 {% block content %}
-<h1>Idea Details</h1>
-<h2>Video: Billing Beyond the Rig</h2>
+  <h1>Idea Details</h1>
+  <h2>Video: Billing Beyond the Rig</h2>
 
-<div class="embed-responsive embed-responsive-16by9">
-  <iframe width="560" height="315" src="https://www.youtube.com/embed/niHsX8vZf1M" frameborder="0"
-          allowfullscreen></iframe>
-</div>
-<p class="text-muted">
-  Video was created by Alpacalypse Productions, <a href="http://alpacabomb.com/">http://alpacabomb.com</a>
-</p>
+  <div class="embed-responsive embed-responsive-16by9">
 
-<h2>Purchase and Rental Management. <span class="text-muted">On the web.</span></h2>
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/1abdXj23UDk" frameborder="0"
+            allowfullscreen></iframe>
+  </div>
+  <p class="text-muted">
+    Video was created by Alpacalypse Productions, <a href="http://alpacabomb.com/">http://alpacabomb.com</a>
+  </p>
 
-<p class="lead">Apollo's purpose is to demonstrate advantages that a web based billing and authentication
-  management application would have over a rig based solution.</p>
-<p>
-  Currently, our customers request equipment from Pason. This request goes to a field technician who delivers the
-  equipment to the rig. The field technician uses our rig site billing software to add a pending charge for the
-  equipment. The on site driller approves this charge. Finally, the billing software enables the equipment.
-</p>
-<p class="lead">
-  This current workflow raises some concerns:
-</p>
-<ul>
-  <li><strong>Why are we sending billing data back and forth between the rig?</strong>
+  <h2>Purchase and Rental Management. <span class="text-muted">On the web.</span></h2>
 
-    <p>Rather than have the rigs all download a version of the price list, we should have all prices centralized and
-      consistent across the field. Rigs should not have to download the price list, part list, field tech credentials,
-      etc. Rigs should listen to our central servers to see what equipment is active. Rigs should keep this state in
-      case internet connectivity goes down, but still update itself whenever a change is made on the central server.</p>
-  </li>
-  <li><strong>Why does control of charges rely on a driller's approval instead of the head office/corporate
-    approval?</strong>
+  <p class="lead">Apollo's purpose is to demonstrate advantages that a web based billing and authentication
+    management application would have over a rig based solution.</p>
+  <p>
+    Currently, our customers request equipment from Pason. This request goes to a field technician who delivers the
+    equipment to the rig. The field technician uses our rig site billing software to add a pending charge for the
+    equipment. The on site driller approves this charge. Finally, the billing software enables the equipment.
+  </p>
+  <p class="lead">
+    This current workflow raises some concerns:
+  </p>
+  <ul>
+    <li><strong>Why are we sending billing data back and forth between the rig?</strong>
 
-    <p>The corporate office user should be responsible for which charges are purchased. Drillers typically don't care
-      about which charges are active, so long as the equipment is enabled. Our existing workflow causes some churn
-      within our customers. There is frequently disputes as to what is paid for and what isn't. Having an easily
-      accessible purchase/rental management solution would fix this problem.</p>
-  </li>
-  <li><strong>Why do field technicians need to go to a rig to manage charges?</strong>
+      <p>Rather than have the rigs all download a version of the price list, we should have all prices centralized and
+        consistent across the field. Rigs should not have to download the price list, part list, field tech credentials,
+        etc. Rigs should listen to our central servers to see what equipment is active. Rigs should keep this state in
+        case internet connectivity goes down, but still update itself whenever a change is made on the central
+        server.</p>
+    </li>
+    <li><strong>Why does control of charges rely on a driller's approval instead of the head office/corporate
+      approval?</strong>
 
-    <p>Field technicians should be able to manage purchases and equipment from their mobile devices and computers
-      without having to travel to a rig. Making a field technician drive out to a rig is expensive. All unnecessary
-      traveling should be minimized. Having a web based billing application mitigates field technicians traveling due to
-      billing errors.</p>
-  </li>
-  <li><strong>How do we expand our current billing model to accommodate off rig products?</strong>
+      <p>The corporate office user should be responsible for which charges are purchased. Drillers typically don't care
+        about which charges are active, so long as the equipment is enabled. Our existing workflow causes some churn
+        within our customers. There is frequently disputes as to what is paid for and what isn't. Having an easily
+        accessible purchase/rental management solution would fix this problem.</p>
+    </li>
+    <li><strong>Why do field technicians need to go to a rig to manage charges?</strong>
 
-    <p>Currently, our billing software exists on the rig. This makes it difficult for off rig innovations to tie into
-      our existing billing workflow. To keep our unique process of billing and equipment activation, a solution is to
-      use a centralized server. This will allow any product with internet capability to tie into our billing model.
-      This is a more scalable solution than having all of our billing clustered among each rig.</p>
-  </li>
-</ul>
-<p>This prototype is not meant to be a drop in replacement for our current billing software. It is simply a way to show
-  what a web application to manage rig rentals and purchases could look like. It is not tied to DataHub or any rigs.
-  Although the server does support websockets, I did not implement a websocket handler for our activated equipment.</p>
-<h2>Summary</h2>
-<p>I hope to raise attention to what a unified web based billing process could offer to Pason. I think that if a
-  re-write were to occur, we should consider moving billing beyond the drilling rig and into the web.</p>
-<p class="text-right">
-  Alexander Wong<br>
-  Software Developer Intern (EDR)<br>
-  Pason Systems Corp.<br>
-</p>
+      <p>Field technicians should be able to manage purchases and equipment from their mobile devices and computers
+        without having to travel to a rig. Making a field technician drive out to a rig is expensive. All unnecessary
+        traveling should be minimized. Having a web based billing application mitigates field technicians traveling due
+        to billing errors.</p>
+    </li>
+    <li><strong>How do we expand our current billing model to accommodate off rig products?</strong>
+
+      <p>Currently, our billing software exists on the rig. This makes it difficult for off rig innovations to tie into
+        our existing billing workflow. To keep our unique process of billing and equipment activation, a solution is to
+        use a centralized server. This will allow any product with internet capability to tie into our billing model.
+        This is a more scalable solution than having all of our billing clustered among each rig.</p>
+    </li>
+  </ul>
+  <p>This prototype is not meant to be a drop in replacement for our current billing software. It is simply a way to
+    show what a web application to manage rig rentals and purchases could look like. It is not tied to DataHub or any
+    rigs. Although the server does support websockets, I did not implement a websocket handler for our activated
+    equipment.</p>
+  <p>Moreover, I made many simplifications on our existing price list and charge list models. I scrapped the idea of
+    having pending, toggled, and approved charges. I broke down each individual charge model such that there are three
+    distinct methods of billing:</p>
+  <ul>
+    <li>Activity Based Charges: Charges based on an arbitrary unit of activity (for example billing per MB for new
+      satellite payment methods).
+    </li>
+    <li>Time Based Charges: Charges based on lengths of time elapsed, such as our typical SPUD time to Release time
+      charges.
+    </li>
+    <li>Unit Based Charges: Charges with one time occurrence, like a delivery or installation fee.</li>
+  </ul>
+  <p>I introduced additional state to each of our stations (whether it is a rig, or an office). Each station now
+    supports awareness as to what equipment needs to be delivered by a field technician, as well as what already exists
+    on site. </p>
+  <h2>Summary</h2>
+  <p>I hope to raise attention to what a unified web based billing process could offer to Pason. I think that if a
+    re-write were to occur, we should consider moving billing beyond the drilling rig and into the web.</p>
+  <p class="text-right">
+    Alexander Wong<br>
+    Software Developer Intern (EDR)<br>
+    Pason Systems Corp.<br>
+  </p>
 {% endblock %}
